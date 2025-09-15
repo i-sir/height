@@ -66,9 +66,8 @@ class AssetController extends AdminBaseController
             $this->assign($k, $v);
         }
 
-
-        $this->assign('operate_type_list', $AssetModel->operate_type);//操作字段类型
-        $this->assign('identity_type_list', $AssetModel->identity_type);//身份类型
+        //操作字段类型
+        $this->assign('operate_type_list', $AssetModel->operate_type);
 
 
         return $this->fetch();
@@ -85,15 +84,13 @@ class AssetController extends AdminBaseController
 
         $params                  = $this->request->param();
         $params['identity_type'] = $params['identity_type'] ?? 'member';
-
         //用户
         if ($params['identity_type'] == 'member') $info = $MemberModel->where('id', '=', $params['id'])->find();
-        //店铺
-        if ($params['identity_type'] == 'shop') $info = [];
+
 
         //找出对应订单类型
-        $operate_order = $AssetModel->operate_order_admin[$params['operate_type']];//操作类型
-        $order_type    = $operate_order[$params['change_type']];//订单类型
+        $operate_order = $AssetModel->operate_order_admin[$params['operate_type']];
+        $order_type    = $operate_order[$params['change_type']];
 
 
         //增加
@@ -155,19 +152,13 @@ class AssetController extends AdminBaseController
     public function log()
     {
         $AssetModel = new \initmodel\AssetModel();
-
-
         //数据类型
-        $operate_type_list     = $AssetModel->operate_type;//操作字段类型
-        $operate_type_log_list = $AssetModel->operate_type_log;//菜单栏 类型列表
-        $change_type_list      = $AssetModel->change_type;//变动类型
-        $order_type_list       = $AssetModel->order_type;//订单类型
-        $identity_type         = $AssetModel->identity_type;//身份类型
-
-        $this->assign('operate_type_list', $operate_type_list);//操作字段类型
-        $this->assign('operate_type_log_list', $operate_type_log_list);//菜单栏 类型列表
-        $this->assign('identity_type_list', $identity_type);//身份类型
-
+        $operate_type_list     = $AssetModel->operate_type;
+        $operate_type_log_list = $AssetModel->operate_type_log;
+        $change_type_list      = $AssetModel->change_type;
+        $order_type_list       = $AssetModel->order_type;
+        $this->assign('operate_type_list', $operate_type_list);
+        $this->assign('operate_type_log_list', $operate_type_log_list);
 
         $params = $this->request->param();
 
@@ -220,14 +211,12 @@ class AssetController extends AdminBaseController
 
 
         //数据类型
-        $operate_type_list     = $AssetModel->operate_type;//操作字段类型
-        $operate_type_log_list = $AssetModel->operate_type_log;//菜单栏 类型列表
-        $change_type_list      = $AssetModel->change_type;//变动类型
-        $order_type_list       = $AssetModel->order_type;//订单类型
-        $identity_type         = $AssetModel->identity_type;//身份类型
-        $this->assign('operate_type_list', $operate_type_list);//操作字段类型
-        $this->assign('operate_type_log_list', $operate_type_log_list);//菜单栏 类型列表
-        $this->assign('identity_type_list', $identity_type);//身份类型
+        $operate_type_list     = $AssetModel->operate_type;
+        $operate_type_log_list = $AssetModel->operate_type_log;
+        $change_type_list      = $AssetModel->change_type;
+        $order_type_list       = $AssetModel->order_type;
+        $this->assign('operate_type_list', $operate_type_list);
+        $this->assign('operate_type_log_list', $operate_type_log_list);
 
         $params = $this->request->param();
 

@@ -12,6 +12,9 @@
     <form class="well form-inline margin-top-20 layui-form ajax-form" method="get" autocomplete="off"
           action="{:url('log_all',array('user_id'=>$user_id,'operate_type'=>$operate_type))}">
 
+        <input type="hidden" name="user_id" value="{$user_id}">
+        <input type="hidden" name="operate_type" value="{$operate_type}">
+
 
         用户信息：
         <div class="form-group layui-form">
@@ -49,7 +52,7 @@
                 </div>
             </div>
         </div>
-        ~
+~
         <div class="form-group">
             <div class="layui-form-item">
                 <div class="col-sm-6" style="display: flex;width: 150px;margin-top: 10px;!important;">
@@ -62,13 +65,9 @@
 
         <button type="submit" class="layui-btn" style="margin-left: 70px">搜索</button>
         <a type="button" class="layui-btn layui-bg-blue ajax-export" href="javascript:;">导出</a>
+        <input type="hidden" name="is_export" class="is_export" value="0">
         <a class="layui-btn layui-bg-red"
            href="{:url('log_all',array('user_id'=>$user_id,'operate_type'=>$operate_type))}">清空</a>
-
-
-        <input type="hidden" name="is_export" class="is_export" value="0">
-        <input type="hidden" name="user_id" value="{$user_id}">
-        <input type="hidden" name="operate_type" value="{$operate_type}">
     </form>
 
 

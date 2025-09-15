@@ -70,17 +70,17 @@ class IndexController extends AdminBaseController
         //$this->assign('admin', $admin);
 
 
+
         //清楚数据  30分钟
         if (!Cache::get('index_clear_cache')) {
             $AdminJournalPlugin = new AdminJournalPlugin();
-            $AdminJournalPlugin->delete_log(); 
- 
+            $AdminJournalPlugin->delete_log();
+
             Cache::set('index_clear_cache', 1, 30 * 60);//30分钟
         }
 
         //清楚缓存实时
         cmf_clear_cache();
-
 
 
         return $this->fetch();

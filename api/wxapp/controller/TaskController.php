@@ -28,8 +28,8 @@ class TaskController
     /**
      * 执行定时任务
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/task/index
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/task/index
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/task/index
+     *   official_environment: http://shop_template.com/api/wxapp/task/index
      *   api: /wxapp/task/index
      *   remark_name: 执行定时任务
      *
@@ -40,6 +40,7 @@ class TaskController
         $task->operation_vip();//处理vip
         $task->operation_cancel_order();//自动取消订单
         $task->operation_accomplish_order();//自动完成订单
+
 
 
         //将公众号的official_openid存入member表中  可以在用户授权登录后操作

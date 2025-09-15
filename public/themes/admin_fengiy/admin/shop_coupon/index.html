@@ -111,6 +111,13 @@
                     <td>{$vo.create_time|date='Y-m-d H:i:s'}</td>
 
                     <td>
+
+                        <!--弹出窗口-->
+                        <a class="layui-btn layui-btn-primary layui-border-blue layui-btn-xs"
+                           href="javascript:parent.openIframeLayer('{:url('send',['coupon_id'=>$vo.id])}','',{ area: ['65%', '85%'],move:'.layui-layer-title'},false);"
+                        >发放优惠券</a>
+
+
                         <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/ShopCoupon/edit')">
                             <a class="layui-btn layui-btn-primary layui-border-green layui-btn-xs"
                                href="{:url('edit',['id'=>$vo.id,'params'=>$params])}">编辑</a>

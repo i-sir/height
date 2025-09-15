@@ -28,7 +28,7 @@ class AssetModel extends Model
     //操作字段类型 && 如删除,后台自动不显示
     public $operate_type = [
         'balance' => '余额',
-        'point'   => '积分',
+//        'point'   => '积分',
     ];
 
     //操作类型,对应key (管理员专属)
@@ -41,16 +41,9 @@ class AssetModel extends Model
     //操作记录列表   && 如删除,后台列表自动不显示
     public $operate_type_log = [
         'balance' => '余额',
-        'point'   => '积分',
+//        'point'   => '积分',
     ];
 
-
-    //身份类型
-    public $identity_type = [
-        'member' => '用户',
-        'rider'  => '骑手',
-        'shop'   => '店铺',
-    ];
 
     //订单类型
     public $order_type = [
@@ -62,8 +55,6 @@ class AssetModel extends Model
         //积分板块
         200  => '支付订单(积分)',
         210  => '签到(积分)',
-        220  => '兑换优惠券扣除(积分)',
-        290  => '兑换优惠券扣除(积分)',
 
         //提现板块
         800  => '提现申请',

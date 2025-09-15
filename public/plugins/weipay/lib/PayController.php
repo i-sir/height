@@ -479,7 +479,7 @@ class PayController
         try {
             $result = Pay::wechat()->refund([
                 'out_trade_no'  => $order_num,
-                'out_refund_no' => cmf_order_sn(),
+                'out_refund_no' => cmf_order_sn(4),
                 'amount'        => [
                     'refund'   => round($amount),
                     'total'    => round($total),
@@ -623,7 +623,6 @@ class PayController
 
 
 
-
     /**
      * 关闭订单
      * @param $pay_num 支付单号
@@ -637,4 +636,6 @@ class PayController
 
         return $result;
     }
+
+
 }

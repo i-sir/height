@@ -123,7 +123,90 @@ class AdminBaseController extends BaseController
     }
 
 
- 
+    /**
+     * 获取唯一单号或唯一编码
+     * @param string $field_name 字段名
+     * @param int    $length     长度(订单号类型，默认8位)
+     * @param int    $type       生成类型：1:数子 2:数字+字母 3:纯数字 4:纯字母(大小写) 5:纯字母(大写)
+     * @param string $prefix     前缀
+     * @param string $table_name 表名|如为空,控制器必须和model名一致
+     * @return string 唯一编号
+     */
+    protected function get_num_only($field_name = 'order_num', $length = 8, $type = 1, $prefix = '', $table_name = '')
+    {
+        if ($type == 1) $only_num = $prefix . cmf_order_sn($length - 6);
+        if ($type == 2) $only_num = $prefix . cmf_random_string($length);
+        if ($type == 3) $only_num = $prefix . $this->generatePureNumber($length);
+        if ($type == 4) $only_num = $prefix . $this->generatePureLetters($length);
+        if ($type == 5) $only_num = $prefix . $this->generateUppercasePureLetters($length);
+
+        if ($table_name && is_string($table_name)) {
+            $is = Db::name($table_name)->where($field_name, '=', $only_num)->count();
+        } elseif (is_object($table_name)) {
+            $is = $table_name->where($field_name, '=', $only_num)->count();
+        } else {
+            $model_class = "\\initmodel\\" . Request::controller() . "Model";
+            $Model       = new $model_class();
+            $is          = $Model->where($field_name, '=', $only_num)->count();
+        }
+
+        if ($is) {
+            // 添加返回递归调用的结果
+            return $this->get_num_only($field_name, $length, $type, $prefix, $table_name);
+        }
+
+        return $only_num;
+    }
+
+
+
+
+    /**
+     * 生成纯字母
+     * @param $length
+     * @return string
+     */
+    protected function generatePureLetters($length)
+    {
+        $letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $result  = '';
+        for ($i = 0; $i < $length; $i++) {
+            $result .= $letters[rand(0, strlen($letters) - 1)];
+        }
+        return $result;
+    }
+
+    /**
+     * 生成纯字母 大写
+     * @param $length
+     * @return string
+     */
+    protected function generateUppercasePureLetters($length)
+    {
+        $letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $result  = '';
+        for ($i = 0; $i < $length; $i++) {
+            $result .= $letters[rand(0, strlen($letters) - 1)];
+        }
+        return $result;
+    }
+
+    /**
+     * 生成纯数字
+     * @param $length
+     * @return string
+     */
+    protected function generatePureNumber($length)
+    {
+        $digits = '0123456789';
+        $result = '';
+        for ($i = 0; $i < $length; $i++) {
+            $result .= $digits[rand(0, strlen($digits) - 1)];
+        }
+        return $result;
+    }
+
+
     private function updateViewConfig($defaultTheme = '', $viewBase = '')
     {
         $cmfAdminThemePath = config('template.cmf_admin_theme_path');

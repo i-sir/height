@@ -165,8 +165,6 @@ edit编辑
         if ($params['class_ids']) {
             $class_ids           = array_keys($params['class_ids']);//提取key
             $params['class_ids'] = $this->setParams($class_ids);
-        }else{
-          $params['class_ids'] = '';
         }
 -->
 <div class="form-group">
@@ -176,7 +174,7 @@ edit编辑
             <input class="form-control post-params" lay-skin="tag" name="class_ids[{$class_value.id}]"
                    title="{$class_value.name}"
                    type="checkbox"
-            <if condition="in_array($class_value.id,$class_ids)">
+            <if condition="$class_value.checked">
                 checked
             </if>
             >

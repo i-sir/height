@@ -139,25 +139,14 @@ class AuthController extends RestBaseController
      * @param string $table_name 表名|如为空,控制器必须和model名一致
      * @return string 唯一编号
      */
-    protected function get_num_only($field_name = 'order_num', $length = 4, $type = 1, $prefix = '', $table_name = '')
+    protected function get_num_only($field_name = 'order_num', $length = 8, $type = 1, $prefix = '', $table_name = '')
     {
-        static $attempts = 0;
-        $attempts++;
-
-        // 生成基础编号
-        if ($type == 1) $only_num = $prefix . cmf_order_sn($length);
+        if ($type == 1) $only_num = $prefix . cmf_order_sn();
         if ($type == 2) $only_num = $prefix . cmf_random_string($length);
         if ($type == 3) $only_num = $prefix . $this->generatePureNumber($length);
         if ($type == 4) $only_num = $prefix . $this->generatePureLetters($length);
         if ($type == 5) $only_num = $prefix . $this->generateUppercasePureLetters($length);
 
-        // 如果超过50次尝试，追加3位随机数字
-        if ($attempts > 50) {
-            $only_num .= mt_rand(100, 999); // 直接生成100-999的随机数
-            $attempts = 0;
-        }
-
-        // 检查唯一性
         if ($table_name && is_string($table_name)) {
             $is = Db::name($table_name)->where($field_name, '=', $only_num)->count();
         } elseif (is_object($table_name)) {
@@ -169,10 +158,10 @@ class AuthController extends RestBaseController
         }
 
         if ($is) {
+            // 添加返回递归调用的结果
             return $this->get_num_only($field_name, $length, $type, $prefix, $table_name);
         }
 
-        $attempts = 0;
         return $only_num;
     }
 
@@ -207,7 +196,6 @@ class AuthController extends RestBaseController
         return $result;
     }
 
-
     /**
      * 生成纯字母 大写
      * @param $length
@@ -222,7 +210,6 @@ class AuthController extends RestBaseController
         }
         return $result;
     }
-
 
     /**
      * 插入随机下划线

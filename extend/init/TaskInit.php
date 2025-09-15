@@ -20,42 +20,53 @@ class TaskInit
      */
     public function operation_cancel_order()
     {
-        $ShopOrderModel = new \initmodel\ShopOrderModel(); //商城订单   (ps:InitModel)
-        $Pay            = new PayController();
-        $OrderPayModel  = new \initmodel\OrderPayModel();
-
+        $ShopOrderModel       = new \initmodel\ShopOrderModel(); //商城订单   (ps:InitModel)
+        $ShopOrderDetailModel = new \initmodel\ShopOrderDetailModel();//订单详情
+        $ShopCouponUserModel  = new \initmodel\ShopCouponUserModel(); //优惠券领取记录   (ps:InitModel)
+        $StockInit            = new \init\StockInit();
+        $Pay                  = new PayController();
+        $OrderPayModel        = new \initmodel\OrderPayModel();
 
         $map   = [];
         $map[] = ['auto_cancel_time', '<', time()];
         $map[] = ['status', '=', 1];
         $list  = $ShopOrderModel->where($map)->select();
-        if ($list) {
 
-            foreach ($list as $k => $order_info) {
-                //微信支付取消 && 不让再次支付了
-                if (empty($order_info['pay_num'])) {
-                    $map300   = [];
-                    $map300[] = ['order_num', '=', $order_info['order_num']];
-                    $pay_num  = $OrderPayModel->where($map300)->value('pay_num');
-                }else{
-                    $pay_num = $order_info['pay_num'];
-                }
-                $Pay->close_order($pay_num);
+        foreach ($list as $key => $order_info) {
+
+            //微信支付取消 && 不让再次支付了
+            if (empty($order_info['pay_num'])) {
+                $map300   = [];
+                $map300[] = ['order_num', '=', $order_info['order_num']];
+                $pay_num  = $OrderPayModel->where($map300)->value('pay_num');
+            } else {
+                $pay_num = $order_info['pay_num'];
+            }
+            $Pay->close_order($pay_num);
+
+
+            //添加库存
+            $order_detail = $ShopOrderDetailModel->where('order_num', '=', $order_info['order_num'])->select();
+            foreach ($order_detail as $k => $v) {
+                $StockInit->inc_stock('shop_goods', $v['sku_id'], $v['count'], $v['goods_id'], $order_info['order_num']);
             }
 
 
-            //更新订单状态
-            $ShopOrderModel->where($map)->strict(false)->update([
-                'status'      => 10,
-                'cancel_time' => time(),
-                'update_time' => time(),
-            ]);
+            //优惠券退回
+            if ($order_info['coupon_id']) {
+                $ShopCouponUserModel->where('id', '=', $order_info['coupon_id'])->update(['used' => 1, 'update_time' => time()]);
+            }
         }
+
+        $ShopOrderModel->where($map)->strict(false)->update([
+            'status'      => 10,
+            'cancel_time' => time(),
+            'update_time' => time(),
+        ]);
 
 
         echo("自动取消订单,执行成功\n" . cmf_random_string(80) . "\n" . date('Y-m-d H:i:s') . "\n");
     }
-
 
 
     /**
@@ -74,7 +85,7 @@ class TaskInit
         $list = $ShopOrderModel->where($map)->field('id,order_num')->select();
         foreach ($list as $k => $order_info) {
             //这里处理订单完成后的逻辑
-            //$InitController->sendShopOrderAccomplish($order_info['order_num']);
+            $InitController->sendShopOrderAccomplish($order_info['order_num']);
         }
 
         $ShopOrderModel->where($map)->strict(false)->update([

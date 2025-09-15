@@ -54,36 +54,36 @@
             <thead>
             <tr>
                 <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/shop_goods_class/list_order_post')">
-                    <th style="">排序</th>
+                    <th style="width: 60px">排序</th>
                 </if>
-                <th style="">ID</th>
+                <th style="width: 60px">ID</th>
 
-                <th style="">名称</th>
+                <th style="width: 60px">名称</th>
                 <if condition="$vo.pid">
-                    <th style="">图片</th>
+                    <th style="width: 60px">图片</th>
                 </if>
                 <if condition="empty($vo.pid)">
-                    <th style="">首页推荐</th>
+                    <th style="width: 60px">首页推荐</th>
                 </if>
-                <th style="">显示</th>
-                <th style="">创建时间</th>
+                <th style="width: 60px">显示</th>
+                <th style="width: 60px">创建时间</th>
 
-                <th style="">操作</th>
+                <th style="width: 80px">操作</th>
             </tr>
             </thead>
             <tbody>
             <foreach name="list" item="vo">
                 <tr>
                     <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/shop_goods_class/list_order_post')">
-                        <td style="width: 90px;">
-                            <input style="width: 100%;!important;" type="text"
-                                   class="form-control input input-order valid post-params" name="list_order[{$vo.id}]"
+                        <td>
+                            <input type="text" class="input input-order valid post-params" name="list_order[{$vo.id}]"
                                    value="{$vo.list_order}">
                         </td>
                     </if>
                     <td>{$vo.id|default=''}</td>  <!--本我-->
                     <td>{$vo.name|default=''}</td>  <!--名称-->
                     <if condition="$vo.pid">
+
                         <td>
                             <!--图片-->
                             <if condition='!empty($vo.image)'>

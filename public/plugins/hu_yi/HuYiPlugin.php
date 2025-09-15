@@ -53,24 +53,6 @@ class HuYiPlugin extends Plugin
         }
     }
 
-    //发送短信 模板信息
-    public function sendMobileText($params): array
-    {
-        $config = $this->getConfig();
-        if (empty($params['mobile']) || empty($params['content'])) {
-            return ['code' => 0, 'msg' => '手机号或发送内容不能为空！'];
-        }
-        $client = new SendMsg($config['apiid'], $config['apikey']);
-        $res    = $client->sendText($params['mobile'], $params['content']);
-        if (isset($res['code']) && $res['code'] == 2) {
-            return ['code' => 1, 'msg' => '短信发送成功！'];
-        } else {
-            return ['code' => 0, 'msg' => $res['msg']];
-        }
-    }
-
-
-
     //发送语音通知
     public function sendVoiceMsg($params)
     {

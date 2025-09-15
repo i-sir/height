@@ -1465,7 +1465,7 @@ function cmf_current_lang()
  */
 function cmf_order_sn($add_num = 4)
 {
-    $rand_num = '';
+    $rand_num = ''; 
     if ($add_num > 0) {
         $rand_num = sprintf("%0{$add_num}d", rand(0, pow(10, $add_num) - 1));
     }

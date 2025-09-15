@@ -5,13 +5,15 @@
         <foreach name="operate_type_log_list" key="key" item="vo">
             <li
             <if condition="$key == $operate_type"> class="active"</if>
-            ><a href="{:url('log',array('user_id'=>$user_id,'identity_type'=>$identity_type,'operate_type'=>$key))}">{$vo}</a></li>
+            ><a href="{:url('log',array('user_id'=>$user_id,'operate_type'=>$key))}">{$vo}</a></li>
         </foreach>
     </ul>
 
     <form class="well form-inline margin-top-20 layui-form ajax-form" method="get" autocomplete="off"
-          action="{:url('log',array('user_id'=>$user_id,'operate_type'=>$operate_type,'identity_type'=>$identity_type))}">
+          action="{:url('log',array('user_id'=>$user_id,'operate_type'=>$operate_type))}">
 
+        <input type="hidden" name="user_id" value="{$user_id}">
+        <input type="hidden" name="operate_type" value="{$operate_type}">
 
         说明搜索：
         <div class="form-group layui-form">
@@ -47,16 +49,11 @@
         </div>
 
 
+
         <button type="submit" class="layui-btn" style="margin-left: 70px">搜索</button>
         <!--        <a type="button" class="layui-btn layui-bg-blue ajax-export" href="javascript:;">导出</a>-->
-        <a class="layui-btn layui-bg-red"
-           href="{:url('log',array('user_id'=>$user_id,'operate_type'=>$operate_type,'identity_type'=>$identity_type))}">清空</a>
-
-
-        <input type="hidden" name="is_export" class="is_export" value="0">
-        <input type="hidden" name="user_id" value="{$user_id}">
-        <input type="hidden" name="operate_type" value="{$operate_type}">
-        <input type="hidden" name="identity_type" value="{$identity_type}">
+        <!--        <input type="hidden" name="is_export" class="is_export" value="0">-->
+        <a class="layui-btn layui-bg-red" href="{:url('log',array('user_id'=>$user_id,'operate_type'=>$operate_type))}">清空</a>
     </form>
 
 

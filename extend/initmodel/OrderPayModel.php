@@ -34,10 +34,7 @@ class OrderPayModel extends Model
         if ($pay_num && $new == 0) return $pay_num;
 
         //获取用户id
-        $map100   = [];
-        $map100[] = ['openid', '=', $openid];
-        $map100[] = ['delete_time', '=', 0];
-        $user_id  = Db::name('member')->where($map100)->value('id');
+        $user_id = Db::name('member')->where('openid', $openid)->value('id');
 
 
         $prefix_num = '5550';//微信支付单号

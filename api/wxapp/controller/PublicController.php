@@ -80,8 +80,8 @@ class PublicController extends AuthController
      * 测试接口
      *
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/index
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/index
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/index
+     *   official_environment: http://shop_template.com/api/wxapp/public/index
      *   api: /wxapp/public/index
      *   remark_name: 测试接口
      *
@@ -90,7 +90,7 @@ class PublicController extends AuthController
     public function index()
     {
         $code                  = cmf_random_string(2);
-        $result['order_num']   = '6666' . cmf_order_sn(6);
+        $result['order_num']   = cmf_order_sn();
         $result['code']        = $code;
         $result['md5_code']    = md5($code);
         $result['sha1_code']   = sha1($code);
@@ -103,6 +103,9 @@ class PublicController extends AuthController
         $result['openid_not']  = 'M_' . (uniqid(mt_rand(0, 999)) . uniqid(mt_rand(0, 999)) . time() . microtime(true * 1000));
         $result['moods']       = 'M_' . $this->insertRandomUnderscore(sha1(uniqid(mt_rand(0, 999)) . uniqid(mt_rand(0, 999)) . time() . microtime(true * 1000)));
         $formData              = http_build_query($result);
+
+        Log::write('index');
+        Log::write($result);
 
 
         $this->success('请求成功!', ['result' => $result, 'formData' => $formData]);
@@ -132,8 +135,8 @@ class PublicController extends AuthController
      * )
      *
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/find_setting
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/find_setting
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/find_setting
+     *   official_environment: http://shop_template.com/api/wxapp/public/find_setting
      *   api: /wxapp/public/find_setting
      *   remark_name: 查询系统配置信息
      *
@@ -236,8 +239,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/find_agreement_list
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/find_agreement_list
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/find_agreement_list
+     *   official_environment: http://shop_template.com/api/wxapp/public/find_agreement_list
      *   api: /wxapp/public/find_agreement_list
      *   remark_name: 查询协议列表
      *
@@ -306,8 +309,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/upload_asset
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/upload_asset
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/upload_asset
+     *   official_environment: http://shop_template.com/api/wxapp/public/upload_asset
      *   api: /wxapp/public/upload_asset
      *   remark_name: 上传图片
      *
@@ -359,8 +362,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/find_slide
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/find_slide
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/find_slide
+     *   official_environment: http://shop_template.com/api/wxapp/public/find_slide
      *   api: /wxapp/public/find_slide
      *   remark_name: 查询幻灯片
      *
@@ -408,8 +411,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/find_navs
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/find_navs
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/find_navs
+     *   official_environment: http://shop_template.com/api/wxapp/public/find_navs
      *   api: /wxapp/public/find_navs
      *   remark_name: 查询导航列表
      *
@@ -488,8 +491,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/wx_app_login
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/wx_app_login
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/wx_app_login
+     *   official_environment: http://shop_template.com/api/wxapp/public/wx_app_login
      *   api: /wxapp/public/wx_app_login
      *   remark_name: 小程序授权登录
      *
@@ -604,8 +607,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/wx_app_silent_login
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/wx_app_silent_login
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/wx_app_silent_login
+     *   official_environment: http://shop_template.com/api/wxapp/public/wx_app_silent_login
      *   api: /wxapp/public/wx_app_silent_login
      *   remark_name: 小程序静默授权登录
      *
@@ -705,8 +708,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/get_opneid
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/get_opneid
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/get_opneid
+     *   official_environment: http://shop_template.com/api/wxapp/public/get_opneid
      *   api: /wxapp/public/get_opneid
      *   remark_name: 静默获取openid
      *
@@ -797,8 +800,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/wx_app_phone2
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/wx_app_phone2
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/wx_app_phone2
+     *   official_environment: http://shop_template.com/api/wxapp/public/wx_app_phone2
      *   api: /wxapp/public/wx_app_phone2
      *   remark_name: 小程序授权手机号登录(不包含注册)
      *
@@ -927,8 +930,8 @@ class PublicController extends AuthController
      * )
      *
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/wx_app_phone
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/wx_app_phone
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/wx_app_phone
+     *   official_environment: http://shop_template.com/api/wxapp/public/wx_app_phone
      *   api: /wxapp/public/wx_app_phone
      *   remark_name: 小程序授权手机号(授权登录)
      *
@@ -1038,8 +1041,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/h5_login
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/h5_login
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/h5_login
+     *   official_environment: http://shop_template.com/api/wxapp/public/h5_login
      *   api: /wxapp/public/h5_login
      *   remark_name: H5授权登录
      *
@@ -1133,8 +1136,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/get_js_sign
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/get_js_sign
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/get_js_sign
+     *   official_environment: http://shop_template.com/api/wxapp/public/get_js_sign
      *   api: /wxapp/public/get_js_sign
      *   remark_name: 获取公众号分享签名
      *
@@ -1187,8 +1190,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/wx_qrcode
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/wx_qrcode
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/wx_qrcode
+     *   official_environment: http://shop_template.com/api/wxapp/public/wx_qrcode
      *   api: /wxapp/public/wx_qrcode
      *   remark_name: 小程序程序二维码(必须get请求)
      *
@@ -1203,7 +1206,7 @@ class PublicController extends AuthController
         $dz           = $this->config['dir'];
         $date         = date('Ymd');
         $qrcode       = 'wxqrcode';
-        $image_name   = md5(md5(uniqid() . uniqid())) . '.png';//图片名字
+        $image_name   = md5(md5(uniqid())) . '.png';//图片名字
 
         //生成路径
         $path     = "upload/{$dz}/{$qrcode}/{$date}/{$image_name}";
@@ -1253,8 +1256,8 @@ class PublicController extends AuthController
         $qrcode       = 'wxqrcode';
 
         //生成路径
-        $path     = "upload/{$dz}/{$qrcode}/{$date}/" . md5(md5(uniqid() . uniqid())) . ".png";
-        $rel_path = "{$dz}/{$qrcode}/{$date}/" . md5(md5(uniqid() . uniqid())) . ".png";
+        $path     = "upload/{$dz}/{$qrcode}/{$date}/" . md5(md5(uniqid())) . ".png";
+        $rel_path = "{$dz}/{$qrcode}/{$date}/" . md5(md5(uniqid())) . ".png";
         $this->is_mkdirs("upload/{$dz}/{$qrcode}/{$date}/");
 
 
@@ -1328,8 +1331,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/add_user_pass
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/add_user_pass
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/add_user_pass
+     *   official_environment: http://shop_template.com/api/wxapp/public/add_user_pass
      *   api: /wxapp/public/add_user_pass
      *   remark_name: 手机号密码注册
      *
@@ -1417,8 +1420,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/pass_login
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/pass_login
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/pass_login
+     *   official_environment: http://shop_template.com/api/wxapp/public/pass_login
      *   api: /wxapp/public/pass_login
      *   remark_name: 手机号密码登录
      *
@@ -1491,8 +1494,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/sms_login
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/sms_login
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/sms_login
+     *   official_environment: http://shop_template.com/api/wxapp/public/sms_login
      *   api: /wxapp/public/sms_login
      *   remark_name: 手机号验证码登录
      *
@@ -1589,8 +1592,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/update_pass
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/update_pass
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/update_pass
+     *   official_environment: http://shop_template.com/api/wxapp/public/update_pass
      *   api: /wxapp/public/update_pass
      *   remark_name: 修改密码
      *
@@ -1661,8 +1664,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/send_sms
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/send_sms
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/send_sms
+     *   official_environment: http://shop_template.com/api/wxapp/public/send_sms
      *   api: /wxapp/public/send_sms
      *   remark_name: 获取手机验证码
      *
@@ -1680,94 +1683,16 @@ class PublicController extends AuthController
         $params = ["mobile" => $phone, "code" => $code];
 
         cmf_verification_code_log($phone, $code);
-        $result = $sms->sendMobileVerificationCode($params);
-        //        $result['code'] = 0;
-        //        $result['msg']  = '暂无配置';
+        //$result = $sms->sendMobileVerificationCode($params);
+        $result['code'] = 0;
+        $result['msg']  = '暂无配置';
 
 
-        if ($result['code'] == 1) {
+        if ($result['code'] == 0) {
             $this->success($result['msg']);
         } else {
             $this->error($result['msg']);
         }
-    }
-
-
-    /**
-     * 获取邮箱验证码
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws Exception
-     * @OA\Post(
-     *     tags={"小程序公共模块接口"},
-     *     path="/wxapp/public/send_mail",
-     *
-     *
-     *     @OA\Parameter(
-     *         name="mail",
-     *         in="query",
-     *         description="邮箱号码",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *     @OA\Response(response="200", description="An example resource"),
-     *     @OA\Response(response="default", description="An example resource")
-     * )
-     *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/send_mail
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/send_mail
-     *   api: /wxapp/public/send_mail
-     *   remark_name: 获取邮箱验证码
-     *
-     */
-    public function send_mail()
-    {
-        $mail = $this->request->param('mail');
-        $mail = trim($mail);
-        if (empty($mail)) $this->error('邮箱不能为空');
-
-
-        //基础配置
-        $email_template = cmf_get_option('email_template_' . 'verification_code');
-
-
-        //获取邮件模版
-        $template = htmlspecialchars_decode(cmf_replace_content_file_url($email_template['template']));
-        $subject  = $email_template['subject'];
-
-
-        //生成验证码
-        $code = cmf_get_verification_code($mail);
-
-
-        //存入数据库
-        cmf_verification_code_log($mail, $code);
-
-
-        // 定义需要替换的占位符数组
-        $search = ['{$code}'];
-        // 定义替换后的实际值数组
-        $replace = [$code];
-
-        // 一次性进行替换
-        $text = str_replace($search, $replace, $template);
-
-
-        //发送信息
-        $send = cmf_send_email($mail, $subject, $text);
-        if ($send['error'] == 1) $this->error($send['message']);
-
-
-        //验证验证码是否正确
-        //   $mail_result = cmf_check_verification_code($params['mail'], $params['code']);
-        //  if($mail_result) $this->error($mail_result);
-
-        $this->success('发送成功!');
     }
 
 
@@ -1797,8 +1722,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/send_voice
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/send_voice
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/send_voice
+     *   official_environment: http://shop_template.com/api/wxapp/public/send_voice
      *   api: /wxapp/public/send_voice
      *   remark_name: 电话语音通知
      *
@@ -1838,8 +1763,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/find_area
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/find_area
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/find_area
+     *   official_environment: http://shop_template.com/api/wxapp/public/find_area
      *   api: /wxapp/public/find_area
      *   remark_name: 获取 省市区
      *
@@ -1880,42 +1805,6 @@ class PublicController extends AuthController
 
 
     /**
-     * 获取市 带字母
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws Exception
-     * @OA\Post(
-     *     tags={"小程序公共模块接口"},
-     *     path="/wxapp/public/find_letter_city_list",
-     *     @OA\Response(response="200", description="An example resource"),
-     *     @OA\Response(response="default", description="An example resource")
-     * )
-     *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/find_letter_city_list
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/find_letter_city_list
-     *   api: /wxapp/public/find_letter_city_list
-     *   remark_name: 获取市 带字母
-     *
-     */
-    public function find_letter_city_list()
-    {
-        if (cache('letter_city_list')) {
-            $result = cache('letter_city_list');
-        } else {
-            $area   = Db::name('region_letter')->where('level_id', 2)->group('letter')->select();
-            $result = [];
-            foreach ($area as $k => $v) {
-                $result[$k]['letter'] = $v['letter'];
-                $result[$k]['data']   = Db::name('region_letter')->where('level_id', 2)->where('letter', $v['letter'])->select();
-            }
-            cache("letter_city_list", $result);
-        }
-        $this->success('list', $result);
-    }
-
-
-    /**
      * 翻译 误删
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
@@ -1941,8 +1830,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/translate
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/translate
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/translate
+     *   official_environment: http://shop_template.com/api/wxapp/public/translate
      *   api: /wxapp/public/translate
      *   remark_name: 翻译 误删
      *
@@ -1966,16 +1855,16 @@ class PublicController extends AuthController
      * @return mixed
      *
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/get_stable_access_token
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/get_stable_access_token
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/get_stable_access_token
+     *   official_environment: http://shop_template.com/api/wxapp/public/get_stable_access_token
      *   api: /wxapp/public/get_stable_access_token
      *   remark_name: 获取超稳定 access_token
      *
      */
     public function get_stable_access_token()
     {
-        $appid  = 'wxcec**0cd6a';
-        $secret = 'c9fee*****8b195';
+        $appid  = 'wxcecfab687710cd6a';
+        $secret = 'c9fee3915c658ed5472b7e5bc328b195';
         $url2   = 'https://api.weixin.qq.com/cgi-bin/stable_token';
         //小程序信息获取token
         $param['grant_type'] = 'client_credential';
@@ -2014,8 +1903,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/public/find_reverse_address
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/find_reverse_address
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/find_reverse_address
+     *   official_environment: http://shop_template.com/api/wxapp/public/find_reverse_address
      *   api: /wxapp/public/find_reverse_address
      *   remark_name: 根据经纬度获取地址信息
      *

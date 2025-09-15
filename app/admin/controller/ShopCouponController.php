@@ -23,6 +23,7 @@ namespace app\admin\controller;
  */
 
 
+use api\wxapp\controller\PublicController;
 use think\facade\Db;
 use cmf\controller\AdminBaseController;
 
@@ -307,6 +308,72 @@ class ShopCouponController extends AdminBaseController
         if (empty($result)) $this->error("失败请重试");
 
         $this->success("保存成功", "index{$this->params_url}");
+    }
+
+
+
+    //发放优惠券,用户列表
+    public function send()
+    {
+        $MemberInit = new \init\MemberInit();//会员管理
+        $params     = $this->request->param();
+
+
+        /** 查询数据 **/
+        $user_list = $MemberInit->get_list();
+        if (empty($user_list)) $this->error("暂无数据");
+
+        $this->assign("user_list", $user_list);
+
+
+        return $this->fetch();
+    }
+
+
+    public function send_post()
+    {
+        $params = $this->request->param();
+
+        $ShopCouponModel     = new \initmodel\ShopCouponModel(); //优惠券   (ps:InitModel)
+        $ShopCouponUserModel = new \initmodel\ShopCouponUserModel(); //优惠券领取记录   (ps:InitModel)
+        $PublicController    = new PublicController();
+
+
+        //优惠券信息
+        $coupon_info = $ShopCouponModel->where(['id' => $params['coupon_id']])->find();
+        if (empty($coupon_info)) $this->error("优惠券不存在!");
+
+
+        //处理优惠券到期时间 && 按天计算
+        if ($coupon_info['type'] == 2) $coupon_info['end_time'] = time() + (86400 * $coupon_info['day']);
+
+
+        foreach ($params['ids'] as $user_id) {
+            //生成优惠券码
+            $code     = $this->get_num_only('code', 10, 4, 'C');
+            $qr_image = $PublicController->wx_qrcode($code, 'pages/index/index', 2);//二维码
+
+            $ShopCouponUserModel->strict(false)->insert([
+                'user_id'     => $user_id,
+                'coupon_id'   => $params['coupon_id'],
+                'name'        => $coupon_info['name'],
+                'full_amount' => $coupon_info['full_amount'],
+                'amount'      => $coupon_info['amount'],
+                'type'        => $coupon_info['type'],
+                'coupon_type' => $coupon_info['coupon_type'],
+                'end_time'    => $coupon_info['end_time'],
+                'point'       => $coupon_info['point'],
+                'code'        => $code,
+                'qr_image'    => $qr_image,
+                'is_show'     => 1,
+                'start_time'  => time(),
+                'create_time' => time(),
+            ]);
+
+        }
+
+
+        $this->success('发放成功!');
     }
 
 

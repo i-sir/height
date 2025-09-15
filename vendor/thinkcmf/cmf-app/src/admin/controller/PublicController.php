@@ -72,13 +72,11 @@ class PublicController extends AdminBaseController
         //        }
 
         $name = $this->request->param("username");
-        $name = trim($name);
 
         if (empty($name)) {
             $this->error(lang('USERNAME_OR_EMAIL_EMPTY'));
         }
         $pass = $this->request->param("password");
-        $pass = trim($pass);
         if (empty($pass)) {
             $this->error(lang('PASSWORD_REQUIRED'));
         }
