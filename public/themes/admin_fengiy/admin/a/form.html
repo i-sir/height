@@ -136,35 +136,25 @@
 
 <!--layui多选框,分类列表 (checkbox)  -->
 <!--
-分类列表 edit
 
-        //处理分类多选
-        $class_ids = $this->getParams($result['class_ids']);
-        //分类列表
-        $class_list = $ProjectClassModel->select();
-        foreach ($class_list as $k => $v) {
-            //是否选中问题
-            $v['checked'] = false;
-            if (in_array($v['id'], $class_ids)) $v['checked'] = true;
+index列表
+        if ($item['class_ids']) {
+            $class_ids               = $this->getParams($item['class_ids']);
+            $class_names             = $ShopClassModel->where('id', 'in', $class_ids)->column('name');
+            $item['class_names']     = $this->setParams($class_names);
+            $item['class_name_list'] = $class_names;
+            $item['class_ids']       = $class_ids;
         }
-       $this->assign("class_list", $class_list);
 
 
-分类列表 add
-        //分类列表
-        $class_list = $ProjectClassModel->select();
-        foreach ($class_list as $k => $v) {
-            $v['checked'] = false;
-        }
-       $this->assign("class_list", $class_list);
--->
-<!--
+
 edit编辑
-
       //处理分类结果值
         if ($params['class_ids']) {
             $class_ids           = array_keys($params['class_ids']);//提取key
             $params['class_ids'] = $this->setParams($class_ids);
+        }else{
+          $params['class_ids'] = '';
         }
 -->
 <div class="form-group">
@@ -174,7 +164,7 @@ edit编辑
             <input class="form-control post-params" lay-skin="tag" name="class_ids[{$class_value.id}]"
                    title="{$class_value.name}"
                    type="checkbox"
-            <if condition="$class_value.checked">
+            <if condition="in_array($class_value.id,$class_ids)">
                 checked
             </if>
             >

@@ -80,8 +80,8 @@ class PublicController extends AuthController
      * 测试接口
      *
      *
-     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/index
-     *   official_environment: http://shop_template.com/api/wxapp/public/index
+     *   test_environment: http://height.ikun:9090/api/wxapp/public/index
+     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/index
      *   api: /wxapp/public/index
      *   remark_name: 测试接口
      *
@@ -135,8 +135,8 @@ class PublicController extends AuthController
      * )
      *
      *
-     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/find_setting
-     *   official_environment: http://shop_template.com/api/wxapp/public/find_setting
+     *   test_environment: http://height.ikun:9090/api/wxapp/public/find_setting
+     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/find_setting
      *   api: /wxapp/public/find_setting
      *   remark_name: 查询系统配置信息
      *
@@ -239,8 +239,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/find_agreement_list
-     *   official_environment: http://shop_template.com/api/wxapp/public/find_agreement_list
+     *   test_environment: http://height.ikun:9090/api/wxapp/public/find_agreement_list
+     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/find_agreement_list
      *   api: /wxapp/public/find_agreement_list
      *   remark_name: 查询协议列表
      *
@@ -309,8 +309,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/upload_asset
-     *   official_environment: http://shop_template.com/api/wxapp/public/upload_asset
+     *   test_environment: http://height.ikun:9090/api/wxapp/public/upload_asset
+     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/upload_asset
      *   api: /wxapp/public/upload_asset
      *   remark_name: 上传图片
      *
@@ -362,8 +362,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/find_slide
-     *   official_environment: http://shop_template.com/api/wxapp/public/find_slide
+     *   test_environment: http://height.ikun:9090/api/wxapp/public/find_slide
+     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/find_slide
      *   api: /wxapp/public/find_slide
      *   remark_name: 查询幻灯片
      *
@@ -411,8 +411,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/find_navs
-     *   official_environment: http://shop_template.com/api/wxapp/public/find_navs
+     *   test_environment: http://height.ikun:9090/api/wxapp/public/find_navs
+     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/find_navs
      *   api: /wxapp/public/find_navs
      *   remark_name: 查询导航列表
      *
@@ -442,423 +442,6 @@ class PublicController extends AuthController
     }
 
 
-    /**
-     * 小程序授权登录
-     * @throws \WeChat\Exceptions\InvalidDecryptException
-     * @throws \WeChat\Exceptions\InvalidResponseException
-     * @throws \WeChat\Exceptions\LocalCacheException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @OA\Post(
-     *     tags={"小程序公共模块接口"},
-     *     path="/wxapp/public/wx_app_login",
-     *
-     *
-     *     @OA\Parameter(
-     *         name="code",
-     *         in="query",
-     *         description="code",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *     @OA\Parameter(
-     *         name="raw_data",
-     *         in="query",
-     *         description="raw_data",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *     @OA\Parameter(
-     *         name="invite_code",
-     *         in="query",
-     *         description="邀请码",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *     @OA\Response(response="200", description="An example resource"),
-     *     @OA\Response(response="default", description="An example resource")
-     * )
-     *
-     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/wx_app_login
-     *   official_environment: http://shop_template.com/api/wxapp/public/wx_app_login
-     *   api: /wxapp/public/wx_app_login
-     *   remark_name: 小程序授权登录
-     *
-     */
-    public function wx_app_login()
-    {
-        $MemberModel = new \initmodel\MemberModel();//用户管
-        $params      = $this->request->param();
-        if (empty($params['code'])) $this->error('code不能为空');
-
-
-        $mini       = new Crypt($this->wx_config);
-        $wxUserData = $mini->session($params['code']);
-        Log::write('wx_app_login:wxUserData');
-        Log::write($wxUserData);
-        if (empty($wxUserData) || empty($wxUserData['openid'])) $this->error('登陆失败!');
-
-
-        $user_openid  = $wxUserData['openid'];
-        $user_unionid = $wxUserData['unionid'];
-        $findUserInfo = $MemberModel->where('openid', '=', $user_openid)->field('id,pid')->find();
-
-        //邀请板块
-        $pid = 0;
-        if ($params['invite_code']) $pid = $MemberModel->where('invite_code', '=', $params['invite_code'])->value('id');
-
-
-        if (empty($findUserInfo)) {
-            //向数据库插入新用户信息
-            $insert['nickname']    = $this->get_member_wx_nickname();
-            $insert['avatar']      = cmf_get_asset_url(cmf_config('app_logo'));
-            $insert['openid']      = $user_openid;
-            $insert['mini_openid'] = $user_openid;
-            $insert['unionid']     = $user_unionid;
-            $insert['pid']         = $pid;
-            $insert['invite_code'] = $this->get_num_only('invite_code', 5, 4, '', 'member');
-            $insert['create_time'] = time();
-            $insert['login_time']  = time();
-            $insert['ip']          = get_client_ip();
-            $insert['login_city']  = $this->get_ip_to_city();
-
-
-            $MemberModel->strict(false)->insert($insert);
-        } else {
-            //数据库已存在用户,更新用户登录信息
-            $update['unionid']     = $user_unionid;
-            $update['mini_openid'] = $user_openid;
-            $update['update_time'] = time();
-            $update['login_time']  = time();
-            $update['ip']          = get_client_ip();
-            $update['login_city']  = $this->get_ip_to_city();
-            if (empty($findUserInfo['pid']) && $pid && $findUserInfo['id'] != $pid) $update['pid'] = $pid;
-
-
-            $MemberModel->where('openid', '=', $user_openid)->strict(false)->update($update);
-        }
-
-
-        //查询会员信息
-        $findUserInfo = $this->getUserInfoByOpenid($user_openid);
-
-
-        $this->success("登录成功!", $findUserInfo);
-    }
-
-
-    /**
-     * 小程序静默授权登录
-     * @throws \WeChat\Exceptions\LocalCacheException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @OA\Get(
-     *     tags={"小程序公共模块接口"},
-     *     path="/wxapp/public/wx_app_silent_login",
-     *
-     *
-     *     @OA\Parameter(
-     *         name="code",
-     *         in="query",
-     *         description="code",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *     @OA\Parameter(
-     *         name="user_id",
-     *         in="query",
-     *         description="用户id",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *     @OA\Parameter(
-     *         name="invite_code",
-     *         in="query",
-     *         description="邀请码",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *     @OA\Response(response="200", description="An example resource"),
-     *     @OA\Response(response="default", description="An example resource")
-     * )
-     *
-     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/wx_app_silent_login
-     *   official_environment: http://shop_template.com/api/wxapp/public/wx_app_silent_login
-     *   api: /wxapp/public/wx_app_silent_login
-     *   remark_name: 小程序静默授权登录
-     *
-     */
-    public function wx_app_silent_login()
-    {
-        $MemberModel = new \initmodel\MemberModel();//用户管理
-        $params      = $this->request->param();
-        if (empty($params['code'])) $this->error('code不能为空');
-
-        $mini       = new Crypt($this->wx_config);
-        $wxUserData = $mini->session($params['code']);
-        Log::write('wx_app_silent_login:wxUserData');
-        Log::write($wxUserData);
-        if (empty($wxUserData) || empty($wxUserData['openid'])) $this->error('登陆失败!');
-
-        $user_openid  = $wxUserData['openid'];
-        $user_unionid = $wxUserData['unionid'];
-        $findUserInfo = $MemberModel->where('openid', '=', $user_openid)->field('id,pid')->find();
-
-
-        //邀请板块
-        $pid = 0;
-        if ($params['invite_code']) $pid = $MemberModel->where('invite_code', '=', $params['invite_code'])->value('id');
-
-
-        if (empty($findUserInfo)) {
-            //向数据库插入新用户信息
-            $insert['nickname']    = $this->get_member_wx_nickname();
-            $insert['avatar']      = cmf_config('app_logo');
-            $insert['openid']      = $user_openid;
-            $insert['mini_openid'] = $user_openid;
-            $insert['unionid']     = $user_unionid;
-            $insert['pid']         = $pid;
-            $insert['invite_code'] = $this->get_num_only('invite_code', 5, 4, '', 'member');
-            $insert['create_time'] = time();
-            $insert['login_time']  = time();
-            $insert['ip']          = get_client_ip();
-            $insert['login_city']  = $this->get_ip_to_city();
-
-
-            $MemberModel->strict(false)->insert($insert);
-        } else {
-            //数据库已存在用户,更新用户登录信息
-            $update['unionid']     = $user_unionid;
-            $update['mini_openid'] = $user_openid;
-            $update['update_time'] = time();
-            $update['login_time']  = time();
-            $update['ip']          = get_client_ip();
-            $update['login_city']  = $this->get_ip_to_city();
-            if (empty($findUserInfo['pid']) && $pid && $findUserInfo['id'] != $pid) $update['pid'] = $pid;
-
-
-            $MemberModel->where('openid', '=', $user_openid)->strict(false)->update($update);
-        }
-
-
-        //查询会员信息
-        $findUserInfo = $this->getUserInfoByOpenid($user_openid);
-
-        $this->success("登录成功!", $findUserInfo);
-    }
-
-
-    /**
-     * 静默获取openid
-     * @throws \WeChat\Exceptions\LocalCacheException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @OA\Get(
-     *     tags={"小程序公共模块接口"},
-     *     path="/wxapp/public/get_opneid",
-     *
-     *
-     *     @OA\Parameter(
-     *         name="openid",
-     *         in="query",
-     *         description="如传openid,自动更新wx_openid",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *     @OA\Parameter(
-     *         name="code",
-     *         in="query",
-     *         description="code",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *     @OA\Response(response="200", description="An example resource"),
-     *     @OA\Response(response="default", description="An example resource")
-     * )
-     *
-     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/get_opneid
-     *   official_environment: http://shop_template.com/api/wxapp/public/get_opneid
-     *   api: /wxapp/public/get_opneid
-     *   remark_name: 静默获取openid
-     *
-     */
-    public function get_opneid()
-    {
-        $params = $this->request->param();
-        if (empty($params['code'])) $this->error('code不能为空');
-
-        $mini       = new Crypt($this->wx_config);
-        $wxUserData = $mini->session($params['code']);
-        Log::write('wx_app_silent_login:wxUserData');
-        Log::write($wxUserData);
-        if (empty($wxUserData) || empty($wxUserData['openid'])) $this->error('失败请重试!');
-
-        //更新wx_openid
-        if ($this->openid) {
-            MemberModel::where('openid', '=', $this->openid)->strict(false)->update([
-                'mini_openid' => $wxUserData['openid'],
-                'update_time' => time(),
-            ]);
-        }
-
-        $this->success("获取成功!", $wxUserData);
-    }
-
-
-    /**
-     * 小程序授权手机号登录(不包含注册)
-     * @throws \WeChat\Exceptions\InvalidDecryptException
-     * @throws \WeChat\Exceptions\InvalidResponseException
-     * @throws \WeChat\Exceptions\LocalCacheException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @OA\Post(
-     *     tags={"小程序公共模块接口"},
-     *     path="/wxapp/public/wx_app_phone2",
-     *
-     *
-     *     @OA\Parameter(
-     *         name="code",
-     *         in="query",
-     *         description="code",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *     @OA\Parameter(
-     *         name="encrypted_data",
-     *         in="query",
-     *         description="encrypted_data",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *
-     *     @OA\Parameter(
-     *         name="iv",
-     *         in="query",
-     *         description="iv",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *     @OA\Parameter(
-     *         name="invite_code",
-     *         in="query",
-     *         description="邀请码",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *
-     *     @OA\Response(response="200", description="An example resource"),
-     *     @OA\Response(response="default", description="An example resource")
-     * )
-     *
-     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/wx_app_phone2
-     *   official_environment: http://shop_template.com/api/wxapp/public/wx_app_phone2
-     *   api: /wxapp/public/wx_app_phone2
-     *   remark_name: 小程序授权手机号登录(不包含注册)
-     *
-     *
-     */
-    public function wx_app_phone2()
-    {
-        $MemberModel  = new \initmodel\MemberModel();//用户管理
-        $params       = $this->request->param();
-        $check_result = $this->validate($params, 'WxLogin');
-        if ($check_result !== true) $this->error($check_result);
-
-
-        $mini       = new Crypt($this->wx_config);
-        $wxUserData = $mini->userInfo($params['code'], $params['iv'], $params['encrypted_data']);
-        Log::write('wx_app_phone:wxUserData');
-        Log::write($wxUserData);
-        if (empty($wxUserData)) $this->error('授权失败!');
-
-
-        // 授权手机号
-        $user_phone   = $wxUserData['purePhoneNumber'];
-        $user_openid  = $wxUserData['openid'];
-        $user_unionid = $wxUserData['unionid'];
-        $findUserInfo = $MemberModel->where('openid', '=', $user_openid)->field('id,pid')->find();
-        if (empty($findUserInfo)) $this->error('请先授权登录');
-
-
-        //邀请板块
-        $pid = 0;
-        if ($params['invite_code']) $pid = $MemberModel->where('invite_code', '=', $params['invite_code'])->value('id');
-
-
-        //更新手机号,登录ip,时间,城市
-        $map   = [];
-        $map[] = ['id', '=', $findUserInfo['id']];
-
-        //更新数据
-        $update['phone']       = $user_phone;
-        $update['unionid']     = $user_unionid;
-        $update['mini_openid'] = $user_openid;
-        $update['login_city']  = $this->get_ip_to_city();
-        $update['update_time'] = time();
-        $update['login_time']  = time();
-        $update['ip']          = get_client_ip();
-        if (empty($findUserInfo['pid']) && $pid && $findUserInfo['id'] != $pid) $update['pid'] = $pid;
-
-
-        $MemberModel->where($map)->strict(false)->update($update);
-
-
-        //查询会员信息
-        $findUserInfo = $this->getUserInfoByOpenid($user_openid);
-
-
-        $this->success("授权成功!", $findUserInfo);
-    }
 
 
     /**
@@ -930,8 +513,8 @@ class PublicController extends AuthController
      * )
      *
      *
-     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/wx_app_phone
-     *   official_environment: http://shop_template.com/api/wxapp/public/wx_app_phone
+     *   test_environment: http://height.ikun:9090/api/wxapp/public/wx_app_phone
+     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/wx_app_phone
      *   api: /wxapp/public/wx_app_phone
      *   remark_name: 小程序授权手机号(授权登录)
      *
@@ -1001,154 +584,6 @@ class PublicController extends AuthController
     }
 
 
-    /**
-     * H5授权登录
-     * @throws \WeChat\Exceptions\InvalidResponseException
-     * @throws \WeChat\Exceptions\LocalCacheException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @OA\Post(
-     *     tags={"小程序公共模块接口"},
-     *     path="/wxapp/public/h5_login",
-     *
-     *
-     *
-     *     @OA\Parameter(
-     *         name="code",
-     *         in="query",
-     *         description="code",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *     @OA\Parameter(
-     *         name="state",
-     *         in="query",
-     *         description="state",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *
-     *     @OA\Response(response="200", description="An example resource"),
-     *     @OA\Response(response="default", description="An example resource")
-     * )
-     *
-     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/h5_login
-     *   official_environment: http://shop_template.com/api/wxapp/public/h5_login
-     *   api: /wxapp/public/h5_login
-     *   remark_name: H5授权登录
-     *
-     */
-    public function h5_login()
-    {
-        $MemberModel = new \initmodel\MemberModel();//用户管理
-        $params      = $this->request->param();
-
-        if (empty($params['code'])) $this->error('code不能为空');
-        if (empty($params['state'])) $this->error('state不能为空');
-        $state_arr = explode('/', $params['state']);
-        $http      = $state_arr[0] . '//';
-        $host      = $state_arr[2];
-
-        $WeChat = new Oauth($this->wx_config);
-        $return = $WeChat->getOauthAccessToken($params['code']);
-        if (empty($return)) $this->error('登陆失败!');
-
-
-        $h5_access_token = $return['access_token'];
-        $user_openid     = $return['openid'];
-        $user_unionid    = $return['unionid'];
-        $UserData        = $WeChat->getUserInfo($h5_access_token, $user_openid);
-        Log::write('h5_login:UserData');
-        Log::write($UserData);
-
-        //邀请板块
-        //$state_arr[8] , 邀请码
-        $pid = 0;
-        if ($state_arr[8]) $pid = $MemberModel->where('invite_code', '=', $state_arr[8])->value('id');
-
-
-        $findUserInfo = $MemberModel->where('openid', '=', $user_openid)->field('id,pid')->find();
-
-        if (empty($findUserInfo)) {
-            //向数据库插入新用户信息
-            $insert['nickname']        = urldecode($UserData['nickname']);
-            $insert['avatar']          = $UserData['headimgurl'];
-            $insert['openid']          = $user_openid;
-            $insert['official_openid'] = $user_openid;
-            $insert['unionid']         = $user_unionid;
-            $insert['invite_code']     = $this->get_num_only('invite_code', 5, 4, '', 'member');
-            $insert['pid']             = $pid;
-            $insert['createtime']      = time();
-            $insert['create_time']     = time();
-            $insert['login_time']      = time();
-            $insert['ip']              = get_client_ip();
-            $insert['login_city']      = $this->get_ip_to_city();
-
-            $MemberModel->strict(false)->insert($insert);
-        } else {
-            //数据库已存在用户,更新用户登录信息
-            $update['nickname']        = urldecode($UserData['nickname']);
-            $update['avatar']          = $UserData['headimgurl'];
-            $update['official_openid'] = $user_openid;
-            $update['unionid']         = $user_unionid;
-            $update['login_time']      = time();
-            $update['ip']              = get_client_ip();
-            $update['login_city']      = $this->get_ip_to_city();
-            if (empty($findUserInfo['pid']) && $pid && $findUserInfo['id'] != $pid) $update['pid'] = $pid;
-
-            $MemberModel->strict(false)->where('openid', $user_openid)->update($update);
-        }
-
-        header('Location:' . $http . $host . '/h5/#/pages/public/login?openid=' . $user_openid);
-    }
-
-
-    /**
-     * 获取公众号分享签名
-     * @OA\Post(
-     *     tags={"小程序公共模块接口"},
-     *     path="/wxapp/public/get_js_sign",
-     *
-     *
-     *
-     * 	   @OA\Parameter(
-     *         name="url",
-     *         in="query",
-     *         description="url",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *
-     *     @OA\Response(response="200", description="An example resource"),
-     *     @OA\Response(response="default", description="An example resource")
-     * )
-     *
-     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/get_js_sign
-     *   official_environment: http://shop_template.com/api/wxapp/public/get_js_sign
-     *   api: /wxapp/public/get_js_sign
-     *   remark_name: 获取公众号分享签名
-     *
-     */
-    public function get_js_sign()
-    {
-        $url    = $this->request->param('url');
-        $WeChat = new Script($this->wx_config);
-        $res    = $WeChat->getJsSign(urldecode($url));
-        $this->success("请求成功！", $res);
-    }
 
 
     /**
@@ -1190,8 +625,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/wx_qrcode
-     *   official_environment: http://shop_template.com/api/wxapp/public/wx_qrcode
+     *   test_environment: http://height.ikun:9090/api/wxapp/public/wx_qrcode
+     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/wx_qrcode
      *   api: /wxapp/public/wx_qrcode
      *   remark_name: 小程序程序二维码(必须get请求)
      *
@@ -1283,359 +718,6 @@ class PublicController extends AuthController
     }
 
 
-    /**
-     * 手机号密码注册
-     * @throws \think\Exception
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @OA\Post(
-     *     tags={"小程序公共模块接口"},
-     *     path="/wxapp/public/add_user_pass",
-     *
-     *
-     *     @OA\Parameter(
-     *         name="phone",
-     *         in="query",
-     *         description="手机号码",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *     @OA\Parameter(
-     *         name="code",
-     *         in="query",
-     *         description="验证码",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *     @OA\Parameter(
-     *         name="pass",
-     *         in="query",
-     *         description="密码",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *     @OA\Response(response="200", description="An example resource"),
-     *     @OA\Response(response="default", description="An example resource")
-     * )
-     *
-     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/add_user_pass
-     *   official_environment: http://shop_template.com/api/wxapp/public/add_user_pass
-     *   api: /wxapp/public/add_user_pass
-     *   remark_name: 手机号密码注册
-     *
-     */
-    public function add_user_pass()
-    {
-        $MemberModel     = new \initmodel\MemberModel();//用户管
-        $params          = $this->request->param();
-        $params['phone'] = trim($params['phone']);
-        if (empty($params['phone'])) $this->error("手机号不能为空！");
-        if (empty($params['code'])) $this->error("验证码不能为空！");
-        if (empty($params['pass'])) $this->error("密码不能为空！");
-
-        //密码加密
-        if ($params['pass']) $params['pass'] = cmf_password($params['pass']);
-
-        $result = cmf_check_verification_code($params['phone'], $params['code']);
-        if ($result) $this->error($result);
-
-
-        $map          = [];
-        $map[]        = ['phone', '=', $params['phone']];
-        $findUserInfo = $MemberModel->where($map)->find();
-
-
-        $pid = 0;
-        if ($params['invite_code']) $pid = $MemberModel->where('invite_code', '=', $params['invite_code'])->value('id');
-
-
-        if (empty($findUserInfo)) {
-            $insert['nickname']    = $this->get_member_wx_nickname();
-            $insert['avatar']      = cmf_config('app_logo');
-            $insert['phone']       = $params['phone'];
-            $insert['openid']      = 'M_' . $this->insertRandomUnderscore(sha1(uniqid(mt_rand(0, 999)) . uniqid(mt_rand(0, 999)) . time() . microtime(true * 1000)));
-            $insert['invite_code'] = $this->get_num_only('invite_code', 5, 4, '', 'member');
-            $insert['create_time'] = time();
-            $insert['login_time']  = time();
-            $insert['ip']          = get_client_ip();
-            $insert['login_city']  = $this->get_ip_to_city();
-            $insert['pid']         = $pid;
-            $insert['pass']        = $params['pass'];
-
-            $MemberModel->strict(false)->insert($insert);
-
-            $this->success("注册成功！");
-        } else {
-            $this->error("你已经注册过了！");
-        }
-    }
-
-
-    /**
-     * 手机号密码登录
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\db\exception\DbException
-     * @OA\Post(
-     *     tags={"小程序公共模块接口"},
-     *     path="/wxapp/public/pass_login",
-     *
-     *
-     *     @OA\Parameter(
-     *         name="phone",
-     *         in="query",
-     *         description="手机号码",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *     @OA\Parameter(
-     *         name="pass",
-     *         in="query",
-     *         description="密码",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *     @OA\Response(response="200", description="An example resource"),
-     *     @OA\Response(response="default", description="An example resource")
-     * )
-     *
-     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/pass_login
-     *   official_environment: http://shop_template.com/api/wxapp/public/pass_login
-     *   api: /wxapp/public/pass_login
-     *   remark_name: 手机号密码登录
-     *
-     */
-    public function pass_login()
-    {
-        $MemberModel     = new \initmodel\MemberModel();//用户管理
-        $params          = $this->request->param();
-        $params['phone'] = trim($params['phone']);
-        if (empty($params['phone'])) $this->error("手机号不能为空！");
-        if (empty($params['pass'])) $this->error("密码不能为空！");
-
-        $map          = [];
-        $map[]        = ['phone', '=', $params['phone']];
-        $findUserInfo = $MemberModel->where($map)->find();
-        if (empty($findUserInfo)) $this->error("用户不存在，请先注册！");
-
-        //检测密码是否正确
-        if (!cmf_compare_password($params['pass'], $findUserInfo['pass'])) $this->error("密码错误！");
-
-        //更新登录ip,时间,城市
-        $MemberModel->where($map)->strict(false)->update([
-            'update_time' => time(),
-            'login_time'  => time(),
-            'ip'          => get_client_ip(),
-            'login_city'  => $this->get_ip_to_city(),
-        ]);
-
-
-        //查询会员信息
-        $findUserInfo = $this->getUserInfoByOpenid($findUserInfo['openid']);
-        $this->success("登录成功！", $findUserInfo);
-
-    }
-
-
-    /**
-     * 手机号验证码登录
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\db\exception\DbException|\think\Exception
-     * @OA\Post(
-     *     tags={"小程序公共模块接口"},
-     *     path="/wxapp/public/sms_login",
-     *
-     *
-     *     @OA\Parameter(
-     *         name="phone",
-     *         in="query",
-     *         description="手机号码",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *     @OA\Parameter(
-     *         name="code",
-     *         in="query",
-     *         description="验证码",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *     @OA\Response(response="200", description="An example resource"),
-     *     @OA\Response(response="default", description="An example resource")
-     * )
-     *
-     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/sms_login
-     *   official_environment: http://shop_template.com/api/wxapp/public/sms_login
-     *   api: /wxapp/public/sms_login
-     *   remark_name: 手机号验证码登录
-     *
-     */
-    public function sms_login()
-    {
-        $MemberModel     = new \initmodel\MemberModel();//用户管理
-        $params          = $this->request->param();
-        $params['phone'] = trim($params['phone']);
-        if (empty($params['phone'])) $this->error("手机号不能为空！");
-        if (empty($params['code'])) $this->error("验证码不能为空！");
-
-        $map          = [];
-        $map[]        = ['phone', '=', $params['phone']];
-        $findUserInfo = $MemberModel->where($map)->find();
-
-        if (empty($findUserInfo)) $this->error("用户不存在，请先注册！");
-        $result = cmf_check_verification_code($params['phone'], $params['code']);
-        if ($result) $this->error($result);
-
-
-        //更新登录ip,时间,城市
-        $MemberModel->where($map)->strict(false)->update([
-            'update_time' => time(),
-            'login_time'  => time(),
-            'ip'          => get_client_ip(),
-            'login_city'  => $this->get_ip_to_city(),
-        ]);
-
-
-        //查询会员信息
-        $findUserInfo = $this->getUserInfoByOpenid($findUserInfo['openid']);
-
-        $this->success("登录成功！", $findUserInfo);
-    }
-
-
-    /**
-     * 修改密码
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\db\exception\DbException
-     * @OA\Post(
-     *     tags={"小程序公共模块接口"},
-     *     path="/wxapp/public/update_pass",
-     *
-     *
-     *     @OA\Parameter(
-     *         name="phone",
-     *         in="query",
-     *         description="手机号码",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *     @OA\Parameter(
-     *         name="pass",
-     *         in="query",
-     *         description="密码",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *
-     *     @OA\Parameter(
-     *         name="code",
-     *         in="query",
-     *         description="根据验证码修改密码 二选一",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *     @OA\Parameter(
-     *         name="old_pass",
-     *         in="query",
-     *         description="根据旧密码修改 二选一",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *     @OA\Response(response="200", description="An example resource"),
-     *     @OA\Response(response="default", description="An example resource")
-     * )
-     *
-     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/update_pass
-     *   official_environment: http://shop_template.com/api/wxapp/public/update_pass
-     *   api: /wxapp/public/update_pass
-     *   remark_name: 修改密码
-     *
-     */
-    public function update_pass()
-    {
-        $MemberModel     = new \initmodel\MemberModel();//用户管理
-        $params          = $this->request->param();
-        $params['phone'] = trim($params['phone']);
-        if (empty($params['phone'])) $this->error("手机号不能为空！");
-
-
-        $map          = [];
-        $map[]        = ['phone', '=', $params['phone']];
-        $findUserInfo = $MemberModel->where($map)->find();
-        if (empty($findUserInfo)) $this->error("用户不存在，请先注册！");
-
-        //旧密码修改检测,是否正确
-        if ($params['old_pass'] && !cmf_compare_password($params['old_pass'], $findUserInfo['pass'])) $this->error("旧密码错误！");
-
-
-        //验证码修改
-        if ($params['code']) {
-            $result = cmf_check_verification_code($params['phone'], $params['code']);
-            if ($result) $this->error($result);
-        }
-
-
-        //更新登录ip,时间,城市,修改密码
-        $MemberModel->where($map)->strict(false)->update([
-            'pass'        => cmf_password($params['pass']),
-            'update_time' => time(),
-            'login_time'  => time(),
-            'ip'          => get_client_ip(),
-            'login_city'  => $this->get_ip_to_city(),
-        ]);
-
-
-        //查询会员信息
-        $findUserInfo = $this->getUserInfoByOpenid($findUserInfo['openid']);
-        $this->success("登录成功！", $findUserInfo);
-    }
 
 
     /**
@@ -1664,8 +746,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/send_sms
-     *   official_environment: http://shop_template.com/api/wxapp/public/send_sms
+     *   test_environment: http://height.ikun:9090/api/wxapp/public/send_sms
+     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/send_sms
      *   api: /wxapp/public/send_sms
      *   remark_name: 获取手机验证码
      *
@@ -1722,8 +804,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/send_voice
-     *   official_environment: http://shop_template.com/api/wxapp/public/send_voice
+     *   test_environment: http://height.ikun:9090/api/wxapp/public/send_voice
+     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/send_voice
      *   api: /wxapp/public/send_voice
      *   remark_name: 电话语音通知
      *
@@ -1763,8 +845,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/find_area
-     *   official_environment: http://shop_template.com/api/wxapp/public/find_area
+     *   test_environment: http://height.ikun:9090/api/wxapp/public/find_area
+     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/find_area
      *   api: /wxapp/public/find_area
      *   remark_name: 获取 省市区
      *
@@ -1830,8 +912,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/translate
-     *   official_environment: http://shop_template.com/api/wxapp/public/translate
+     *   test_environment: http://height.ikun:9090/api/wxapp/public/translate
+     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/translate
      *   api: /wxapp/public/translate
      *   remark_name: 翻译 误删
      *
@@ -1855,8 +937,8 @@ class PublicController extends AuthController
      * @return mixed
      *
      *
-     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/get_stable_access_token
-     *   official_environment: http://shop_template.com/api/wxapp/public/get_stable_access_token
+     *   test_environment: http://height.ikun:9090/api/wxapp/public/get_stable_access_token
+     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/get_stable_access_token
      *   api: /wxapp/public/get_stable_access_token
      *   remark_name: 获取超稳定 access_token
      *
@@ -1903,8 +985,8 @@ class PublicController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://shop_template.ikun:9090/api/wxapp/public/find_reverse_address
-     *   official_environment: http://shop_template.com/api/wxapp/public/find_reverse_address
+     *   test_environment: http://height.ikun:9090/api/wxapp/public/find_reverse_address
+     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/public/find_reverse_address
      *   api: /wxapp/public/find_reverse_address
      *   remark_name: 根据经纬度获取地址信息
      *
