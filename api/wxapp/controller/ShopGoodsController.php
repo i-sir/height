@@ -547,7 +547,7 @@ class ShopGoodsController extends AuthController
         $params          = $this->request->param();
 
         /** 查询条件 **/
-        $where = [];
+        $where   = [];
         $where[] = ["type", "=", 'goods'];
         $where[] = ["pid", "=", $params["goods_id"]];
 
