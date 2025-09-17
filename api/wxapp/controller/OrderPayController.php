@@ -37,7 +37,7 @@ class OrderPayController extends AuthController
      *    @OA\Parameter(
      *         name="order_type",
      *         in="query",
-     *         description="10商城,20合作申请,90充值余额",
+     *         description="10商城,20合作申请,30体验卡订单,90充值余额",
      *         required=false,
      *         @OA\Schema(
      *             type="string",
@@ -74,10 +74,11 @@ class OrderPayController extends AuthController
         $params = $this->request->param();
         $openid = $this->user_info['mini_openid'];
 
-        $Pay            = new PayController();
-        $OrderPayModel  = new \initmodel\OrderPayModel();
-        $ShopOrderModel = new \initmodel\ShopOrderModel(); //订单管理   (ps:InitModel)
+        $Pay              = new PayController();
+        $OrderPayModel    = new \initmodel\OrderPayModel();
+        $ShopOrderModel   = new \initmodel\ShopOrderModel(); //订单管理   (ps:InitModel)
         $CooperationModel = new \initmodel\CooperationModel(); //合作申请   (ps:InitModel)
+        $ExpOrderModel    = new \initmodel\ExpOrderModel(); //体验卡订单管理   (ps:InitModel)
 
         $map   = [];
         $map[] = ['order_num', '=', $params['order_num']];
@@ -94,13 +95,23 @@ class OrderPayController extends AuthController
         }
 
         //订单支付,合作申请
-        if ($params['order_type'] == 10) {
+        if ($params['order_type'] == 20) {
             //修改订单,支付类型
             $CooperationModel->where($map)->strict(false)->update([
                 'pay_type'    => 1,
                 'update_time' => time(),
             ]);
             $order_info = $CooperationModel->where($map)->find();
+        }
+
+        //体验卡订单,合作申请
+        if ($params['order_type'] == 30) {
+            //修改订单,支付类型
+            $ExpOrderModel->where($map)->strict(false)->update([
+                'pay_type'    => 1,
+                'update_time' => time(),
+            ]);
+            $order_info = $ExpOrderModel->where($map)->find();
         }
 
 
@@ -194,6 +205,7 @@ class OrderPayController extends AuthController
         $ShopOrderModel   = new \initmodel\ShopOrderModel(); //订单管理   (ps:InitModel)
         $NotifyController = new NotifyController();
         $CooperationModel = new \initmodel\CooperationModel(); //合作申请   (ps:InitModel)
+        $ExpOrderModel    = new \initmodel\ExpOrderModel(); //体验卡订单管理   (ps:InitModel)
 
         $map   = [];
         $map[] = ['order_num', '=', $params['order_num']];
@@ -221,6 +233,17 @@ class OrderPayController extends AuthController
         }
 
 
+        //体验卡订单,合作申请
+        if ($params['order_type'] == 30) {
+            //修改订单,支付类型
+            $ExpOrderModel->where($map)->strict(false)->update([
+                'pay_type'    => 6,
+                'update_time' => time(),
+            ]);
+            $order_info = $ExpOrderModel->where($map)->find();
+        }
+
+
         if (empty($order_info)) $this->error('订单不存在');
         if ($order_info['amount'] < 0.01) $this->error('订单错误');
         if ($order_info['status'] != 1) $this->error('订单状态错误');
@@ -245,7 +268,6 @@ class OrderPayController extends AuthController
 
         $this->success('支付成功', $result);
     }
-
 
 
 }

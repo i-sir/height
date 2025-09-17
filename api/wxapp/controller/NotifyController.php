@@ -311,10 +311,12 @@ class NotifyController extends AuthController
      */
     public function processOrder($pay_num)
     {
-        $OrderPayModel    = new \initmodel\OrderPayModel();//支付记录表
-        $ShopOrderModel   = new \initmodel\ShopOrderModel(); //订单管理  (ps:InitModel)
-        $CooperationModel = new \initmodel\CooperationModel(); //合作申请   (ps:InitModel)
-        $MemberModel      = new \initmodel\MemberModel();//用户管理
+        $OrderPayModel       = new \initmodel\OrderPayModel();//支付记录表
+        $ShopOrderModel      = new \initmodel\ShopOrderModel(); //订单管理  (ps:InitModel)
+        $CooperationModel    = new \initmodel\CooperationModel(); //合作申请   (ps:InitModel)
+        $MemberModel         = new \initmodel\MemberModel();//用户管理
+        $ExpOrderModel       = new \initmodel\ExpOrderModel(); //体验卡订单管理   (ps:InitModel)
+        $ShopCouponUserModel = new \initmodel\ShopCouponUserModel(); //优惠券领取记录   (ps:InitModel)
 
 
         /** 查询出支付信息,以及关联的订单号 */
@@ -363,6 +365,21 @@ class NotifyController extends AuthController
                 'update_time'       => time(),
             ]);
 
+        }
+
+
+        //体验卡订单 & 类型注意
+        if ($pay_info['order_type'] == 30) {
+            $order_info = $ExpOrderModel->where($map)->find();//查询订单信息
+            if ($order_info['status'] != 1) {
+                Log::write("订单状态异常[processOrder],订单号[{$order_num}]");
+                return false;//订单状态异常
+            }
+            $result = $ExpOrderModel->where($map)->strict(false)->update($update);//更新订单信息
+
+
+            //核销优惠券
+            $ShopCouponUserModel->where('id', '=', $order_info['coupon_id'])->update(['used' => 2, 'update_time' => time()]);
         }
 
 
