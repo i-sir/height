@@ -20,6 +20,7 @@ namespace api\wxapp\controller;
  */
 
 
+use init\QrInit;
 use think\facade\Db;
 use think\facade\Log;
 use think\facade\Cache;
@@ -256,6 +257,17 @@ class ExpOrderController extends AuthController
      *     ),
      *
      *
+     *    @OA\Parameter(
+     *         name="type",
+     *         in="query",
+     *         description="预约项目",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
      *
      *    @OA\Parameter(
      *         name="username",
@@ -351,6 +363,7 @@ class ExpOrderController extends AuthController
         $ExpOrderModel       = new \initmodel\ExpOrderModel(); //体验卡订单管理   (ps:InitModel)
         $ShopCouponUserModel = new \initmodel\ShopCouponUserModel(); //优惠券领取记录   (ps:InitModel)
         $ExpGoodsModel       = new \initmodel\ExpGoodsModel(); //体验卡   (ps:InitModel)
+        $QrInit              = new QrInit();//生成二维码
 
         /** 获取参数 **/
         $params            = $this->request->param();
@@ -385,6 +398,7 @@ class ExpOrderController extends AuthController
         $insert['make_date']     = $params['make_date'];
         $insert['make_time']     = $params['make_time'];
         $insert['goods_id']      = $params['goods_id'];
+        $insert['type']          = $params['type'];
         $insert['coupon_amount'] = $coupon_amount;
         $insert['goods_amount']  = $goods_info['price'];
         $insert['total_amount']  = $goods_info['price'];
@@ -392,6 +406,8 @@ class ExpOrderController extends AuthController
         $insert['goods_name']    = $goods_info['goods_name'];
         $insert['goods_image']   = cmf_get_asset_url($goods_info['image']);
         $insert['create_time']   = time();
+        $insert['cav_code']      = $this->get_num_only('cav_code', 12, 4, 'T');
+        $insert['cav_qr_code']   = $QrInit->get_qr($insert['cav_code']);
 
 
         /** 提交更新 **/
@@ -426,7 +442,18 @@ class ExpOrderController extends AuthController
      *    @OA\Parameter(
      *         name="order_num",
      *         in="query",
-     *         description="id 订单号二选一",
+     *         description="id 订单号三选一 ",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
+     *    @OA\Parameter(
+     *         name="cav_code",
+     *         in="query",
+     *         description="code 三选一",
      *         required=false,
      *         @OA\Schema(
      *             type="string",
@@ -457,6 +484,7 @@ class ExpOrderController extends AuthController
         /** 查询条件 **/
         if ($params['id']) $where[] = ["id", "=", $params["id"]];
         if ($params['order_num']) $where[] = ["order_num", "=", $params["order_num"]];
+        if ($params['cav_code']) $where[] = ["cav_code", "=", $params["cav_code"]];
 
 
         $order_info = $ExpOrderModel->where($where)->find();
@@ -520,8 +548,8 @@ class ExpOrderController extends AuthController
     public function cancel_order()
     {
         $this->checkAuth();
-        $ExpOrderModel = new \initmodel\ExpOrderModel(); //体验卡订单管理   (ps:InitModel)
-        $ShopCouponUserModel  = new \initmodel\ShopCouponUserModel(); //优惠券领取记录   (ps:InitModel)
+        $ExpOrderModel       = new \initmodel\ExpOrderModel(); //体验卡订单管理   (ps:InitModel)
+        $ShopCouponUserModel = new \initmodel\ShopCouponUserModel(); //优惠券领取记录   (ps:InitModel)
 
         /** 获取参数 **/
         $params            = $this->request->param();

@@ -192,6 +192,9 @@
                                                 <div class="title">
                                                     {$vo.goods_name}
                                                 </div>
+                                                <div class="title">
+                                                    {$vo.type}
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
@@ -259,12 +262,12 @@
                                 <!--                                </a>-->
 
                                 <if condition="$vo.status==2">
-<!--                                    <a class="layui-bg-gray-light layui-circle op-btn"-->
-<!--                                       data-toggle="tooltip"-->
-<!--                                       href="javascript:parent.openIframeLayer('{:url('send',['id'=>$vo.id])}','发货',{area: ['80%', '80%']},true)"-->
-<!--                                       title="发货">-->
-<!--                                        <i class="layui-icon layui-icon-release"></i>-->
-<!--                                    </a>-->
+                                    <!--                                    <a class="layui-bg-gray-light layui-circle op-btn"-->
+                                    <!--                                       data-toggle="tooltip"-->
+                                    <!--                                       href="javascript:parent.openIframeLayer('{:url('send',['id'=>$vo.id])}','发货',{area: ['80%', '80%']},true)"-->
+                                    <!--                                       title="发货">-->
+                                    <!--                                        <i class="layui-icon layui-icon-release"></i>-->
+                                    <!--                                    </a>-->
 
                                     <!--                                    <a class="layui-bg-gray-light layui-circle op-btn"-->
                                     <!--                                       data-id="{$vo.id}"-->
@@ -277,13 +280,13 @@
 
 
                                 <if condition="$vo.status==2">
-                                                                        <a class="layui-bg-gray-light layui-circle op-btn"
-                                                                           data-id="{$vo.id}"
-                                                                           data-toggle="tooltip"
-                                                                           lay-on="verification_order"
-                                                                           title="确认核销？">
-                                                                            <i class="layui-icon layui-icon-unlink"></i>
-                                                                        </a>
+                                    <a class="layui-bg-gray-light layui-circle op-btn"
+                                       data-id="{$vo.id}"
+                                       data-toggle="tooltip"
+                                       lay-on="verification_order"
+                                       title="确认核销？">
+                                        <i class="layui-icon layui-icon-unlink"></i>
+                                    </a>
                                 </if>
 
 
@@ -368,6 +371,25 @@
                                             {$vo.address}
                                         </div>
                                     </div>
+
+
+                                    <if condition="$vo.status != 8">
+                                        <div style="display:flex;">
+                                            <div style="width: 90px"><cite>核销码：</cite></div>
+                                            <div class="layui-font-orange">
+                                                <if condition="$vo.cav_qr_code">
+                                                    <div class="img">
+                                                        <a href="javascript:imagePreviewDialog('{:cmf_get_image_preview_url($vo.cav_qr_code)}');">
+                                                            <img alt=""
+                                                                 class="img-rounded" height="25" width="25"
+                                                                 src="{:cmf_get_image_preview_url($vo.cav_qr_code)}">
+                                                        </a>
+                                                    </div>
+                                                </if>
+                                            </div>
+                                        </div>
+                                    </if>
+
 
                                     <notempty name="$vo.admin_remark">
                                         <div style="display:flex;">
