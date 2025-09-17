@@ -207,7 +207,7 @@ class ShopOrderController extends AuthController
         $params = $this->request->param();
 
         /** 查询条件 **/
-        $where = [];
+        $where   = [];
         $where[] = ['user_id', '=', $this->user_id];
         if ($params['id']) $where[] = ["id", "=", $params["id"]];
         if ($params['order_num']) $where[] = ["order_num", "=", $params["order_num"]];
@@ -701,6 +701,8 @@ class ShopOrderController extends AuthController
         $goods_amount   = 0;//商品金额
         $coupon_amount  = 0;//优惠金额
         $freight_amount = 0;//运费
+        $commission     = 0;//直推佣金
+        $commission2    = 0;//间推佣金
         $total_amount   = 0;//订单总金额,实际支付金额+优惠金额+运费
         $type           = '';//商品类型:商品类型:goods=普通商品,customized=定制商品
 
@@ -748,6 +750,9 @@ class ShopOrderController extends AuthController
                 $order_detail[$key]['order_num']    = $order_num;
                 $order_detail[$key]['create_time']  = time();
                 $order_detail[$key]['image']        = cmf_get_asset_url($goods_info['image']);
+                //佣金
+                $commission  += round(($sku_info['price'] * $cart['count']) * ($goods_info['commission'] / 100), 2);
+                $commission2 += round(($sku_info['price'] * $cart['count']) * ($goods_info['commission2'] / 100), 2);
 
                 //商品金额
                 $goods_amount += round($sku_info['price'] * $cart['count'], 2);
@@ -815,6 +820,9 @@ class ShopOrderController extends AuthController
             $order_detail['goods_name']   = $goods_info['goods_name'];
             $order_detail['shop_id']      = $params['shop_id'] ?? $goods_info['shop_id'];
             $order_detail['image']        = cmf_get_asset_url($goods_info['image']);
+            //佣金
+            $commission  += round(($sku_info['price'] * $count) * ($goods_info['commission'] / 100), 2);
+            $commission2 += round(($sku_info['price'] * $count) * ($goods_info['commission2'] / 100), 2);
 
 
             //商品金额
@@ -854,6 +862,8 @@ class ShopOrderController extends AuthController
         $order_insert['freight_amount'] = round($freight_amount, 2);//运费
         $order_insert['goods_amount']   = round($goods_amount, 2);//商品金额
         $order_insert['coupon_amount']  = round($coupon_amount, 2);//优惠金额
+        $order_insert['commission']     = round($commission, 2);
+        $order_insert['commission2']    = round($commission2, 2);
         $order_insert['total_amount']   = round($total_amount, 2);//订单总金额,实际支付金额+优惠金额+运费金额+会员折扣金额
 
 
@@ -944,7 +954,7 @@ class ShopOrderController extends AuthController
         $params = $this->request->param();
 
 
-        $where = [];
+        $where   = [];
         $where[] = ['user_id', '=', $this->user_id];
         if ($params['id']) $where[] = ['id', '=', $params['id']];
         if ($params['order_num']) $where[] = ['order_num', '=', $params['order_num']];
@@ -1072,7 +1082,7 @@ class ShopOrderController extends AuthController
         $ShopOrderModel = new \initmodel\ShopOrderModel();//订单管理
 
 
-        $where = [];
+        $where   = [];
         $where[] = ['user_id', '=', $this->user_id];
         if ($params['id']) $where[] = ['id', '=', $params['id']];
         if ($params['order_num']) $where[] = ['order_num', '=', $params['order_num']];
@@ -1091,101 +1101,8 @@ class ShopOrderController extends AuthController
         if (empty($result)) $this->error('失败请重试');
 
         //这里处理订单完成后的逻辑
-        //        $InitController = new InitController();//基础接口
-        //        $InitController->sendShopOrderAccomplish($order_info['order_num']);
-
-        $this->success("操作成功");
-    }
-
-
-    /**
-     * 申请退款 无购物车版本,申请退款无需要单号版本
-     * @OA\Post(
-     *     tags={"订单管理"},
-     *     path="/wxapp/shop_order/refund_order",
-     *
-     *
-     *    @OA\Parameter(
-     *         name="openid",
-     *         in="query",
-     *         description="openid",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *
-     *  @OA\Parameter(
-     *         name="order_num",
-     *         in="query",
-     *         description="订单号 或 id二选一",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *    @OA\Parameter(
-     *         name="id",
-     *         in="query",
-     *         description="id 或 订单号二选一",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *
-     *     @OA\Response(response="200", description="An example resource"),
-     *     @OA\Response(response="default", description="An example resource")
-     * )
-     *
-     *   test_environment: http://height.ikun:9090/api/wxapp/shop_order/refund_order
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/shop_order/refund_order
-     *   api: /wxapp/shop_order/refund_order
-     *   remark_name: 申请退款
-     *
-     */
-    public function refund_order()
-    {
-        $this->checkAuth();
-
-        // 启动事务
-        Db::startTrans();
-
-        $ShopOrderModel = new \initmodel\ShopOrderModel();//订单管理
-
-
-        $params = $this->request->param();
-
-
-        $where = [];
-        $where[] = ['user_id', '=', $this->user_id];
-        if ($params['id']) $where[] = ['id', '=', $params['id']];
-        if ($params['order_num']) $where[] = ['order_num', '=', $params['order_num']];
-
-        //取消订单
-        $order_info = $ShopOrderModel->where($where)->find();
-        if (empty($order_info)) $this->error('暂无数据!');
-        if (!in_array($order_info['status'], [2, 4, 8])) $this->error('非法操作!!');
-        if (in_array($order_info['status'], [12, 14, 16])) $this->error('请勿重复提交!');
-
-
-        //处理订单
-        $update['status']      = 12;
-        $update['refund_time'] = time();
-        $update['update_time'] = time();
-        $result                = $ShopOrderModel->where($where)->strict(false)->update($update);
-        if (empty($result)) $this->error('失败请重试');
-
-
-        // 提交事务
-        Db::commit();
-
+        $InitController = new InitController();//基础接口
+        $InitController->sendShopOrderAccomplish($order_info['order_num']);
 
         $this->success("操作成功");
     }
@@ -1292,7 +1209,7 @@ class ShopOrderController extends AuthController
 
         $params = $this->request->param();
 
-        $where = [];
+        $where   = [];
         $where[] = ['user_id', '=', $this->user_id];
         if ($params['id']) $where[] = ['id', '=', $params['id']];
         if ($params['order_num']) $where[] = ['order_num', '=', $params['order_num']];
@@ -1401,7 +1318,7 @@ class ShopOrderController extends AuthController
         $params = $this->request->param();
 
 
-        $where = [];
+        $where   = [];
         $where[] = ['user_id', '=', $this->user_id];
         if ($params['id']) $where[] = ['id', '=', $params['id']];
         if ($params['order_num']) $where[] = ['order_num', '=', $params['order_num']];

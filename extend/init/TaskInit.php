@@ -42,7 +42,7 @@ class TaskInit
             } else {
                 $pay_num = $order_info['pay_num'];
             }
-            $Pay->close_order($pay_num);
+            if ($pay_num) $Pay->close_order($pay_num);
 
 
             //添加库存

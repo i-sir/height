@@ -220,6 +220,20 @@
 </div>
 
 
+<!--佣金-->
+<div class="form-group">
+    <label class="col-sm-2 control-label">直推佣金:</label>
+    <div class="layui-input-block col-sm-6">
+        <input type="text" name="commission" class="form-control post-params item-left" value="{$commission|default='0'}">
+    </div>
+</div>
+<!--佣金-->
+<div class="form-group">
+    <label class="col-sm-2 control-label">间推佣金:</label>
+    <div class="layui-input-block col-sm-6">
+        <input type="text" name="commission2" class="form-control post-params item-left" value="{$commission2|default='0'}">
+    </div>
+</div>
 
 
 <!-- 规格类型 -->
@@ -300,7 +314,8 @@
     <div class="layui-input-block col-sm-6">
         <script type="text/plain" id="content" name="content">
             {:cmf_replace_content_file_url(htmlspecialchars_decode($content))}
- </script>
+
+        </script>
     </div>
 </div>
 

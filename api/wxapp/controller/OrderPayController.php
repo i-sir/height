@@ -37,7 +37,7 @@ class OrderPayController extends AuthController
      *    @OA\Parameter(
      *         name="order_type",
      *         in="query",
-     *         description="10商城,90充值余额",
+     *         description="10商城,20合作申请,90充值余额",
      *         required=false,
      *         @OA\Schema(
      *             type="string",
@@ -77,6 +77,7 @@ class OrderPayController extends AuthController
         $Pay            = new PayController();
         $OrderPayModel  = new \initmodel\OrderPayModel();
         $ShopOrderModel = new \initmodel\ShopOrderModel(); //订单管理   (ps:InitModel)
+        $CooperationModel = new \initmodel\CooperationModel(); //合作申请   (ps:InitModel)
 
         $map   = [];
         $map[] = ['order_num', '=', $params['order_num']];
@@ -90,6 +91,16 @@ class OrderPayController extends AuthController
                 'update_time' => time(),
             ]);
             $order_info = $ShopOrderModel->where($map)->find();
+        }
+
+        //订单支付,合作申请
+        if ($params['order_type'] == 10) {
+            //修改订单,支付类型
+            $CooperationModel->where($map)->strict(false)->update([
+                'pay_type'    => 1,
+                'update_time' => time(),
+            ]);
+            $order_info = $CooperationModel->where($map)->find();
         }
 
 
@@ -182,6 +193,7 @@ class OrderPayController extends AuthController
         $OrderPayModel    = new \initmodel\OrderPayModel();
         $ShopOrderModel   = new \initmodel\ShopOrderModel(); //订单管理   (ps:InitModel)
         $NotifyController = new NotifyController();
+        $CooperationModel = new \initmodel\CooperationModel(); //合作申请   (ps:InitModel)
 
         $map   = [];
         $map[] = ['order_num', '=', $params['order_num']];
@@ -195,6 +207,17 @@ class OrderPayController extends AuthController
                 'update_time' => time(),
             ]);
             $order_info = $ShopOrderModel->where($map)->find();
+        }
+
+
+        //订单支付,合作申请
+        if ($params['order_type'] == 20) {
+            //修改订单,支付类型
+            $CooperationModel->where($map)->strict(false)->update([
+                'pay_type'    => 6,
+                'update_time' => time(),
+            ]);
+            $order_info = $CooperationModel->where($map)->find();
         }
 
 

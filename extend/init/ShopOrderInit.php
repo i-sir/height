@@ -33,11 +33,11 @@ class ShopOrderInit extends Base
 
 
     //后台展示状态列表,统计数量
-    public $status_list = [1 => '待付款', 2 => '已付款', 4 => '已发货', 6 => '已收货', 8 => '已完成', 10 => '已取消', 12 => '退款申请', 14 => '退款不通过', 16 => '退款通过'];
+    public $status_list = [1 => '待付款', 2 => '已付款', 4 => '已发货', 6 => '已收货', 8 => '已完成', 10 => '已取消', 12 => '退款申请'];
 
     //后台状态,名字,条件
     public $admin_status       = [1 => '待付款', 2 => '待发货', 4 => '已发货', 6 => '已收货', 8 => '已完成', 10 => '已取消', 12 => '退款审核中', 14 => '退款驳回', 16 => '退款成功'];
-    public $admin_status_where = [1 => [1], 2 => [2], 4 => [4], 6 => [6], 8 => [8], 10 => [10], 12 => [12], 14 => [14], 15 => [15], 16 => [16]];
+    public $admin_status_where = [1 => [1], 2 => [2], 4 => [4], 6 => [6], 8 => [8], 10 => [10], 12 => [12, 14, 16], 14 => [14], 15 => [15], 16 => [16]];
 
     //前端状态,名字,条件
     public $api_status       = [1 => '待付款', 2 => '待发货', 4 => '已发货', 6 => '待评价', 8 => '已完成', 10 => '已取消', 12 => '退款审核中', 14 => '退款驳回', 16 => '退款成功'];
@@ -56,9 +56,8 @@ class ShopOrderInit extends Base
     //本init和model
     public function _init()
     {
-        $ShopOrderInit        = new \init\ShopOrderInit();//订单管理
-        $ShopOrderModel       = new \initmodel\ShopOrderModel(); //订单管理  (ps:InitModel)
-
+        $ShopOrderInit  = new \init\ShopOrderInit();//订单管理
+        $ShopOrderModel = new \initmodel\ShopOrderModel(); //订单管理  (ps:InitModel)
 
 
         $ShopOrderDetailInit  = new \init\ShopOrderDetailInit();//订单详情   (ps:InitController)
@@ -75,7 +74,6 @@ class ShopOrderInit extends Base
     {
         $ShopOrderDetailInit = new \init\ShopOrderDetailInit();//订单详情   (ps:InitController)
         $MemberInit          = new \init\MemberInit();//会员管理 (ps:InitController)
-
 
 
         //状态,支付方式,信息

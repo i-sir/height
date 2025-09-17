@@ -245,6 +245,18 @@ class ShopCouponController extends AuthController
      *
      *
      *    @OA\Parameter(
+     *         name="used",
+     *         in="query",
+     *         description="状态:1未使用,2已使用,3已过期",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
+     *
+     *    @OA\Parameter(
      *         name="openid",
      *         in="query",
      *         description="openid",
@@ -277,6 +289,7 @@ class ShopCouponController extends AuthController
 
         $map   = [];
         $map[] = ['user_id', '=', $this->user_id];
+        if ($params['used']) $map[] = ['used', '=', $params['used']];
         //筛选可使用优惠券
         if ($params['amount']) {
             $map[] = ['end_time', '>', time()];
@@ -359,7 +372,12 @@ class ShopCouponController extends AuthController
         $map[] = ['used', '=', 1];
         if ($params['id']) $map[] = ['id', '=', $params['id']];
         if ($params['code']) $map[] = ['code', '=', $params['code']];
-        $result = $ShopCouponUserModel->where($map)->update(['used' => 2, 'update_time' => time()]);
+        $result = $ShopCouponUserModel->where($map)->update([
+            'verification_user_id' => $this->user_id,
+            'verification_name'    => $this->user_info['nickname'],
+            'used'                 => 2,
+            'update_time'          => time(),
+        ]);
         if (empty($result)) $this->error("失败请重试!");
 
         $this->success("核销成功!");
@@ -400,4 +418,6 @@ class ShopCouponController extends AuthController
 
         echo("更新置顶,执行成功\n" . cmf_random_string(80) . "\n" . date('Y-m-d H:i:s') . "\n");
     }
+
+
 }
