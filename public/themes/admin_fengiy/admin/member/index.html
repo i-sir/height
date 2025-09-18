@@ -41,6 +41,7 @@
                 <th style="width: 60px">用户信息</th>
                 <th style="width: 60px">手机号</th>
                 <th style="width: 60px">余额</th>
+                <th style="width: 60px">分销员</th>
                 <th style="width: 60px">创建时间</th>
                 <th style="width: 160px">操作</th>
             </tr>
@@ -64,6 +65,17 @@
                     </td>
                     <td>{$vo.phone}</td>
                     <td>{$vo.balance}</td>
+                    <td>
+                        <div class="layui-form">
+                            <input type="checkbox" lay-skin="switch" lay-text="是|否" lay-filter="is_admin"
+                                   name="is_admin"
+                                   value="{$vo.id}"
+                            <if condition="$vo.is_admin == 1">checked</if>
+                            >
+                        </div>
+                    </td>
+
+
                     <!--                    <td>-->
                     <!--                        <if condition="!empty($vo.p_user_info)">-->
                     <!--                            <span ondblclick="copyContent('{$vo.p_user_info.openid}')">{$vo.p_user_info.nickname} ({$vo.p_user_info.id})</span>-->
@@ -107,6 +119,19 @@
 </body>
 </html>
 
+
+<script>
+    layui.use(['layer', 'form', 'slider'], function () {
+        var layer = layui.layer, form = layui.form;
+
+
+        form.on('switch(is_admin)', function (data) {
+            batchPost(data.value, 'is_admin', this.checked ? 1 : 2)
+        });
+
+
+    });
+</script>
 
 <script>
     //复制变量

@@ -4,18 +4,18 @@ namespace api\wxapp\controller;
 
 /**
  * @ApiController(
- *     "name"                    =>"Course",
- *     "name_underline"          =>"course",
- *     "controller_name"         =>"Course",
- *     "table_name"              =>"course",
- *     "remark"                  =>"课程计划"
- *     "api_url"                 =>"/api/wxapp/course/index",
+ *     "name"                    =>"CoursePlan",
+ *     "name_underline"          =>"course_plan",
+ *     "controller_name"         =>"CoursePlan",
+ *     "table_name"              =>"course_plan",
+ *     "remark"                  =>"计划管理"
+ *     "api_url"                 =>"/api/wxapp/course_plan/index",
  *     "author"                  =>"",
- *     "create_time"             =>"2025-09-18 11:42:28",
+ *     "create_time"             =>"2025-09-18 16:53:49",
  *     "version"                 =>"1.0",
- *     "use"                     => new \api\wxapp\controller\CourseController();
- *     "test_environment"        =>"http://height.ikun:9090/api/wxapp/course/index",
- *     "official_environment"    =>"https://xcxkf173.aubye.com/api/wxapp/course/index",
+ *     "use"                     => new \api\wxapp\controller\CoursePlanController();
+ *     "test_environment"        =>"http://height.ikun:9090/api/wxapp/course_plan/index",
+ *     "official_environment"    =>"https://xcxkf173.aubye.com/api/wxapp/course_plan/index",
  * )
  */
 
@@ -28,36 +28,36 @@ use think\facade\Cache;
 error_reporting(0);
 
 
-class CourseController extends AuthController
+class CoursePlanController extends AuthController
 {
 
     //public function initialize(){
-    //	//课程计划
+    //	//计划管理
     //	parent::initialize();
     //}
 
 
     /**
      * 默认接口
-     * /api/wxapp/course/index
-     * https://xcxkf173.aubye.com/api/wxapp/course/index
+     * /api/wxapp/course_plan/index
+     * https://xcxkf173.aubye.com/api/wxapp/course_plan/index
      */
     public function index()
     {
-        $CourseInit  = new \init\CourseInit();//课程计划   (ps:InitController)
-        $CourseModel = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
+        $CoursePlanInit  = new \init\CoursePlanInit();//计划管理   (ps:InitController)
+        $CoursePlanModel = new \initmodel\CoursePlanModel(); //计划管理   (ps:InitModel)
 
         $result = [];
 
-        $this->success('课程计划-接口请求成功', $result);
+        $this->success('计划管理-接口请求成功', $result);
     }
 
 
     /**
-     * 课程计划 列表
+     * 计划管理 列表
      * @OA\Post(
-     *     tags={"课程计划"},
-     *     path="/wxapp/course/find_course_list",
+     *     tags={"计划管理"},
+     *     path="/wxapp/course_plan/find_plan_list",
      *
      *
      *
@@ -66,6 +66,19 @@ class CourseController extends AuthController
      *         name="openid",
      *         in="query",
      *         description="openid",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
+     *
+     *
+     *    @OA\Parameter(
+     *         name="course_id",
+     *         in="query",
+     *         description="课时id",
      *         required=false,
      *         @OA\Schema(
      *             type="string",
@@ -111,16 +124,16 @@ class CourseController extends AuthController
      * )
      *
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/course/find_course_list
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/course/find_course_list
-     *   api:  /wxapp/course/find_course_list
-     *   remark_name: 课程计划 列表
+     *   test_environment: http://height.ikun:9090/api/wxapp/course_plan/find_plan_list
+     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/course_plan/find_plan_list
+     *   api:  /wxapp/course_plan/find_plan_list
+     *   remark_name: 计划管理 列表
      *
      */
-    public function find_course_list()
+    public function find_plan_list()
     {
-        $CourseInit  = new \init\CourseInit();//课程计划   (ps:InitController)
-        $CourseModel = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
+        $CoursePlanInit  = new \init\CoursePlanInit();//计划管理   (ps:InitController)
+        $CoursePlanModel = new \initmodel\CoursePlanModel(); //计划管理   (ps:InitModel)
 
         /** 获取参数 **/
         $params            = $this->request->param();
@@ -130,7 +143,8 @@ class CourseController extends AuthController
         $where   = [];
         $where[] = ['id', '>', 0];
         $where[] = ['is_show', '=', 1];
-        if ($params["keyword"]) $where[] = ["name|introduce", "like", "%{$params['keyword']}%"];
+        if ($params["keyword"]) $where[] = ["name|introduce|description", "like", "%{$params['keyword']}%"];
+        if ($params["course_id"]) $where[] = ["course_id", "=", $params["course_id"]];
         if ($params["status"]) $where[] = ["status", "=", $params["status"]];
 
 
@@ -138,8 +152,8 @@ class CourseController extends AuthController
         $params["InterfaceType"] = "api";//接口类型
         $params["DataFormat"]    = "list";//数据格式,find详情,list列表
         $params["field"]         = "*";//过滤字段
-        if ($params['is_paginate']) $result = $CourseInit->get_list($where, $params);
-        if (empty($params['is_paginate'])) $result = $CourseInit->get_list_paginate($where, $params);
+        if ($params['is_paginate']) $result = $CoursePlanInit->get_list($where, $params);
+        if (empty($params['is_paginate'])) $result = $CoursePlanInit->get_list_paginate($where, $params);
         if (empty($result)) $this->error("暂无信息!");
 
         $this->success("请求成功!", $result);
@@ -147,10 +161,10 @@ class CourseController extends AuthController
 
 
     /**
-     * 课程计划 详情
+     * 计划管理 详情
      * @OA\Post(
-     *     tags={"课程计划"},
-     *     path="/wxapp/course/find_course",
+     *     tags={"计划管理"},
+     *     path="/wxapp/course_plan/find_plan",
      *
      *
      *
@@ -170,16 +184,16 @@ class CourseController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/course/find_course
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/course/find_course
-     *   api:  /wxapp/course/find_course
-     *   remark_name: 课程计划 详情
+     *   test_environment: http://height.ikun:9090/api/wxapp/course_plan/find_plan
+     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/course_plan/find_plan
+     *   api:  /wxapp/course_plan/find_plan
+     *   remark_name: 计划管理 详情
      *
      */
-    public function find_course()
+    public function find_plan()
     {
-        $CourseInit  = new \init\CourseInit();//课程计划    (ps:InitController)
-        $CourseModel = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
+        $CoursePlanInit  = new \init\CoursePlanInit();//计划管理    (ps:InitController)
+        $CoursePlanModel = new \initmodel\CoursePlanModel(); //计划管理   (ps:InitModel)
 
         /** 获取参数 **/
         $params            = $this->request->param();
@@ -192,13 +206,11 @@ class CourseController extends AuthController
         /** 查询数据 **/
         $params["InterfaceType"] = "api";//接口类型
         $params["DataFormat"]    = "find";//数据格式,find详情,list列表
-        $result                  = $CourseInit->get_find($where, $params);
+        $result                  = $CoursePlanInit->get_find($where, $params);
         if (empty($result)) $this->error("暂无数据");
 
         $this->success("详情数据", $result);
     }
-
-
 
 
 }

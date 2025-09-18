@@ -260,14 +260,22 @@ class ShopGoodsInit extends Base
 
         /** 可直接传id,或者where条件 **/
         if (is_string($where) || is_int($where)) $where = ["id" => (int)$where];
-        if (empty($where)) return false;
+        if (empty($where) && !$params['is_rand']) return false;
 
-        /** 查询数据 **/
-        $item = $ShopGoodsModel
-            ->where($where)
-            ->order($params['order'] ?? $this->Order)
-            ->field($params['field'] ?? $this->Field)
-            ->find();
+
+        if ($params['is_rand']) {
+            $item = $ShopGoodsModel
+                ->orderRaw('RAND()')
+                ->field($params['field'] ?? $this->Field)
+                ->find();
+        } else {
+            /** 查询数据 **/
+            $item = $ShopGoodsModel
+                ->where($where)
+                ->order($params['order'] ?? $this->Order)
+                ->field($params['field'] ?? $this->Field)
+                ->find();
+        }
 
 
         if (empty($item)) return false;

@@ -493,6 +493,8 @@ class ExpOrderController extends AuthController
 
         if ($order_info['status'] != 2) $this->error("状态错误");
         $result = $ExpOrderModel->where($where)->strict(false)->update([
+            "cav_user_id"     => $this->user_id,
+            "cav_username"    => $this->user_info['nickname'],
             "status"          => 8,
             "update_time"     => time(),
             "accomplish_time" => time(),

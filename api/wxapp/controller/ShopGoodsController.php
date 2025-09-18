@@ -469,6 +469,17 @@ class ShopGoodsController extends AuthController
      *     ),
      *
      *
+     *    @OA\Parameter(
+     *         name="is_rand",
+     *         in="query",
+     *         description="true 随机查询",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
      *
      *
      *

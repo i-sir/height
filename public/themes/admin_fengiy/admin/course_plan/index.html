@@ -1,12 +1,12 @@
 <include file="public@header"/></head>
-
 <body xmlns="http://www.w3.org/1999/html">
 <div class="wrap js-check-wrap">
     <ul class="nav nav-tabs">
-        <li class="active"><a href="{:url('index',['pid'=>$pid,'params'=>$params])}">课程计划</a></li>
+        <li class="active"><a href="{:url('index',['pid'=>$pid,'course_id'=>$course_id,'params'=>$params])}">计划管理</a>
+        </li>
 
-        <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/course/add')">
-            <li><a href="{:url('add',['pid'=>$pid,'params'=>$params])}">添加</a></li>
+        <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/course_plan/add')">
+            <li><a href="{:url('add',['pid'=>$pid,'course_id'=>$course_id,'params'=>$params])}">添加</a></li>
         </if>
 
     </ul>
@@ -25,7 +25,8 @@
         </div>
 
         <button type="submit" class="layui-btn" style="margin-left: 10px">搜索</button>
-        <a class="layui-btn layui-bg-red" href="{:url('index',['pid'=>$pid,'params'=>$params])}">清空</a>
+        <a class="layui-btn layui-bg-red"
+           href="{:url('index',['pid'=>$pid,'course_id'=>$course_id,'params'=>$params])}">清空</a>
 
 
         <!--        <a class="layui-btn layui-bg-blue ajax-export" href="javascript:;">导出</a>-->
@@ -33,6 +34,7 @@
         <!-- 如有导出需把  筛选条件在这里用input回显,input需隐藏-->
         <input type="hidden" name="is_export" class="is_export" value="0">
         <input type="hidden" name="pid" value="{$pid}">
+        <input type="hidden" name="course_id" value="{$course_id}">
     </form>
 
 
@@ -41,9 +43,9 @@
         <br>
         <div class="table-actions">
 
-            <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/course/list_order_post')">
+            <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/course_plan/list_order_post')">
                 <button class="layui-btn layui-btn-primary layui-border-green layui-btn-xs js-ajax-submit" type="submit"
-                        data-action="{:url('list_order_post',['page'=>$page,'pid'=>$pid,'params'=>$params])}">
+                        data-action="{:url('list_order_post',['page'=>$page,'pid'=>$pid,'course_id'=>$course_id,'params'=>$params])}">
                     排序
                 </button>
             </if>
@@ -55,13 +57,14 @@
         <table class="table table-hover table-bordered">
             <thead>
             <tr>
-                <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/course/list_order_post')">
+                <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/course_plan/list_order_post')">
                     <th style="">排序</th>
                 </if>
                 <th style="">ID</th>
                 <th style="">名称</th>
-                <th style="width: 120px;">介绍</th>
-                <th style="">总天数</th>
+                <th style="">描述</th>
+                <th style="">总分钟数</th>
+                <th style="">组数</th>
                 <th style="">参加人数</th>
                 <th style="">虚拟人数</th>
                 <th style="">显示</th>
@@ -73,7 +76,7 @@
             <tbody>
             <foreach name="list" item="vo">
                 <tr>
-                    <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/course/list_order_post')">
+                    <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/course_plan/list_order_post')">
                         <td style="width: 90px;">
                             <input style="width: 100%;!important;" type="text"
                                    class="form-control input input-order valid post-params" name="list_order[{$vo.id}]"
@@ -82,15 +85,9 @@
                     </if>
                     <td>{$vo.id|default=''}</td>  <!--本我-->
                     <td>{$vo.name|default=''}</td>  <!--名称-->
-                    <td>
-                        <div data-toggle="tooltip"
-                             title="{$vo.introduce}"
-                             style="width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
-                        >
-                            {$vo.introduce}
-                        </div>
-                    </td>
-                    <td>{$vo.total_day|default=''}</td>  <!--总天数-->
+                    <td>{$vo.description|default=''}</td>  <!--描述-->
+                    <td>{$vo.total_minute|default=''}</td>  <!--总分钟数-->
+                    <td>{$vo.min_group|default=''} ~ {$vo.max_group|default=''}</td>  <!--组数-->
                     <td>{$vo.attend_number|default=''}</td>  <!--参加人数-->
                     <td>{$vo.virtual_number|default=''}</td>  <!--虚拟人数-->
                     <td>
@@ -106,27 +103,20 @@
                         ''}
                     </td>  <!--创建时间-->
                     <td>
-
-                        <!--弹出窗口-->
-                        <a class="layui-btn layui-btn-primary layui-border-blue layui-btn-xs"
-                           href="javascript:parent.openIframeLayer('{:url('course_plan/index',['course_id'=>$vo.id])}','',{ area: ['85%', '90%'],move:'.layui-layer-title'},false);"
-                        >课时管理</a>
-
-
-                        <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/course/edit')">
+                        <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/course_plan/edit')">
                             <a class="layui-btn layui-btn-primary layui-border-green layui-btn-xs"
-                               href="{:url('edit',['id'=>$vo.id,'pid'=>$pid,'page'=>$page,'params'=>$params])}">编辑</a>
+                               href="{:url('edit',['id'=>$vo.id,'pid'=>$pid,'course_id'=>$course_id,'page'=>$page,'params'=>$params])}">编辑</a>
                         </if>
                         <div style="display: none;">
-                            <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/course/edit')">
+                            <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/course_plan/edit')">
                                 <a class="layui-btn layui-btn-primary layui-border-green layui-btn-xs"
-                                   href="javascript:parent.openIframeLayer('{:url('edit',['id'=>$vo.id,'pid'=>$pid,'page'=>$page,'params'=>$params])}','编辑',{ area: ['65%', '85%'],move:'.layui-layer-title'},true);"
+                                   href="javascript:parent.openIframeLayer('{:url('edit',['id'=>$vo.id,'pid'=>$pid,'course_id'=>$course_id,'page'=>$page,'params'=>$params])}','编辑',{ area: ['65%', '85%'],move:'.layui-layer-title'},true);"
                                 >编辑(弹框-更改后台方法,跳转页面)</a>
                             </if>
                         </div>
-                        <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/course/delete')">
+                        <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/course_plan/delete')">
                             <a class="layui-btn layui-btn-primary layui-border-red layui-btn-xs js-ajax-delete"
-                               href="{:url('delete',['id'=>$vo.id,'pid'=>$pid,'page'=>$page,'params'=>$params])}">删除</a>
+                               href="{:url('delete',['id'=>$vo.id,'pid'=>$pid,'course_id'=>$course_id,'page'=>$page,'params'=>$params])}">删除</a>
                         </if>
 
 
@@ -198,7 +188,5 @@
         $(".w-form-search").attr('action', "/index.html");
         $(".w-form-search").submit();
     });
-
-
 </script>
 

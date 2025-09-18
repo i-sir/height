@@ -87,6 +87,7 @@ class AuthController extends RestBaseController
     protected function checkAuth($level = 1)
     {
         if (empty($this->user_id)) $this->error('请先授权登录');
+        if ($level == 2 && $this->user_info['is_admin'] != 1) $this->error('您没有权限');
     }
 
 

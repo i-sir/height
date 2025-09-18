@@ -480,8 +480,6 @@ if($params['end_time']) $params['end_time'] = strtotime($params['end_time']." 23
 
 
 <!--自定义表单 图片+input框  -->
-
-
 <!--控制器写法
 
         //处理自定义标签
@@ -491,16 +489,16 @@ if($params['end_time']) $params['end_time'] = strtotime($params['end_time']." 23
             $post_data = [];
             foreach ($data_key as $key => $value) {
                 if ($value && $data_value[$key]) {
-                    $post_data[$key]['key']   = $value;
+                    $post_data[$key]['image'] = cmf_get_asset_url($value);
                     $post_data[$key]['value'] = $data_value[$key];
                 }
             }
         }
-        $params['post_data'] = serialize($post_data);
+        $params['post_data'] = json_encode($post_data, JSON_UNESCAPED_UNICODE);
 
 
         //查询详情
-        if ($item['post_data']) $item['post_data'] = unserialize($item['post_data']);
+        if ($item['post_data']) $item['post_data'] = json_decode($item['post_data'], true);
 -->
 <style>
     .custom-form-container {

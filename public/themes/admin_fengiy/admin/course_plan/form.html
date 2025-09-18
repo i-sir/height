@@ -1,0 +1,290 @@
+<!--课程id-->
+<div class="form-group" style="display: none;">
+    <label class="col-sm-2 control-label">课程id:</label>
+    <div class="layui-input-block col-sm-6">
+        <input type="text" name="course_id" class="form-control post-params item-left" value="{$course_id|default=''}">
+    </div>
+</div>
+
+
+<!--名称-->
+<div class="form-group">
+    <label class="col-sm-2 control-label">名称:</label>
+    <div class="layui-input-block col-sm-6">
+        <input type="text" name="name" class="form-control post-params item-left" value="{$name|default=''}">
+    </div>
+</div>
+
+
+<div class="form-group">
+    <label class="col-sm-2 control-label">视频:</label>
+    <div class="layui-input-block col-sm-6">
+        <input id="video-00000001" class="form-control post-params" type="text" name="video"
+               readonly="readonly" value="{$video|default=''}" placeholder="请上传视频">
+        <notempty name="$video">
+            <a id="video-preview" href="{:cmf_get_file_download_url($video)}"
+               target="_blank">下载</a>
+        </notempty>
+        <a href="javascript:uploadOne('视频上传','#video-00000001','video');">上传</a>
+        <a onclick="$('#video-00000001').val('');return false;">取消</a>
+    </div>
+</div>
+
+
+<!--介绍-->
+<div class="form-group">
+    <label class="col-sm-2 control-label">介绍:</label>
+    <div class="layui-input-block col-sm-6">
+                                <textarea rows="4" class="form-control post-params item-left" cols="60"
+                                          name="introduce">{$introduce|default=''}</textarea>
+    </div>
+</div>
+
+
+<!--描述-->
+<div class="form-group">
+    <label class="col-sm-2 control-label">描述:</label>
+    <div class="layui-input-block col-sm-6">
+        <textarea rows="4" class="form-control post-params item-left" cols="60"
+                  name="description">{$description|default=''}</textarea>
+    </div>
+</div>
+
+
+<!--总分钟数-->
+<div class="form-group">
+    <label class="col-sm-2 control-label">总分钟数:</label>
+    <div class="layui-input-block col-sm-6">
+        <input type="text" name="total_minute" class="form-control post-params item-left"
+               value="{$total_minute|default=''}">
+    </div>
+</div>
+
+
+<!--虚拟人数-->
+<div class="form-group">
+    <label class="col-sm-2 control-label">虚拟人数:</label>
+    <div class="layui-input-block col-sm-6">
+        <input type="number" class="form-control post-params item-left" name="virtual_number"
+               value="{$virtual_number|default=''}">
+    </div>
+</div>
+
+
+<!--number数字框(两个框,一个框最大值,一个框最小值) -->
+<div class="form-group layui-form-item">
+    <label class="col-sm-2 control-label">组数:</label>
+    <div class="layui-input-block col-sm-6 layui-inline">
+        <div class="layui-input-inline" style="width: 100px;">
+            <input autocomplete="off" class="layui-input" lay-affix="number" min="1" name="min_group"
+                   placeholder=""
+                   step="1" type="number" value="{$min_group|default='1'}">
+        </div>
+        <div class="layui-form-mid">-</div>
+        <div class="layui-input-inline" style="width: 100px;">
+            <input autocomplete="off" class="layui-input" lay-affix="number" min="1" name="max_group"
+                   placeholder="" step="1" type="number" value="{$max_group|default='1'}">
+        </div>
+    </div>
+</div>
+
+
+
+<!--控制器写法
+
+        //处理自定义标签
+        $data_key   = $params['data_image'];
+        $data_value = $params['data_value'];
+        if (!empty($data_key) && !empty($data_value)) {
+            $post_data = [];
+            foreach ($data_key as $key => $value) {
+                if ($value && $data_value[$key]) {
+                    $post_data[$key]['key']   = $value;
+                    $post_data[$key]['value'] = $data_value[$key];
+                }
+            }
+        }
+        $params['post_data'] = serialize($post_data);
+
+
+        //查询详情
+        if ($item['post_data']) $item['post_data'] = unserialize($item['post_data']);
+-->
+<style>
+    .custom-form-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .custom-form-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-image-preview {
+        height: 45px;
+        width: 45px;
+        cursor: pointer;
+    }
+
+    .form-actions {
+        gap: 5px;
+    }
+
+    .data-value {
+        margin-left: 30px;
+    }
+
+    .layui-btn .layui-icon {
+        vertical-align: middle !important;
+    }
+</style>
+<div class="form-group">
+    <div class="layui-form-item">
+        <label class="col-sm-2 control-label">动作要领:</label>
+        <div class="col-md-6 col-sm-10" id="data_value_container">
+            <!-- 已有数据循环 -->
+            <if condition="!empty($action)">
+                <foreach item="value" key="key" name="$action">
+                    <div class="custom-form-container">
+                        <div class="custom-form-group">
+                            <input class="form-control post-params" id="photo_{$key}" name="data_image[]" type="hidden"
+                                   value="{$value.image|default=''}">
+                            <a href="javascript:imagePreviewDialog('{:cmf_get_image_preview_url($value.image)}');">
+                                <img class="form-image-preview" id="photo_{$key}-preview"
+                                     src="{:cmf_get_image_preview_url($value.image)}"
+                                     onerror="this.src='/static/images/default.png'">
+                            </a>
+                            <div class="form-actions">
+                                <a href="javascript:uploadOneImage('图片上传','#photo_{$key}');">上传</a>
+                                <br>
+                                <a onclick="resetImage('#photo_{$key}')">取消</a>
+                            </div>
+                        </div>
+                        <div class="custom-form-group data-value">
+                            <textarea rows="4" class="form-control post-params item-left" cols="60" placeholder="描述"
+                                      name="data_value[]">{$value.value}</textarea>
+                            <button class="layui-btn layui-btn-danger layui-btn-sm remove-item" type="button">
+                                <i class="layui-icon">&#xe67e;</i>
+                            </button>
+                        </div>
+                    </div>
+                </foreach>
+            </if>
+
+            <!-- 新增项模板 -->
+            <div class="custom-form-container">
+                <div class="custom-form-group">
+                    <input class="form-control post-params" id="photo_new_aa99999" name="data_image[]" type="hidden">
+                    <img class="form-image-preview" id="photo_new_aa99999-preview" src="/static/images/default.png">
+                    <div class="form-actions">
+                        <a href="javascript:uploadOneImage('图片上传','#photo_new_aa99999');">上传</a>
+                        <br>
+                        <a onclick="resetImage('#photo_new_aa99999')">取消</a>
+                    </div>
+                </div>
+                <div class="custom-form-group data-value">
+                    <textarea rows="4" class="form-control post-params item-left" cols="60" placeholder="描述"
+                                 name="data_value[]"></textarea>
+                    <button class="layui-btn layui-btn-warm layui-btn-sm add-item" type="button">
+                        <i class="layui-icon">&#xe654;</i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use(['jquery', 'form'], function () {
+        var $ = layui.$,
+            form = layui.form;
+
+        // 计数器用于生成唯一ID
+        var itemCounter = 1;
+
+        // 重置图片函数
+        window.resetImage = function (selector) {
+            $(selector + '-preview').attr('src', '/static/images/default.png');
+            $(selector).val('');
+        };
+
+        // 添加新项
+        $('body').on('click', '.add-item', function () {
+            var newId = 'photo_new_' + itemCounter++;
+            var newItem = `
+        <div class="custom-form-container">
+            <div class="custom-form-group">
+                <input class="form-control post-params" id="${newId}" name="data_image[]" type="hidden">
+                <img class="form-image-preview" id="${newId}-preview" src="/static/images/default.png"  onclick="imagePreviewDialog(this.src);">
+                <div class="form-actions" style="display: block;!important;">
+                    <a href="javascript:uploadOneImage('图片上传','#${newId}');">上传</a>
+                    <br>
+                    <a onclick="resetImage('#${newId}')">取消</a>
+                </div>
+            </div>
+            <div class="custom-form-group data-value">
+                 <textarea rows="4" class="form-control post-params item-left" cols="60" placeholder="描述"
+                                 name="data_value[]"></textarea>
+                <button class="layui-btn layui-btn-danger layui-btn-sm remove-item" type="button">
+                    <i class="layui-icon">&#xe67e;</i>
+                </button>
+            </div>
+        </div>
+        `;
+
+            $('#data_value_container').append(newItem);
+            form.render();
+        });
+
+        // 删除项
+        $('body').on('click', '.remove-item', function () {
+            $(this).closest('.custom-form-container').remove();
+        });
+    });
+
+
+</script>
+
+
+<!--课程介绍-->
+<div class="form-group">
+    <label class="col-sm-2 control-label">课程介绍:</label>
+    <div class="layui-input-block col-sm-6">
+        <script type="text/plain" id="content" name="content">
+            {:cmf_replace_content_file_url(htmlspecialchars_decode($content))}
+
+        </script>
+        <script type="text/javascript">
+            //编辑器路径定义
+            var editorURL = GV.WEB_ROOT;
+        </script>
+        <script type="text/javascript" src="/static/js/ueditor/ueditor.config.js?v=00001"></script>
+        <script type="text/javascript" src="/static/js/ueditor/ueditor.all.min.js"></script>
+        <!--编辑器支持秀米-->
+        <script type="text/javascript" src="/static/js/ueditor/xiumi/xiumi-ue-dialog-v5.js"></script>
+        <link rel="stylesheet" type="text/css" href="/static/js/ueditor/xiumi/xiumi-ue-v5.css"/>
+        <script type="text/javascript">
+            $(function () {
+                editorcontent = new baidu.editor.ui.Editor();
+                editorcontent.render('content');
+                try {
+                    editorcontent.sync();
+                } catch (err) {
+                }
+            });
+        </script>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
