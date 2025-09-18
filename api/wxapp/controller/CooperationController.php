@@ -56,7 +56,7 @@ class CooperationController extends AuthController
     /**
      * 下单
      * @OA\Post(
-     *     tags={"合作申请"},
+     *     tags={"合作记录"},
      *     path="/wxapp/cooperation/add_cooperation",
      *
      *
