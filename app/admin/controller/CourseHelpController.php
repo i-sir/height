@@ -5,20 +5,20 @@ namespace app\admin\controller;
 
 /**
  * @adminMenuRoot(
- *     "name"                =>"Course",
- *     "name_underline"      =>"course",
- *     "controller_name"     =>"Course",
- *     "table_name"          =>"course",
+ *     "name"                =>"CourseHelp",
+ *     "name_underline"      =>"course_help",
+ *     "controller_name"     =>"CourseHelp",
+ *     "table_name"          =>"course_help",
  *     "action"              =>"default",
  *     "parent"              =>"",
  *     "display"             => true,
  *     "order"               => 10000,
  *     "icon"                =>"none",
- *     "remark"              =>"课程计划",
+ *     "remark"              =>"训练帮助",
  *     "author"              =>"",
- *     "create_time"         =>"2025-09-18 11:42:28",
+ *     "create_time"         =>"2025-09-19 17:47:59",
  *     "version"             =>"1.0",
- *     "use"                 => new \app\admin\controller\CourseController();
+ *     "use"                 => new \app\admin\controller\CourseHelpController();
  * )
  */
 
@@ -27,11 +27,11 @@ use think\facade\Db;
 use cmf\controller\AdminBaseController;
 
 
-class CourseController extends AdminBaseController
+class CourseHelpController extends AdminBaseController
 {
 
     // public function initialize(){
-    //	//课程计划
+    //	//训练帮助
     //	parent::initialize();
     //	}
 
@@ -49,7 +49,6 @@ class CourseController extends AdminBaseController
      */
     protected function base_edit()
     {
-
 
     }
 
@@ -73,14 +72,14 @@ class CourseController extends AdminBaseController
         $this->base_index();//处理基础信息
 
 
-        $CourseInit  = new \init\CourseInit();//课程计划    (ps:InitController)
-        $CourseModel = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
-        $params      = $this->request->param();
+        $CourseHelpInit  = new \init\CourseHelpInit();//训练帮助    (ps:InitController)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助   (ps:InitModel)
+        $params          = $this->request->param();
 
         /** 查询条件 **/
         $where   = [];
         $where[] = ["class_id", "=", 1];
-        if ($params["keyword"]) $where[] = ["name|introduce", "like", "%{$params["keyword"]}%"];
+        if ($params["keyword"]) $where[] = ["name|describe", "like", "%{$params["keyword"]}%"];
         if ($params["test"]) $where[] = ["test", "=", $params["test"]];
 
 
@@ -96,11 +95,11 @@ class CourseController extends AdminBaseController
 
 
         /** 导出数据 **/
-        if ($params["is_export"]) $CourseInit->export_excel($where, $params);
+        if ($params["is_export"]) $CourseHelpInit->export_excel($where, $params);
 
 
         /** 查询数据 **/
-        $result = $CourseInit->get_list_paginate($where, $params);
+        $result = $CourseHelpInit->get_list_paginate($where, $params);
 
 
         /** 数据渲染 **/
@@ -133,14 +132,14 @@ class CourseController extends AdminBaseController
         $this->base_index();//处理基础信息
 
 
-        $CourseInit  = new \init\CourseInit();//课程计划    (ps:InitController)
-        $CourseModel = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
-        $params      = $this->request->param();
+        $CourseHelpInit  = new \init\CourseHelpInit();//训练帮助    (ps:InitController)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助   (ps:InitModel)
+        $params          = $this->request->param();
 
         /** 查询条件 **/
         $where   = [];
         $where[] = ["class_id", "=", 2];
-        if ($params["keyword"]) $where[] = ["name|introduce", "like", "%{$params["keyword"]}%"];
+        if ($params["keyword"]) $where[] = ["name|describe", "like", "%{$params["keyword"]}%"];
         if ($params["test"]) $where[] = ["test", "=", $params["test"]];
 
 
@@ -156,11 +155,11 @@ class CourseController extends AdminBaseController
 
 
         /** 导出数据 **/
-        if ($params["is_export"]) $CourseInit->export_excel($where, $params);
+        if ($params["is_export"]) $CourseHelpInit->export_excel($where, $params);
 
 
         /** 查询数据 **/
-        $result = $CourseInit->get_list_paginate($where, $params);
+        $result = $CourseHelpInit->get_list_paginate($where, $params);
 
 
         /** 数据渲染 **/
@@ -193,14 +192,14 @@ class CourseController extends AdminBaseController
         $this->base_index();//处理基础信息
 
 
-        $CourseInit  = new \init\CourseInit();//课程计划    (ps:InitController)
-        $CourseModel = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
-        $params      = $this->request->param();
+        $CourseHelpInit  = new \init\CourseHelpInit();//训练帮助    (ps:InitController)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助   (ps:InitModel)
+        $params          = $this->request->param();
 
         /** 查询条件 **/
         $where   = [];
         $where[] = ["class_id", "=", 3];
-        if ($params["keyword"]) $where[] = ["name|introduce", "like", "%{$params["keyword"]}%"];
+        if ($params["keyword"]) $where[] = ["name|describe", "like", "%{$params["keyword"]}%"];
         if ($params["test"]) $where[] = ["test", "=", $params["test"]];
 
 
@@ -216,11 +215,11 @@ class CourseController extends AdminBaseController
 
 
         /** 导出数据 **/
-        if ($params["is_export"]) $CourseInit->export_excel($where, $params);
+        if ($params["is_export"]) $CourseHelpInit->export_excel($where, $params);
 
 
         /** 查询数据 **/
-        $result = $CourseInit->get_list_paginate($where, $params);
+        $result = $CourseHelpInit->get_list_paginate($where, $params);
 
 
         /** 数据渲染 **/
@@ -253,14 +252,14 @@ class CourseController extends AdminBaseController
         $this->base_index();//处理基础信息
 
 
-        $CourseInit  = new \init\CourseInit();//课程计划    (ps:InitController)
-        $CourseModel = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
-        $params      = $this->request->param();
+        $CourseHelpInit  = new \init\CourseHelpInit();//训练帮助    (ps:InitController)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助   (ps:InitModel)
+        $params          = $this->request->param();
 
         /** 查询条件 **/
         $where   = [];
         $where[] = ["class_id", "=", 4];
-        if ($params["keyword"]) $where[] = ["name|introduce", "like", "%{$params["keyword"]}%"];
+        if ($params["keyword"]) $where[] = ["name|describe", "like", "%{$params["keyword"]}%"];
         if ($params["test"]) $where[] = ["test", "=", $params["test"]];
 
 
@@ -276,11 +275,11 @@ class CourseController extends AdminBaseController
 
 
         /** 导出数据 **/
-        if ($params["is_export"]) $CourseInit->export_excel($where, $params);
+        if ($params["is_export"]) $CourseHelpInit->export_excel($where, $params);
 
 
         /** 查询数据 **/
-        $result = $CourseInit->get_list_paginate($where, $params);
+        $result = $CourseHelpInit->get_list_paginate($where, $params);
 
 
         /** 数据渲染 **/
@@ -292,7 +291,6 @@ class CourseController extends AdminBaseController
 
         return $this->fetch();
     }
-
 
     //添加
     public function add()
@@ -306,21 +304,22 @@ class CourseController extends AdminBaseController
     //添加提交
     public function add_post()
     {
-        $CourseInit  = new \init\CourseInit();//课程计划   (ps:InitController)
-        $CourseModel = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
-        $params      = $this->request->param();
+        $CourseHelpInit  = new \init\CourseHelpInit();//训练帮助   (ps:InitController)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助   (ps:InitModel)
+        $params          = $this->request->param();
 
 
         /** 检测参数信息 **/
-        $validateResult = $this->validate($params, 'Course');
+        $validateResult = $this->validate($params, 'CourseHelp');
         if ($validateResult !== true) $this->error($validateResult);
 
 
         /** 插入数据 **/
-        $result = $CourseInit->admin_edit_post($params);
+        $result = $CourseHelpInit->admin_edit_post($params);
         if (empty($result)) $this->error("失败请重试");
 
         $this->success("保存成功", "index{$params['class_id']}{$this->params_url}");
+
     }
 
 
@@ -329,9 +328,9 @@ class CourseController extends AdminBaseController
     {
         $this->base_edit();//处理基础信息
 
-        $CourseInit  = new \init\CourseInit();//课程计划    (ps:InitController)
-        $CourseModel = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
-        $params      = $this->request->param();
+        $CourseHelpInit  = new \init\CourseHelpInit();//训练帮助    (ps:InitController)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助   (ps:InitModel)
+        $params          = $this->request->param();
 
         /** 查询条件 **/
         $where   = [];
@@ -340,7 +339,7 @@ class CourseController extends AdminBaseController
         /** 查询数据 **/
         $params["InterfaceType"] = "admin";//接口类型
         $params["DataFormat"]    = "find";//数据格式,find详情,list列表
-        $result                  = $CourseInit->get_find($where, $params);
+        $result                  = $CourseHelpInit->get_find($where, $params);
         if (empty($result)) $this->error("暂无数据");
 
         /** 数据格式转数组 **/
@@ -358,9 +357,9 @@ class CourseController extends AdminBaseController
     {
         $this->base_edit();//处理基础信息
 
-        $CourseInit  = new \init\CourseInit();//课程计划  (ps:InitController)
-        $CourseModel = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
-        $params      = $this->request->param();
+        $CourseHelpInit  = new \init\CourseHelpInit();//训练帮助  (ps:InitController)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助   (ps:InitModel)
+        $params          = $this->request->param();
 
         /** 查询条件 **/
         $where   = [];
@@ -369,7 +368,7 @@ class CourseController extends AdminBaseController
         /** 查询数据 **/
         $params["InterfaceType"] = "admin";//接口类型
         $params["DataFormat"]    = "find";//数据格式,find详情,list列表
-        $result                  = $CourseInit->get_find($where, $params);
+        $result                  = $CourseHelpInit->get_find($where, $params);
         if (empty($result)) $this->error("暂无数据");
 
         /** 数据格式转数组 **/
@@ -385,13 +384,13 @@ class CourseController extends AdminBaseController
     //提交编辑
     public function edit_post()
     {
-        $CourseInit  = new \init\CourseInit();//课程计划   (ps:InitController)
-        $CourseModel = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
-        $params      = $this->request->param();
+        $CourseHelpInit  = new \init\CourseHelpInit();//训练帮助   (ps:InitController)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助   (ps:InitModel)
+        $params          = $this->request->param();
 
 
         /** 检测参数信息 **/
-        $validateResult = $this->validate($params, 'Course');
+        $validateResult = $this->validate($params, 'CourseHelp');
         if ($validateResult !== true) $this->error($validateResult);
 
 
@@ -401,38 +400,40 @@ class CourseController extends AdminBaseController
 
 
         /** 提交数据 **/
-        $result = $CourseInit->admin_edit_post($params, $where);
+        $result = $CourseHelpInit->admin_edit_post($params, $where);
         if (empty($result)) $this->error("失败请重试");
 
         $this->success("保存成功", "index{$params['class_id']}{$this->params_url}");
+
     }
 
 
     //提交(副本,无任何操作) 编辑&添加
     public function edit_post_two()
     {
-        $CourseInit  = new \init\CourseInit();//课程计划   (ps:InitController)
-        $CourseModel = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
-        $params      = $this->request->param();
+        $CourseHelpInit  = new \init\CourseHelpInit();//训练帮助   (ps:InitController)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助   (ps:InitModel)
+        $params          = $this->request->param();
 
         /** 更改数据条件 && 或$params中存在id本字段可以忽略 **/
         $where = [];
         if ($params['id']) $where[] = ['id', '=', $params['id']];
 
         /** 提交数据 **/
-        $result = $CourseInit->edit_post_two($params, $where);
+        $result = $CourseHelpInit->edit_post_two($params, $where);
         if (empty($result)) $this->error("失败请重试");
 
         $this->success("保存成功", "index{$params['class_id']}{$this->params_url}");
+
     }
 
 
     //驳回
     public function refuse()
     {
-        $CourseInit  = new \init\CourseInit();//课程计划  (ps:InitController)
-        $CourseModel = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
-        $params      = $this->request->param();
+        $CourseHelpInit  = new \init\CourseHelpInit();//训练帮助  (ps:InitController)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助   (ps:InitModel)
+        $params          = $this->request->param();
 
         /** 查询条件 **/
         $where   = [];
@@ -442,7 +443,7 @@ class CourseController extends AdminBaseController
         /** 查询数据 **/
         $params["InterfaceType"] = "admin";//接口类型
         $params["DataFormat"]    = "find";//数据格式,find详情,list列表
-        $result                  = $CourseInit->get_find($where, $params);
+        $result                  = $CourseHelpInit->get_find($where, $params);
         if (empty($result)) $this->error("暂无数据");
 
         /** 数据格式转数组 **/
@@ -458,9 +459,9 @@ class CourseController extends AdminBaseController
     //驳回,更改状态
     public function audit_post()
     {
-        $CourseInit  = new \init\CourseInit();//课程计划   (ps:InitController)
-        $CourseModel = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
-        $params      = $this->request->param();
+        $CourseHelpInit  = new \init\CourseHelpInit();//训练帮助   (ps:InitController)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助   (ps:InitModel)
+        $params          = $this->request->param();
 
         /** 更改数据条件 && 或$params中存在id本字段可以忽略 **/
         $where = [];
@@ -470,7 +471,7 @@ class CourseController extends AdminBaseController
         /** 查询数据 **/
         $params["InterfaceType"] = "admin";//接口类型
         $params["DataFormat"]    = "find";//数据格式,find详情,list列表
-        $item                    = $CourseInit->get_find($where);
+        $item                    = $CourseHelpInit->get_find($where);
         if (empty($item)) $this->error("暂无数据");
 
         /** 通过&拒绝时间 **/
@@ -478,7 +479,7 @@ class CourseController extends AdminBaseController
         if ($params['status'] == 3) $params['refuse_time'] = time();
 
         /** 提交数据 **/
-        $result = $CourseInit->edit_post_two($params, $where);
+        $result = $CourseHelpInit->edit_post_two($params, $where);
         if (empty($result)) $this->error("失败请重试");
 
         $this->success("操作成功");
@@ -487,15 +488,15 @@ class CourseController extends AdminBaseController
     //删除
     public function delete()
     {
-        $CourseInit  = new \init\CourseInit();//课程计划   (ps:InitController)
-        $CourseModel = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
-        $params      = $this->request->param();
+        $CourseHelpInit  = new \init\CourseHelpInit();//训练帮助   (ps:InitController)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助   (ps:InitModel)
+        $params          = $this->request->param();
 
         if ($params["id"]) $id = $params["id"];
         if (empty($params["id"])) $id = $this->request->param("ids/a");
 
         /** 删除数据 **/
-        $result = $CourseInit->delete_post($id);
+        $result = $CourseHelpInit->delete_post($id);
         if (empty($result)) $this->error("失败请重试");
 
         $this->success("删除成功");//   , "index{$this->params_url}"
@@ -505,15 +506,15 @@ class CourseController extends AdminBaseController
     //批量操作
     public function batch_post()
     {
-        $CourseInit  = new \init\CourseInit();//课程计划   (ps:InitController)
-        $CourseModel = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
-        $params      = $this->request->param();
+        $CourseHelpInit  = new \init\CourseHelpInit();//训练帮助   (ps:InitController)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助   (ps:InitModel)
+        $params          = $this->request->param();
 
         $id = $this->request->param("id/a");
         if (empty($id)) $id = $this->request->param("ids/a");
 
         //提交编辑
-        $result = $CourseInit->batch_post($id, $params);
+        $result = $CourseHelpInit->batch_post($id, $params);
         if (empty($result)) $this->error("失败请重试");
 
         $this->success("保存成功");//   , "index{$this->params_url}"
@@ -523,12 +524,12 @@ class CourseController extends AdminBaseController
     //更新排序
     public function list_order_post()
     {
-        $CourseInit  = new \init\CourseInit();//课程计划   (ps:InitController)
-        $CourseModel = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
-        $params      = $this->request->param("list_order/a");
+        $CourseHelpInit  = new \init\CourseHelpInit();//训练帮助   (ps:InitController)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助   (ps:InitModel)
+        $params          = $this->request->param("list_order/a");
 
         //提交更新
-        $result = $CourseInit->list_order_post($params);
+        $result = $CourseHelpInit->list_order_post($params);
         if (empty($result)) $this->error("失败请重试");
 
         $this->success("保存成功"); //   , "index{$this->params_url}"

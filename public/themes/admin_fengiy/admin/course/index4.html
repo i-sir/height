@@ -3,7 +3,7 @@
 <body xmlns="http://www.w3.org/1999/html">
 <div class="wrap js-check-wrap">
     <ul class="nav nav-tabs">
-        <li class="active"><a href="{:url('index',['pid'=>$pid,'class_id'=>$class_id,'params'=>$params])}">课程计划</a></li>
+        <li class="active"><a href="{:url('index4',['pid'=>$pid,'class_id'=>$class_id,'params'=>$params])}">课程计划</a></li>
 
         <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/course/add')">
             <li><a href="{:url('add',['pid'=>$pid,'class_id'=>$class_id,'params'=>$params])}">添加</a></li>
@@ -25,7 +25,7 @@
         </div>
 
         <button type="submit" class="layui-btn" style="margin-left: 10px">搜索</button>
-        <a class="layui-btn layui-bg-red" href="{:url('index',['pid'=>$pid,'class_id'=>$class_id,'params'=>$params])}">清空</a>
+        <a class="layui-btn layui-bg-red" href="{:url('index4',['pid'=>$pid,'class_id'=>$class_id,'params'=>$params])}">清空</a>
 
 
         <!--        <a class="layui-btn layui-bg-blue ajax-export" href="javascript:;">导出</a>-->

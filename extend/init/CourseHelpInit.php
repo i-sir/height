@@ -5,15 +5,15 @@ namespace init;
 
 /**
  * @Init(
- *     "name"            =>"Course",
- *     "name_underline"  =>"course",
- *     "table_name"      =>"course",
- *     "model_name"      =>"CourseModel",
- *     "remark"          =>"课程计划",
+ *     "name"            =>"CourseHelp",
+ *     "name_underline"  =>"course_help",
+ *     "table_name"      =>"course_help",
+ *     "model_name"      =>"CourseHelpModel",
+ *     "remark"          =>"训练帮助",
  *     "author"          =>"",
- *     "create_time"     =>"2025-09-18 11:42:28",
+ *     "create_time"     =>"2025-09-19 17:47:59",
  *     "version"         =>"1.0",
- *     "use"             => new \init\CourseInit();
+ *     "use"             => new \init\CourseHelpInit();
  * )
  */
 
@@ -21,7 +21,7 @@ use think\facade\Db;
 use app\admin\controller\ExcelController;
 
 
-class CourseInit extends Base
+class CourseHelpInit extends Base
 {
 
     public $is_show = [1 => '是', 2 => '否'];//显示
@@ -37,8 +37,8 @@ class CourseInit extends Base
     //本init和model
     public function _init()
     {
-        $CourseInit  = new \init\CourseInit();//课程计划   (ps:InitController)
-        $CourseModel = new \initmodel\CourseModel(); //课程计划  (ps:InitModel)
+        $CourseHelpInit  = new \init\CourseHelpInit();//训练帮助   (ps:InitController)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助  (ps:InitModel)
     }
 
     /**
@@ -50,7 +50,6 @@ class CourseInit extends Base
     public function common_item($item = [], $params = [])
     {
 
-        $CourseOrderModel = new \initmodel\CourseOrderModel(); //课程订单   (ps:InitModel)
 
         //接口类型
         if ($params['InterfaceType']) $this->InterfaceType = $params['InterfaceType'];
@@ -59,14 +58,7 @@ class CourseInit extends Base
 
 
         /** 数据格式(公共部分),find详情&&list列表 共存数据 **/
-        $item['is_pay'] = false;
-        //用户已支付的课程
-        $map    = [];
-        $map[]  = ['user_id', '=', $params['user_id']];
-        $map[]  = ['status', '=', 2];//已支付
-        $map[]  = ['course_id', '=', $item['course_id']];
-        $is_pay = $CourseOrderModel->where($map)->count();
-        if ($is_pay) $item['is_pay'] = true;
+
 
 
         /** 处理文字描述 **/
@@ -128,11 +120,11 @@ class CourseInit extends Base
      */
     public function get_list($where = [], $params = [])
     {
-        $CourseModel = new \initmodel\CourseModel(); //课程计划  (ps:InitModel)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助  (ps:InitModel)
 
 
         /** 查询数据 **/
-        $result = $CourseModel
+        $result = $CourseHelpModel
             ->where($where)
             ->order($params['order'] ?? $this->Order)
             ->field($params['field'] ?? $this->Field)
@@ -162,11 +154,11 @@ class CourseInit extends Base
      */
     public function get_list_paginate($where = [], $params = [])
     {
-        $CourseModel = new \initmodel\CourseModel(); //课程计划  (ps:InitModel)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助  (ps:InitModel)
 
 
         /** 查询数据 **/
-        $result = $CourseModel
+        $result = $CourseHelpModel
             ->where($where)
             ->order($params['order'] ?? $this->Order)
             ->field($params['field'] ?? $this->Field)
@@ -195,10 +187,10 @@ class CourseInit extends Base
      */
     public function get_join_list($where = [], $params = [])
     {
-        $CourseModel = new \initmodel\CourseModel(); //课程计划  (ps:InitModel)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助  (ps:InitModel)
 
         /** 查询数据 **/
-        $result = $CourseModel
+        $result = $CourseHelpModel
             ->alias('a')
             ->join('member b', 'a.user_id = b.id')
             ->where($where)
@@ -230,14 +222,14 @@ class CourseInit extends Base
      */
     public function get_find($where = [], $params = [])
     {
-        $CourseModel = new \initmodel\CourseModel(); //课程计划  (ps:InitModel)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助  (ps:InitModel)
 
         /** 可直接传id,或者where条件 **/
         if (is_string($where) || is_int($where)) $where = ["id" => (int)$where];
         if (empty($where)) return false;
 
         /** 查询数据 **/
-        $item = $CourseModel
+        $item = $CourseHelpModel
             ->where($where)
             ->order($params['order'] ?? $this->Order)
             ->field($params['field'] ?? $this->Field)
@@ -302,7 +294,7 @@ class CourseInit extends Base
      */
     public function edit_post($params, $where = [])
     {
-        $CourseModel = new \initmodel\CourseModel(); //课程计划  (ps:InitModel)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助  (ps:InitModel)
 
 
         /** 查询详情数据 && 需要再打开 **/
@@ -319,17 +311,17 @@ class CourseInit extends Base
         if (!empty($where)) {
             //传入where条件,根据条件更新数据
             $params["update_time"] = time();
-            $result                = $CourseModel->where($where)->strict(false)->update($params);
+            $result                = $CourseHelpModel->where($where)->strict(false)->update($params);
             //if ($result) $result = $item["id"];
         } elseif (!empty($params["id"])) {
             //如传入id,根据id编辑数据
             $params["update_time"] = time();
-            $result                = $CourseModel->where("id", "=", $params["id"])->strict(false)->update($params);
+            $result                = $CourseHelpModel->where("id", "=", $params["id"])->strict(false)->update($params);
             //if($result) $result = $item["id"];
         } else {
             //无更新条件则添加数据
             $params["create_time"] = time();
-            $result                = $CourseModel->strict(false)->insert($params, true);
+            $result                = $CourseHelpModel->strict(false)->insert($params, true);
         }
 
         return $result;
@@ -344,7 +336,7 @@ class CourseInit extends Base
      */
     public function edit_post_two($params, $where = [])
     {
-        $CourseModel = new \initmodel\CourseModel(); //课程计划  (ps:InitModel)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助  (ps:InitModel)
 
 
         /** 可直接传id,或者where条件 **/
@@ -357,15 +349,15 @@ class CourseInit extends Base
         if (!empty($where)) {
             //传入where条件,根据条件更新数据
             $params["update_time"] = time();
-            $result                = $CourseModel->where($where)->strict(false)->update($params);
+            $result                = $CourseHelpModel->where($where)->strict(false)->update($params);
         } elseif (!empty($params["id"])) {
             //如传入id,根据id编辑数据
             $params["update_time"] = time();
-            $result                = $CourseModel->where("id", "=", $params["id"])->strict(false)->update($params);
+            $result                = $CourseHelpModel->where("id", "=", $params["id"])->strict(false)->update($params);
         } else {
             //无更新条件则添加数据
             $params["create_time"] = time();
-            $result                = $CourseModel->strict(false)->insert($params);
+            $result                = $CourseHelpModel->strict(false)->insert($params);
         }
 
         return $result;
@@ -381,11 +373,11 @@ class CourseInit extends Base
      */
     public function delete_post($id, $type = 1, $params = [])
     {
-        $CourseModel = new \initmodel\CourseModel(); //课程计划  (ps:InitModel)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助  (ps:InitModel)
 
 
-        if ($type == 1) $result = $CourseModel->destroy($id);//软删除 数据表字段必须有delete_time
-        if ($type == 2) $result = $CourseModel->destroy($id, true);//真实删除
+        if ($type == 1) $result = $CourseHelpModel->destroy($id);//软删除 数据表字段必须有delete_time
+        if ($type == 2) $result = $CourseHelpModel->destroy($id, true);//真实删除
 
         return $result;
     }
@@ -399,14 +391,14 @@ class CourseInit extends Base
      */
     public function batch_post($id, $params = [])
     {
-        $CourseModel = new \initmodel\CourseModel(); //课程计划  (ps:InitModel)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助  (ps:InitModel)
 
         $where   = [];
         $where[] = ["id", "in", $id];//$id 为数组
 
 
         $params["update_time"] = time();
-        $result                = $CourseModel->where($where)->strict(false)->update($params);//修改状态
+        $result                = $CourseHelpModel->where($where)->strict(false)->update($params);//修改状态
 
         return $result;
     }
@@ -420,12 +412,12 @@ class CourseInit extends Base
      */
     public function list_order_post($list_order, $params = [])
     {
-        $CourseModel = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助   (ps:InitModel)
 
         foreach ($list_order as $k => $v) {
             $where   = [];
             $where[] = ["id", "=", $k];
-            $result  = $CourseModel->where($where)->strict(false)->update(["list_order" => $v, "update_time" => time()]);//排序
+            $result  = $CourseHelpModel->where($where)->strict(false)->update(["list_order" => $v, "update_time" => time()]);//排序
         }
 
         return $result;
@@ -438,10 +430,10 @@ class CourseInit extends Base
      */
     public function export_excel($where = [], $params = [])
     {
-        $CourseInit  = new \init\CourseInit();//课程计划   (ps:InitController)
-        $CourseModel = new \initmodel\CourseModel(); //课程计划  (ps:InitModel)
+        $CourseHelpInit  = new \init\CourseHelpInit();//训练帮助   (ps:InitController)
+        $CourseHelpModel = new \initmodel\CourseHelpModel(); //训练帮助  (ps:InitModel)
 
-        $result = $CourseInit->get_list($where, $params);
+        $result = $CourseHelpInit->get_list($where, $params);
 
         $result = $result->toArray();
         foreach ($result as $k => &$item) {
@@ -479,7 +471,7 @@ class CourseInit extends Base
         //        ];
 
         $Excel = new ExcelController();
-        $Excel->excelExports($result, $headArrValue, ["fileName" => "课程计划"]);
+        $Excel->excelExports($result, $headArrValue, ["fileName" => "训练帮助"]);
     }
 
 }

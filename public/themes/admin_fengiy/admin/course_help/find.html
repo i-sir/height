@@ -31,6 +31,21 @@
 
 
 
+            <!--分类id-->            <div class="form-group">
+                <label class="col-sm-2 control-label">分类id:</label>
+                <div class="layui-input-block col-sm-6">
+                                                {$class_name|default=''}                                    </div>
+            </div>
+
+
+
+
+
+
+        
+
+
+
             <!--名称-->            <div class="form-group">
                 <label class="col-sm-2 control-label">名称:</label>
                 <div class="layui-input-block col-sm-6">
@@ -46,59 +61,10 @@
 
 
 
-            <!--介绍-->            <div class="form-group">
-                <label class="col-sm-2 control-label">介绍:</label>
+            <!--描述-->            <div class="form-group">
+                <label class="col-sm-2 control-label">描述:</label>
                 <div class="layui-input-block col-sm-6">
-                                            {$introduce|default=''}                </div>
-            </div>
-
-
-
-
-
-
-        
-
-
-
-            <!--总天数-->            <div class="form-group">
-                <label class="col-sm-2 control-label">总天数:</label>
-                <div class="layui-input-block col-sm-6">
-                                                {$total_day|default=''}                                    </div>
-            </div>
-
-
-
-
-
-
-        
-
-
-
-            <!--参加人数-->            <div class="form-group">
-                <label class="col-sm-2 control-label">参加人数:</label>
-                <div class="layui-input-block col-sm-6">
-                                                <input type="number" class="form-control post-params item-left" name="attend_number"
-                                   value="{$attend_number|default=''}">
-                                        </div>
-            </div>
-
-
-
-
-
-
-        
-
-
-
-            <!--虚拟人数-->            <div class="form-group">
-                <label class="col-sm-2 control-label">虚拟人数:</label>
-                <div class="layui-input-block col-sm-6">
-                                                <input type="number" class="form-control post-params item-left" name="virtual_number"
-                                   value="{$virtual_number|default=''}">
-                                        </div>
+                                                {$describe|default=''}                                    </div>
             </div>
 
 

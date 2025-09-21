@@ -37,7 +37,7 @@ class OrderPayController extends AuthController
      *    @OA\Parameter(
      *         name="order_type",
      *         in="query",
-     *         description="10商城,20合作申请,30体验卡订单,90充值余额",
+     *         description="10商城,20合作申请,30体验卡订单,40课程计划,90充值余额",
      *         required=false,
      *         @OA\Schema(
      *             type="string",
@@ -79,6 +79,8 @@ class OrderPayController extends AuthController
         $ShopOrderModel   = new \initmodel\ShopOrderModel(); //订单管理   (ps:InitModel)
         $CooperationModel = new \initmodel\CooperationModel(); //合作申请   (ps:InitModel)
         $ExpOrderModel    = new \initmodel\ExpOrderModel(); //体验卡订单管理   (ps:InitModel)
+        $CourseOrderModel = new \initmodel\CourseOrderModel(); //课程订单   (ps:InitModel)
+        $ShopCouponUserModel = new \initmodel\ShopCouponUserModel(); //优惠券领取记录   (ps:InitModel)
 
         $map   = [];
         $map[] = ['order_num', '=', $params['order_num']];
@@ -113,6 +115,25 @@ class OrderPayController extends AuthController
             ]);
             $order_info = $ExpOrderModel->where($map)->find();
         }
+
+        //课程计划
+        if ($params['order_type'] == 40) {
+
+            $map100   = [];
+            $map100[] = ['order_num', 'in', $this->getParams($params['order_num'])];
+            //修改订单,支付类型
+            $CourseOrderModel->where($map100)->strict(false)->update([
+                'pay_type'    => 1,
+                'update_time' => time(),
+            ]);
+
+            //计算价格
+            $amount                  = $CourseOrderModel->where($map100)->sum('amount');
+            $order_info['order_num'] = $params['order_num'];
+            $order_info['amount']    = $amount;
+            $order_info['status']    = 1;
+        }
+
 
 
         if (empty($order_info)) $this->error('订单不存在');
@@ -161,15 +182,18 @@ class OrderPayController extends AuthController
      *     ),
      *
      *
+     *
      *    @OA\Parameter(
      *         name="order_type",
      *         in="query",
-     *         description="10商城,90充值余额",
+     *         description="10商城,20合作申请,30体验卡订单,40课程计划,90充值余额",
      *         required=false,
      *         @OA\Schema(
      *             type="string",
      *         )
      *     ),
+     *
+     *
      *
      *
      * 	   @OA\Parameter(
@@ -206,6 +230,8 @@ class OrderPayController extends AuthController
         $NotifyController = new NotifyController();
         $CooperationModel = new \initmodel\CooperationModel(); //合作申请   (ps:InitModel)
         $ExpOrderModel    = new \initmodel\ExpOrderModel(); //体验卡订单管理   (ps:InitModel)
+        $CourseOrderModel = new \initmodel\CourseOrderModel(); //课程订单   (ps:InitModel)
+
 
         $map   = [];
         $map[] = ['order_num', '=', $params['order_num']];
@@ -241,6 +267,25 @@ class OrderPayController extends AuthController
                 'update_time' => time(),
             ]);
             $order_info = $ExpOrderModel->where($map)->find();
+        }
+
+
+        //课程计划
+        if ($params['order_type'] == 40) {
+
+            $map100   = [];
+            $map100[] = ['order_num', 'in', $this->getParams($params['order_num'])];
+            //修改订单,支付类型
+            $CourseOrderModel->where($map100)->strict(false)->update([
+                'pay_type'    => 6,
+                'update_time' => time(),
+            ]);
+
+            //计算价格
+            $amount                  = $CourseOrderModel->where($map100)->sum('amount');
+            $order_info['order_num'] = $params['order_num'];
+            $order_info['amount']    = $amount;
+            $order_info['status']    = 1;
         }
 
 

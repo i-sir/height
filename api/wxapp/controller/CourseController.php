@@ -54,6 +54,72 @@ class CourseController extends AuthController
 
 
     /**
+     * 分类列表
+     * @OA\Post(
+     *     tags={"课程计划"},
+     *     path="/wxapp/course/find_class_list",
+     *
+     *
+     *
+     *
+     *    @OA\Parameter(
+     *         name="openid",
+     *         in="query",
+     *         description="openid",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *     @OA\Response(response="200", description="An example resource"),
+     *     @OA\Response(response="default", description="An example resource")
+     * )
+     *
+     *
+     *   test_environment: http://height.ikun:9090/api/wxapp/course/find_class_list
+     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/course/find_class_list
+     *   api:  /wxapp/course/find_class_list
+     *   remark_name: 分类列表
+     *
+     */
+    public function find_class_list()
+    {
+        $CourseClassInit  = new \init\CourseClassInit();//分类管理   (ps:InitController)
+        $CourseClassModel = new \initmodel\CourseClassModel(); //分类管理   (ps:InitModel)
+
+        /** 获取参数 **/
+        $params            = $this->request->param();
+        $params["user_id"] = $this->user_id;
+
+        /** 查询条件 **/
+        $where   = [];
+        $where[] = ['id', '>', 0];
+        $where[] = ['is_show', '=', 1];
+        if ($params["keyword"]) $where[] = ["name", "like", "%{$params['keyword']}%"];
+        if ($params["status"]) $where[] = ["status", "=", $params["status"]];
+
+
+        /** 查询数据 **/
+        $params["InterfaceType"] = "api";//接口类型
+        $params["DataFormat"]    = "list";//数据格式,find详情,list列表
+        $params["field"]         = "*";//过滤字段
+        $result                  = $CourseClassInit->get_list($where, $params);
+        if (empty($result)) $this->error("暂无信息!");
+
+        $this->success("请求成功!", $result);
+    }
+
+
+    /**
      * 课程计划 列表
      * @OA\Post(
      *     tags={"课程计划"},
@@ -75,6 +141,18 @@ class CourseController extends AuthController
      *
      *
      *
+     *
+     *
+     *
+     *    @OA\Parameter(
+     *         name="class_id",
+     *         in="query",
+     *         description="class_id分类",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
      *
      *
      *
@@ -131,6 +209,7 @@ class CourseController extends AuthController
         $where[] = ['id', '>', 0];
         $where[] = ['is_show', '=', 1];
         if ($params["keyword"]) $where[] = ["name|introduce", "like", "%{$params['keyword']}%"];
+        if ($params["class_id"]) $where[] = ["class_id", "=", $params["class_id"]];
         if ($params["status"]) $where[] = ["status", "=", $params["status"]];
 
 
@@ -197,8 +276,6 @@ class CourseController extends AuthController
 
         $this->success("详情数据", $result);
     }
-
-
 
 
 }
