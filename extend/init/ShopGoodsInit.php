@@ -55,8 +55,8 @@ class ShopGoodsInit extends Base
      */
     public function common_item($item = [], $params = [])
     {
-        $ShopGoodsClassModel = new \initmodel\ShopGoodsClassModel();//分类管理   (ps:InitModel)
         //$BaseLikeModel       = new \initmodel\BaseLikeModel(); //点赞&收藏   (ps:InitModel)
+        $CourseClassModel = new \initmodel\CourseClassModel(); //分类管理  (ps:InitModel)
 
 
         //接口类型
@@ -69,12 +69,8 @@ class ShopGoodsInit extends Base
         $item['type_name'] = $this->type_simple[$item['type']] ?? '';
 
         //分类名称
-        $one_info = $ShopGoodsClassModel->where('id', '=', $item['class_id'])->find();
-        $two_info = $ShopGoodsClassModel->where('id', '=', $item['class_two_id'])->find();
-        if ($one_info) $item['class_name'] = $one_info['name'];
-        if ($two_info) $item['class_name'] = $two_info['name'];
-        if ($two_info && $one_info) $item['class_name'] = $one_info['name'] . ' - ' . $two_info['name'];
-
+        $class_info = $CourseClassModel->where('id', '=', $item['class_id'])->find();
+        if ($class_info) $item['class_name'] = $class_info['name'];
 
         /** 处理文字描述 **/
 

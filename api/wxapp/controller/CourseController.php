@@ -143,11 +143,11 @@ class CourseController extends AuthController
      *
      *
      *
-     *
+
      *    @OA\Parameter(
      *         name="class_id",
      *         in="query",
-     *         description="class_id分类",
+     *         description="分类id    1身高管理计划,2体态管理计划,3减重管理计划,4局部塑型计划",
      *         required=false,
      *         @OA\Schema(
      *             type="string",

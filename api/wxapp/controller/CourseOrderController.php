@@ -314,7 +314,7 @@ class CourseOrderController extends AuthController
             //下单全部
             $map100      = [];
             $map100[]    = ['is_show', '=', 1];
-            $map100[]    = ['class_id', '=', $params['class_id']];
+            $map100[]    = ['class_id', '=', $params['class_id']??1];
             $course_list = $CourseModel->where($map100)->select();
         } elseif ($params['course_ids']) {
             //下单指定

@@ -54,47 +54,13 @@ class ShopGoodsController extends AdminBaseController
         $this->assign('type_list', $ShopGoodsInit->type);
 
 
-        $ShopGoodsClassInit = new \init\ShopGoodsClassInit();//分类管理     (ps:InitController)
-        $class_map          = [];
-        $class_map[]        = ['id', '<>', 0];
-        $class_map[]        = ['pid', '=', 0];
-        $class_map[]        = ['type', '=', 'goods'];
-        $this->assign('class_list', $ShopGoodsClassInit->get_list($class_map));
+        $CourseClassInit = new \init\CourseClassInit();//分类管理    (ps:InitController)
+        $class_map       = [];
+        $class_map[]     = ['id', '<>', 0];
+        $this->assign('class_list', $CourseClassInit->get_list($class_map));
     }
 
 
-    //获取分类列表
-    public function get_class_list()
-    {
-        $ShopGoodsClassModel = new \initmodel\ShopGoodsClassModel(); //分类管理  (ps:InitModel)
-        $ShopGoodsModel      = new \initmodel\ShopGoodsModel(); //商品管理   (ps:InitModel)
-
-        $params = $this->request->param();
-
-
-        //商品详情
-        $info = $ShopGoodsModel->where('id', '=', $params['item_id'])->field('class_two_id,id')->find();
-
-
-        //分类列表
-        $where   = [];
-        $where[] = ['pid', '=', $params['one_id']];
-
-        $result = $ShopGoodsClassModel
-            ->where($where)
-            ->select()
-            ->each(function ($item, $key) use ($info) {
-                //如果详情中,分类存在,回显
-                if ($info['class_two_id'] == $item['id']) $item['selected'] = 'selected';
-                return $item;
-            });
-
-
-        if (empty(count($result))) $this->error('暂无数据!');
-
-
-        $this->success("list", '', $result);
-    }
 
 
     /**
