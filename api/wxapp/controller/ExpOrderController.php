@@ -420,10 +420,100 @@ class ExpOrderController extends AuthController
 
 
     /**
+     * 取消订单
+     * @OA\Post(
+     *     tags={"体验卡订单管理"},
+     *     path="/wxapp/exp_order/cancel_order",
+     *
+     *
+     *
+     *    @OA\Parameter(
+     *         name="id",
+     *         in="query",
+     *         description="id",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
+     *
+     *    @OA\Parameter(
+     *         name="order_num",
+     *         in="query",
+     *         description="id 订单号二选一",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
+     *
+     *     @OA\Response(response="200", description="An example resource"),
+     *     @OA\Response(response="default", description="An example resource")
+     * )
+     *
+     *   test_environment: http://height.ikun:9090/api/wxapp/exp_order/cancel_order
+     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/exp_order/cancel_order
+     *   api:  /wxapp/exp_order/cancel_order
+     *   remark_name: 取消订单
+     *
+     */
+    public function cancel_order()
+    {
+        $this->checkAuth();
+        $ExpOrderModel       = new \initmodel\ExpOrderModel(); //体验卡订单管理   (ps:InitModel)
+        $ShopCouponUserModel = new \initmodel\ShopCouponUserModel(); //优惠券领取记录   (ps:InitModel)
+
+        /** 获取参数 **/
+        $params            = $this->request->param();
+        $params["user_id"] = $this->user_id;
+
+        /** 查询条件 **/
+        if ($params['id']) $where[] = ["id", "=", $params["id"]];
+        if ($params['order_num']) $where[] = ["order_num", "=", $params["order_num"]];
+
+
+        $order_info = $ExpOrderModel->where($where)->find();
+        if (empty($order_info)) $this->error("暂无数据");
+
+
+        //优惠券退回
+        if ($order_info['coupon_id']) {
+            $ShopCouponUserModel->where('id', '=', $order_info['coupon_id'])->update(['used' => 1, 'update_time' => time()]);
+        }
+
+        if ($order_info['status'] != 2) $this->error("状态错误");
+        $result = $ExpOrderModel->where($where)->strict(false)->update([
+            "status"      => 11,
+            "update_time" => time(),
+            "cancel_time" => time(),
+        ]);
+        if (empty($result)) $this->error("暂无数据");
+
+        $this->success("取消成功");
+    }
+
+
+    /**
      * 核销订单
      * @OA\Post(
      *     tags={"体验卡订单管理"},
      *     path="/wxapp/exp_order/verification_order",
+     *
+     *
+     *
+     *    @OA\Parameter(
+     *         name="openid",
+     *         in="query",
+     *         description="openid",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
      *
      *
      *
@@ -506,29 +596,17 @@ class ExpOrderController extends AuthController
 
 
     /**
-     * 取消订单
+     * 核销记录
      * @OA\Post(
      *     tags={"体验卡订单管理"},
-     *     path="/wxapp/exp_order/cancel_order",
+     *     path="/wxapp/exp_order/find_verification_list",
      *
      *
      *
      *    @OA\Parameter(
-     *         name="id",
+     *         name="openid",
      *         in="query",
-     *         description="id",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *
-     *    @OA\Parameter(
-     *         name="order_num",
-     *         in="query",
-     *         description="id 订单号二选一",
+     *         description="openid",
      *         required=false,
      *         @OA\Schema(
      *             type="string",
@@ -541,45 +619,42 @@ class ExpOrderController extends AuthController
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
-     *   test_environment: http://height.ikun:9090/api/wxapp/exp_order/cancel_order
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/exp_order/cancel_order
-     *   api:  /wxapp/exp_order/cancel_order
-     *   remark_name: 取消订单
+     *   test_environment: http://height.ikun:9090/api/wxapp/exp_order/find_verification_list
+     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/exp_order/find_verification_list
+     *   api:  /wxapp/exp_order/find_verification_list
+     *   remark_name: 核销记录
      *
      */
-    public function cancel_order()
+    public function find_verification_list()
     {
-        $this->checkAuth();
-        $ExpOrderModel       = new \initmodel\ExpOrderModel(); //体验卡订单管理   (ps:InitModel)
-        $ShopCouponUserModel = new \initmodel\ShopCouponUserModel(); //优惠券领取记录   (ps:InitModel)
+        $this->checkAuth(2);
+
+
+        $ExpOrderInit  = new \init\ExpOrderInit();//体验卡订单管理   (ps:InitController)
+        $ExpOrderModel = new \initmodel\ExpOrderModel(); //体验卡订单管理   (ps:InitModel)
 
         /** 获取参数 **/
-        $params            = $this->request->param();
-        $params["user_id"] = $this->user_id;
+        $params                = $this->request->param();
+        $params["cav_user_id"] = $this->user_id;
 
         /** 查询条件 **/
-        if ($params['id']) $where[] = ["id", "=", $params["id"]];
-        if ($params['order_num']) $where[] = ["order_num", "=", $params["order_num"]];
+        $where   = [];
+        $where[] = ['id', '>', 0];
+        $where[] = ["status", "in", [2, 8, 11]];
+        if ($params["keyword"]) $where[] = ["order_num|username|phone|goods_name", "like", "%{$params['keyword']}%"];
+        if ($params["status"]) $where[] = ["status", "=", $params["status"]];
 
 
-        $order_info = $ExpOrderModel->where($where)->find();
-        if (empty($order_info)) $this->error("暂无数据");
+        /** 查询数据 **/
+        $params["InterfaceType"] = "api";//接口类型
+        $params["DataFormat"]    = "list";//数据格式,find详情,list列表
+        $params["field"]         = "*";//过滤字段
+        if ($params['is_paginate']) $result = $ExpOrderInit->get_list($where, $params);
+        if (empty($params['is_paginate'])) $result = $ExpOrderInit->get_list_paginate($where, $params);
+        if (empty($result)) $this->error("暂无信息!");
 
+        $this->success("请求成功!", $result);
 
-        //优惠券退回
-        if ($order_info['coupon_id']) {
-            $ShopCouponUserModel->where('id', '=', $order_info['coupon_id'])->update(['used' => 1, 'update_time' => time()]);
-        }
-
-        if ($order_info['status'] != 2) $this->error("状态错误");
-        $result = $ExpOrderModel->where($where)->strict(false)->update([
-            "status"      => 11,
-            "update_time" => time(),
-            "cancel_time" => time(),
-        ]);
-        if (empty($result)) $this->error("暂无数据");
-
-        $this->success("取消成功");
     }
 
 

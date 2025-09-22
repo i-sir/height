@@ -143,7 +143,6 @@ class CourseController extends AuthController
      *
      *
      *
-
      *    @OA\Parameter(
      *         name="class_id",
      *         in="query",
@@ -197,8 +196,9 @@ class CourseController extends AuthController
      */
     public function find_course_list()
     {
-        $CourseInit  = new \init\CourseInit();//课程计划   (ps:InitController)
-        $CourseModel = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
+        $CourseInit       = new \init\CourseInit();//课程计划   (ps:InitController)
+        $CourseModel      = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
+        $CourseOrderModel = new \initmodel\CourseOrderModel(); //课程订单
 
         /** 获取参数 **/
         $params            = $this->request->param();
@@ -212,6 +212,31 @@ class CourseController extends AuthController
         if ($params["class_id"]) $where[] = ["class_id", "=", $params["class_id"]];
         if ($params["status"]) $where[] = ["status", "=", $params["status"]];
 
+
+        /** 获取用户已支付课程ID列表 **/
+        $paidCourseIds = $CourseOrderModel
+            ->where('user_id', $params['user_id'])
+            ->where('status', 2)
+            ->column('course_id');
+
+        /** 计算下一个可解锁课程的list_order **/
+        $max_list_order = 0;
+        if (!empty($paidCourseIds)) {
+            $max_list_order = $CourseModel
+                ->where('id', 'in', $paidCourseIds)
+                ->where('is_show', 1)
+                ->max('list_order');
+        }
+
+        $next_course               = $CourseModel
+            ->where('list_order', '>', $max_list_order)
+            ->where('is_show', 1)
+            ->where('class_id', '=', $params['class_id'] ?? 1)
+            ->order('list_order')
+            ->find();
+        $next_list_order           = $next_course ? $next_course['list_order'] : 0;
+        $params['paid_course_ids'] = $paidCourseIds;
+        $params['next_list_order'] = $next_list_order;
 
         /** 查询数据 **/
         $params["InterfaceType"] = "api";//接口类型

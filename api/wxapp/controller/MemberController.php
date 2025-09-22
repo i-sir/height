@@ -424,4 +424,92 @@ class MemberController extends AuthController
     }
 
 
+    /**
+     * 统计佣金资金信息
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     * @OA\Post(
+     *     tags={"会员中心模块"},
+     *     path="/wxapp/member/statistics",
+     *
+     *
+     *
+     *     @OA\Parameter(
+     *         name="openid",
+     *         in="query",
+     *         description="openid",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
+     *     @OA\Response(response="200", description="An example resource"),
+     *     @OA\Response(response="default", description="An example resource")
+     * )
+     *
+     *   test_environment: http://height.ikun:9090/api/wxapp/member/statistics
+     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/member/statistics
+     *   api: /wxapp/member/statistics
+     *   remark_name: 统计佣金资金信息
+     *
+     */
+    public function statistics()
+    {
+        $this->checkAuth();
+
+        $AssetModel = new \initmodel\AssetModel();
+
+
+        $map   = [];
+        $map[] = ['user_id', '=', $this->user_id];
+        $map[] = ['operate_type', '=', 'balance'];
+        $map[] = ['identity_type', '=', 'member'];
+        $map[] = ['change_type', '=', 1];
+        $map[] = ['order_type', 'in', [120, 130]];
+
+
+        //累计佣金
+        $result['total_commission'] = $AssetModel->where($map)->sum('price');
+        //可提现佣金
+        $result['balance'] = $this->user_info['balance'];
+        //今日收益
+        $result['today_commission'] = $AssetModel->where($map)->whereTime('create_time', 'today')->sum('price');
+        //团队人数
+        $result['team_number'] = count($this->getAllChildIds($this->user_id));
+
+
+        $this->success("请求成功！", $result);
+    }
+
+
+    /**
+     * 获取所有子级ID（递归方法）
+     * @param int    $pid      父级ID
+     * @param array &$childIds 用于存储结果的数组
+     * @return array
+     */
+    public function getAllChildIds($pid, &$childIds = [])
+    {
+        $MemberModel = new \initmodel\MemberModel();
+
+
+        // 查询直接子级
+        $map      = [];
+        $map[]    = ['pid', '=', $pid];
+        $children = $MemberModel->where($map)->column('id');
+
+        if (!empty($children)) {
+            foreach ($children as $childId) {
+                $childIds[] = $childId;
+                // 递归查询子级的子级
+                $this->getAllChildIds($childId, $childIds);
+            }
+        }
+
+        return $childIds;
+    }
+
 }

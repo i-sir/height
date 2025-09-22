@@ -20,7 +20,7 @@ use think\Response;
  */
 class MemberInit extends Base
 {
-    protected $Field         = 'id,avatar,nickname,phone,openid,create_time';//过滤字段,默认全部
+    protected $Field         = 'id,avatar,nickname,phone,openid,create_time,study_day';//过滤字段,默认全部
     protected $Limit         = 100000;//如不分页,展示条数
     protected $PageSize      = 15;//分页每页,数据条数
     protected $Order         = 'id desc';//排序

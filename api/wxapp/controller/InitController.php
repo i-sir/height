@@ -139,6 +139,33 @@ class InitController
 
 
 
+    /**
+     * 获取所有子级ID（递归方法）
+     * @param int    $pid      父级ID
+     * @param array &$childIds 用于存储结果的数组
+     * @return array
+     */
+    public function getAllChildIds($pid, &$childIds = [])
+    {
+        $MemberModel = new \initmodel\MemberModel();
+
+
+        // 查询直接子级
+        $map      = [];
+        $map[]    = ['pid', '=', $pid];
+        $map[]    = ['is_show', '=', 1];
+        $children = $MemberModel->where($map)->column('id');
+
+        if (!empty($children)) {
+            foreach ($children as $childId) {
+                $childIds[] = $childId;
+                // 递归查询子级的子级
+                $this->getAllChildIds($childId, $childIds);
+            }
+        }
+
+        return $childIds;
+    }
 
 
 

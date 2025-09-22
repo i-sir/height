@@ -24,7 +24,8 @@ use app\admin\controller\ExcelController;
 class CoursePlanInit extends Base
 {
 
-    public $is_show = [1 => '是', 2 => '否'];//显示
+    public $is_show   = [1 => '是', 2 => '否'];//显示
+    public $is_unlock = [1 => '可学习', 2 => '锁定', 3 => '已学习'];
 
 
     protected $Field         = "*";//过滤字段,默认全部
@@ -49,6 +50,7 @@ class CoursePlanInit extends Base
      */
     public function common_item($item = [], $params = [])
     {
+        $CourseStudyModel = new \initmodel\CourseStudyModel(); //学习记录   (ps:InitModel)
 
 
         //接口类型
@@ -58,6 +60,16 @@ class CoursePlanInit extends Base
 
 
         /** 数据格式(公共部分),find详情&&list列表 共存数据 **/
+        if (in_array($item['id'], $params['paid_plan_ids'])) {
+            $item['is_unlock'] = 3; // 已学习
+        } else {
+            if ($item['list_order'] == $params['next_list_order'] && $params['new_date'] < date('Y-m-d')) {
+                $item['is_unlock'] = 1; // 可解锁
+            } else {
+                $item['is_unlock'] = 2; // 不可解锁
+            }
+        }
+        $item['is_unlock_name'] = $this->is_unlock[$item['is_unlock']];
 
 
         /** 处理文字描述 **/
@@ -65,7 +77,17 @@ class CoursePlanInit extends Base
         if ($item['action']) $item['action'] = json_decode($item['action'], true);
 
 
-        $item['group_list'] = range($item['min_group'], $item['max_group'], $step = 1);
+        //组数
+        $item['group_list'] = range($item['min_group'], $item['max_group']);
+
+
+        //完成次数
+        $item['accomplish_number'] = $CourseStudyModel
+                ->where('user_id', $params['user_id'])
+                ->where('course_id', '=', $params['course_id'] ?? 0)
+                ->where('plan_id', '=', $item['id'])
+                ->where('status', 2)
+                ->sum('number') ?? 0;
 
 
         /** 处理数据 **/

@@ -388,7 +388,7 @@ class NotifyController extends AuthController
             $map100   = [];
             $map100[] = ['order_num', 'in', $this->getParams($order_num)];
 
-            $result   = $CourseOrderModel->where($map100)->strict(false)->update($update);//更新订单信息
+            $result = $CourseOrderModel->where($map100)->strict(false)->update($update);//更新订单信息
 
             //计算价格
             $coupon_amount = $CourseOrderModel->where($map100)->sum('coupon_amount');
@@ -415,6 +415,7 @@ class NotifyController extends AuthController
                 'end_time'    => time() + ($coupon_validity_period * 86400),
                 'code'        => $code,
                 'qr_image'    => $qr_image,
+                'order_num'   => $pay_num,
                 'start_time'  => time(),
                 'create_time' => time(),
             ]);

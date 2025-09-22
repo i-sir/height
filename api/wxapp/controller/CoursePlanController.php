@@ -132,8 +132,9 @@ class CoursePlanController extends AuthController
      */
     public function find_plan_list()
     {
-        $CoursePlanInit  = new \init\CoursePlanInit();//计划管理   (ps:InitController)
-        $CoursePlanModel = new \initmodel\CoursePlanModel(); //计划管理   (ps:InitModel)
+        $CoursePlanInit   = new \init\CoursePlanInit();//计划管理   (ps:InitController)
+        $CoursePlanModel  = new \initmodel\CoursePlanModel(); //计划管理   (ps:InitModel)
+        $CourseStudyModel = new \initmodel\CourseStudyModel(); //学习记录   (ps:InitModel)
 
         /** 获取参数 **/
         $params            = $this->request->param();
@@ -146,6 +147,46 @@ class CoursePlanController extends AuthController
         if ($params["keyword"]) $where[] = ["name|introduce|description", "like", "%{$params['keyword']}%"];
         if ($params["course_id"]) $where[] = ["course_id", "=", $params["course_id"]];
         if ($params["status"]) $where[] = ["status", "=", $params["status"]];
+
+
+        /** 获取用户 学习完成的课时ID列表 **/
+        $paidPlanIds = $CourseStudyModel
+            ->where('user_id', $params['user_id'])
+            ->where('course_id', '=', $params['course_id'] ?? 0)
+            ->where('status', 2)
+            ->column('plan_id');
+
+        /** 计算下一个可解锁课程的list_order **/
+        $max_list_order = 0;
+        if (!empty($paidPlanIds)) {
+            $max_list_order = $CoursePlanModel
+                ->where('id', 'in', $paidPlanIds)
+                ->where('is_show', 1)
+                ->max('list_order');
+        }
+
+        //下一个可解锁课时
+        $next_plan = $CoursePlanModel
+            ->where('list_order', '>', $max_list_order)
+            ->where('is_show', 1)
+            ->where('course_id', '=', $params['course_id'] ?? 0)
+            ->order('list_order')
+            ->find();
+
+
+        //最近解锁 时间
+        $new_date = $CourseStudyModel
+            ->where('user_id', $params['user_id'])
+            ->where('course_id', '=', $params['course_id'] ?? 0)
+            ->where('status', 2)
+            ->order('id desc')
+            ->value('date');
+
+        //参数
+        $next_list_order           = $next_plan ? $next_plan['list_order'] : 0;
+        $params['paid_plan_ids']   = $paidPlanIds;
+        $params['next_list_order'] = $next_list_order;
+        $params['new_date']        = $new_date;
 
 
         /** 查询数据 **/
