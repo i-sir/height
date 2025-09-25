@@ -224,6 +224,73 @@ class ShopCouponController extends AuthController
 
 
     /**
+     * 已领取优惠 详情
+     * @OA\Post(
+     *     tags={"优惠券"},
+     *     path="/wxapp/shop_coupon/my_coupon",
+     *
+     *
+     *
+     *     @OA\Parameter(
+     *         name="order_num",
+     *         in="query",
+     *         description="订单号",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
+     *
+     *
+     *
+     *
+     *    @OA\Parameter(
+     *         name="openid",
+     *         in="query",
+     *         description="openid",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
+     *
+     *     @OA\Response(response="200", description="An example resource"),
+     *     @OA\Response(response="default", description="An example resource")
+     * )
+     *
+     *
+     *   test_environment: http://height.ikun:9090/api/wxapp/shop_coupon/my_coupon
+     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/shop_coupon/my_coupon
+     *   api:  /wxapp/shop_coupon/my_coupon
+     *   remark_name: 已领取优惠 详情
+     *
+     */
+    public function my_coupon()
+    {
+        $this->checkAuth();
+
+        $ShopCouponUserInit = new \init\ShopCouponUserInit();//优惠券领取记录   (ps:InitController)
+
+        $params = $this->request->param();
+
+        $map   = [];
+        $map[] = ['user_id', '=', $this->user_id];
+        $map[] = ['order_num', '=', $params['order_num']];
+
+
+        $result = $ShopCouponUserInit->get_find($map, $params);
+
+        if (empty($result)) $this->error("失败请重试!");
+
+        $this->success("获取成功!", $result);
+    }
+
+
+    /**
      * 已领取优惠列表
      * @OA\Post(
      *     tags={"优惠券"},

@@ -142,19 +142,19 @@ class CourseStudyController extends AuthController
 
         /** 查询条件 **/
         $where   = [];
-        $where[] = ['id', '>', 0];
-        $where[] = ['user_id', '=', $this->user_id];
-        $where[] = ['date', '=', $params['date'] ?? date('Y-m-d')];
-        if ($params["keyword"]) $where[] = ["date", "like", "%{$params['keyword']}%"];
-        if ($params["status"]) $where[] = ["status", "=", $params["status"]];
+        $where[] = ['a.id', '>', 0];
+        $where[] = ['a.user_id', '=', $this->user_id];
+        $where[] = ['a.date', '=', $params['date'] ?? date('Y-m-d')];
+        if ($params["status"]) $where[] = ["a.status", "=", $params["status"]];
+        if ($params["course_id"]) $where[] = ["a.course_id", "=", $params["course_id"]];
+        if ($params["class_id"]) $where[] = ["a.class_id", "=", $params["class_id"]];
 
 
         /** 查询数据 **/
         $params["InterfaceType"] = "api";//接口类型
         $params["DataFormat"]    = "list";//数据格式,find详情,list列表
         $params["field"]         = "*";//过滤字段
-        if ($params['is_paginate']) $result = $CourseStudyInit->get_list($where, $params);
-        if (empty($params['is_paginate'])) $result = $CourseStudyInit->get_list_paginate($where, $params);
+        $result                  = $CourseStudyInit->get_join_list($where, $params);
         if (empty($result)) $this->error("暂无信息!");
 
         $this->success("请求成功!", $result);
@@ -234,6 +234,17 @@ class CourseStudyController extends AuthController
      *
      *
      *
+     *
+     *
+     *    @OA\Parameter(
+     *         name="class_id",
+     *         in="query",
+     *         description="分类id",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
      *
      *
      *    @OA\Parameter(
@@ -434,6 +445,7 @@ class CourseStudyController extends AuthController
         if ($params['is_me']) {
             $map100   = [];
             $map100[] = ['status', '=', 2];
+            $map100[] = ['class_id', '=', $params['class_id']];
             $map100[] = ['user_id', '=', $this->user_id];
 
             //累计天数
@@ -475,7 +487,6 @@ class CourseStudyController extends AuthController
     }
 
 
-
     /**
      * 排名列表
      * @OA\Post(
@@ -507,15 +518,14 @@ class CourseStudyController extends AuthController
      */
     public function ranking()
     {
-        $MemberInit  = new \init\MemberInit();//用户管理
+        $MemberInit = new \init\MemberInit();//用户管理
 
 
-
-        $params = $this->request->param();
+        $params          = $this->request->param();
         $params['order'] = 'study_day desc,id desc';
 
 
-        $result = $MemberInit->get_list([],$params);
+        $result = $MemberInit->get_list([], $params);
 
 
         $this->success("排名列表", $result);

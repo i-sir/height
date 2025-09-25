@@ -58,13 +58,12 @@ class CourseStudyInit extends Base
 
 
         /** 数据格式(公共部分),find详情&&list列表 共存数据 **/
+        //秒转成 n分钟n秒 second
+        $item['time_name'] = $this->secondsToFullTime($item['second']);
 
 
         /** 处理文字描述 **/
         $item['status_name'] = $this->status[$item['status']];//状态
-
-
-
 
 
         /** 处理数据 **/
@@ -194,10 +193,10 @@ class CourseStudyInit extends Base
         /** 查询数据 **/
         $result = $CourseStudyModel
             ->alias('a')
-            ->join('member b', 'a.user_id = b.id')
+            ->join('course_plan p', 'a.plan_id = p.id')
             ->where($where)
             ->order('a.id desc')
-            ->field('a.*')
+            ->field('a.*,p.name as plan_name,p.introduce as plan_introduce,p.description as plan_description')
             ->paginate(["list_rows" => $params["page_size"] ?? $this->PageSize, "query" => $params])
             ->each(function ($item, $key) use ($params) {
 
@@ -479,4 +478,25 @@ class CourseStudyInit extends Base
         $Excel->excelExports($result, $headArrValue, ["fileName" => "学习记录"]);
     }
 
+    function secondsToFullTime($seconds)
+    {
+        $days             = floor($seconds / 86400);
+        $hours            = floor(($seconds % 86400) / 3600);
+        $minutes          = floor(($seconds % 3600) / 60);
+        $remainingSeconds = $seconds % 60;
+
+        $result = '';
+        if ($days > 0) {
+            $result .= $days . '天';
+        }
+        if ($hours > 0 || $days > 0) {
+            $result .= $hours . '小时';
+        }
+        if ($minutes > 0 || $hours > 0 || $days > 0) {
+            $result .= $minutes . '分钟';
+        }
+        $result .= $remainingSeconds . '秒';
+
+        return $result;
+    }
 }

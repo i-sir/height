@@ -132,6 +132,7 @@ class CoursePlanController extends AuthController
      */
     public function find_plan_list()
     {
+        $this->checkAuth();
         $CoursePlanInit   = new \init\CoursePlanInit();//计划管理   (ps:InitController)
         $CoursePlanModel  = new \initmodel\CoursePlanModel(); //计划管理   (ps:InitModel)
         $CourseStudyModel = new \initmodel\CourseStudyModel(); //学习记录   (ps:InitModel)
@@ -176,11 +177,11 @@ class CoursePlanController extends AuthController
 
         //最近解锁 时间
         $new_date = $CourseStudyModel
-            ->where('user_id', $params['user_id'])
-            ->where('course_id', '=', $params['course_id'] ?? 0)
-            ->where('status', 2)
-            ->order('id desc')
-            ->value('date');
+                ->where('user_id', $params['user_id'])
+                ->where('course_id', '=', $params['course_id'] ?? 0)
+                ->where('status', 2)
+                ->order('id desc')
+                ->value('date') ?? date('Y-m-d', strtotime('-1 day'));
 
         //参数
         $next_list_order           = $next_plan ? $next_plan['list_order'] : 0;
