@@ -74,11 +74,15 @@ class ShopInit extends Base
         /** 处理文字描述 **/
         $item['is_recommend_name'] = $this->is_recommend[$item['is_recommend']];//推荐
 
+        //回显,展示
+        $item['distance_km'] = '0km';
+        if ($item['distance']) $item['distance_km'] = round($item['distance'] / 1000, 2) . 'km';
 
         /** 处理数据 **/
         if ($this->InterfaceType == 'api') {
             /** api处理文件 **/
             if ($item['logo_image']) $item['logo_image'] = cmf_get_asset_url($item['logo_image']);//logo
+            if ($item['image']) $item['image'] = cmf_get_asset_url($item['image']);//logo
             if ($item['images']) $item['images'] = $this->getImagesUrl($item['images']);//轮播图
             if ($item['video']) $item['video'] = cmf_get_asset_url($item['video']);//视频
 
