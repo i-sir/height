@@ -5,20 +5,20 @@ namespace app\admin\controller;
 
 /**
  * @adminMenuRoot(
- *     "name"                =>"ExpGoods",
- *     "name_underline"      =>"exp_goods",
- *     "controller_name"     =>"ExpGoods",
- *     "table_name"          =>"exp_goods",
+ *     "name"                =>"Make",
+ *     "name_underline"      =>"make",
+ *     "controller_name"     =>"Make",
+ *     "table_name"          =>"make",
  *     "action"              =>"default",
  *     "parent"              =>"",
  *     "display"             => true,
  *     "order"               => 10000,
  *     "icon"                =>"none",
- *     "remark"              =>"体验卡",
+ *     "remark"              =>"预约记录",
  *     "author"              =>"",
- *     "create_time"         =>"2025-09-17 15:49:28",
+ *     "create_time"         =>"2025-09-25 17:03:25",
  *     "version"             =>"1.0",
- *     "use"                 => new \app\admin\controller\ExpGoodsController();
+ *     "use"                 => new \app\admin\controller\MakeController();
  * )
  */
 
@@ -27,11 +27,11 @@ use think\facade\Db;
 use cmf\controller\AdminBaseController;
 
 
-class ExpGoodsController extends AdminBaseController
+class MakeController extends AdminBaseController
 {
 
     // public function initialize(){
-    //	//体验卡
+    //	//预约记录
     //	parent::initialize();
     //	}
 
@@ -49,25 +49,23 @@ class ExpGoodsController extends AdminBaseController
      */
     protected function base_edit()
     {
-        $ShopInit = new \init\ShopInit();//店铺管理    (ps:InitController)
 
-        $map   = [];
-        $map[] = ['id', '<>', 0];
-        $this->assign('shop_list', $ShopInit->get_list($map));
+
+
     }
 
 
     /**
      * 首页列表数据
      * @adminMenu(
-     *     'name'             => 'ExpGoods',
-     *     'name_underline'   => 'exp_goods',
+     *     'name'             => 'Make',
+     *     'name_underline'   => 'make',
      *     'parent'           => 'index',
      *     'display'          => true,
      *     'hasView'          => true,
      *     'order'            => 10000,
      *     'icon'             => '',
-     *     'remark'           => '体验卡',
+     *     'remark'           => '预约记录',
      *     'param'            => ''
      * )
      */
@@ -76,14 +74,14 @@ class ExpGoodsController extends AdminBaseController
         $this->base_index();//处理基础信息
 
 
-        $ExpGoodsInit  = new \init\ExpGoodsInit();//体验卡    (ps:InitController)
-        $ExpGoodsModel = new \initmodel\ExpGoodsModel(); //体验卡   (ps:InitModel)
-        $params        = $this->request->param();
+        $MakeInit  = new \init\MakeInit();//预约记录    (ps:InitController)
+        $MakeModel = new \initmodel\MakeModel(); //预约记录   (ps:InitModel)
+        $params    = $this->request->param();
 
         /** 查询条件 **/
         $where = [];
         //$where[]=["type","=", 1];
-        if ($params["keyword"]) $where[] = ["goods_name", "like", "%{$params["keyword"]}%"];
+        if ($params["keyword"]) $where[] = ["order_num|make_date|username|phone", "like", "%{$params["keyword"]}%"];
         if ($params["test"]) $where[] = ["test", "=", $params["test"]];
 
 
@@ -99,11 +97,11 @@ class ExpGoodsController extends AdminBaseController
 
 
         /** 导出数据 **/
-        if ($params["is_export"]) $ExpGoodsInit->export_excel($where, $params);
+        if ($params["is_export"]) $MakeInit->export_excel($where, $params);
 
 
         /** 查询数据 **/
-        $result = $ExpGoodsInit->get_list_paginate($where, $params);
+        $result = $MakeInit->get_list_paginate($where, $params);
 
 
         /** 数据渲染 **/
@@ -128,18 +126,18 @@ class ExpGoodsController extends AdminBaseController
     //添加提交
     public function add_post()
     {
-        $ExpGoodsInit  = new \init\ExpGoodsInit();//体验卡   (ps:InitController)
-        $ExpGoodsModel = new \initmodel\ExpGoodsModel(); //体验卡   (ps:InitModel)
-        $params        = $this->request->param();
+        $MakeInit  = new \init\MakeInit();//预约记录   (ps:InitController)
+        $MakeModel = new \initmodel\MakeModel(); //预约记录   (ps:InitModel)
+        $params    = $this->request->param();
 
 
         /** 检测参数信息 **/
-        $validateResult = $this->validate($params, 'ExpGoods');
+        $validateResult = $this->validate($params, 'Make');
         if ($validateResult !== true) $this->error($validateResult);
 
 
         /** 插入数据 **/
-        $result = $ExpGoodsInit->admin_edit_post($params);
+        $result = $MakeInit->admin_edit_post($params);
         if (empty($result)) $this->error("失败请重试");
 
         $this->success("保存成功", "index{$this->params_url}");
@@ -151,9 +149,9 @@ class ExpGoodsController extends AdminBaseController
     {
         $this->base_edit();//处理基础信息
 
-        $ExpGoodsInit  = new \init\ExpGoodsInit();//体验卡    (ps:InitController)
-        $ExpGoodsModel = new \initmodel\ExpGoodsModel(); //体验卡   (ps:InitModel)
-        $params        = $this->request->param();
+        $MakeInit  = new \init\MakeInit();//预约记录    (ps:InitController)
+        $MakeModel = new \initmodel\MakeModel(); //预约记录   (ps:InitModel)
+        $params    = $this->request->param();
 
         /** 查询条件 **/
         $where   = [];
@@ -162,7 +160,7 @@ class ExpGoodsController extends AdminBaseController
         /** 查询数据 **/
         $params["InterfaceType"] = "admin";//接口类型
         $params["DataFormat"]    = "find";//数据格式,find详情,list列表
-        $result                  = $ExpGoodsInit->get_find($where, $params);
+        $result                  = $MakeInit->get_find($where, $params);
         if (empty($result)) $this->error("暂无数据");
 
         /** 数据格式转数组 **/
@@ -180,9 +178,9 @@ class ExpGoodsController extends AdminBaseController
     {
         $this->base_edit();//处理基础信息
 
-        $ExpGoodsInit  = new \init\ExpGoodsInit();//体验卡  (ps:InitController)
-        $ExpGoodsModel = new \initmodel\ExpGoodsModel(); //体验卡   (ps:InitModel)
-        $params        = $this->request->param();
+        $MakeInit  = new \init\MakeInit();//预约记录  (ps:InitController)
+        $MakeModel = new \initmodel\MakeModel(); //预约记录   (ps:InitModel)
+        $params    = $this->request->param();
 
         /** 查询条件 **/
         $where   = [];
@@ -191,7 +189,7 @@ class ExpGoodsController extends AdminBaseController
         /** 查询数据 **/
         $params["InterfaceType"] = "admin";//接口类型
         $params["DataFormat"]    = "find";//数据格式,find详情,list列表
-        $result                  = $ExpGoodsInit->get_find($where, $params);
+        $result                  = $MakeInit->get_find($where, $params);
         if (empty($result)) $this->error("暂无数据");
 
         /** 数据格式转数组 **/
@@ -207,13 +205,13 @@ class ExpGoodsController extends AdminBaseController
     //提交编辑
     public function edit_post()
     {
-        $ExpGoodsInit  = new \init\ExpGoodsInit();//体验卡   (ps:InitController)
-        $ExpGoodsModel = new \initmodel\ExpGoodsModel(); //体验卡   (ps:InitModel)
-        $params        = $this->request->param();
+        $MakeInit  = new \init\MakeInit();//预约记录   (ps:InitController)
+        $MakeModel = new \initmodel\MakeModel(); //预约记录   (ps:InitModel)
+        $params    = $this->request->param();
 
 
         /** 检测参数信息 **/
-        $validateResult = $this->validate($params, 'ExpGoods');
+        $validateResult = $this->validate($params, 'Make');
         if ($validateResult !== true) $this->error($validateResult);
 
 
@@ -223,7 +221,7 @@ class ExpGoodsController extends AdminBaseController
 
 
         /** 提交数据 **/
-        $result = $ExpGoodsInit->admin_edit_post($params, $where);
+        $result = $MakeInit->admin_edit_post($params, $where);
         if (empty($result)) $this->error("失败请重试");
 
         $this->success("保存成功", "index{$this->params_url}");
@@ -233,16 +231,16 @@ class ExpGoodsController extends AdminBaseController
     //提交(副本,无任何操作) 编辑&添加
     public function edit_post_two()
     {
-        $ExpGoodsInit  = new \init\ExpGoodsInit();//体验卡   (ps:InitController)
-        $ExpGoodsModel = new \initmodel\ExpGoodsModel(); //体验卡   (ps:InitModel)
-        $params        = $this->request->param();
+        $MakeInit  = new \init\MakeInit();//预约记录   (ps:InitController)
+        $MakeModel = new \initmodel\MakeModel(); //预约记录   (ps:InitModel)
+        $params    = $this->request->param();
 
         /** 更改数据条件 && 或$params中存在id本字段可以忽略 **/
         $where = [];
         if ($params['id']) $where[] = ['id', '=', $params['id']];
 
         /** 提交数据 **/
-        $result = $ExpGoodsInit->edit_post_two($params, $where);
+        $result = $MakeInit->edit_post_two($params, $where);
         if (empty($result)) $this->error("失败请重试");
 
         $this->success("保存成功", "index{$this->params_url}");
@@ -252,9 +250,9 @@ class ExpGoodsController extends AdminBaseController
     //驳回
     public function refuse()
     {
-        $ExpGoodsInit  = new \init\ExpGoodsInit();//体验卡  (ps:InitController)
-        $ExpGoodsModel = new \initmodel\ExpGoodsModel(); //体验卡   (ps:InitModel)
-        $params        = $this->request->param();
+        $MakeInit  = new \init\MakeInit();//预约记录  (ps:InitController)
+        $MakeModel = new \initmodel\MakeModel(); //预约记录   (ps:InitModel)
+        $params    = $this->request->param();
 
         /** 查询条件 **/
         $where   = [];
@@ -264,7 +262,7 @@ class ExpGoodsController extends AdminBaseController
         /** 查询数据 **/
         $params["InterfaceType"] = "admin";//接口类型
         $params["DataFormat"]    = "find";//数据格式,find详情,list列表
-        $result                  = $ExpGoodsInit->get_find($where, $params);
+        $result                  = $MakeInit->get_find($where, $params);
         if (empty($result)) $this->error("暂无数据");
 
         /** 数据格式转数组 **/
@@ -280,9 +278,9 @@ class ExpGoodsController extends AdminBaseController
     //驳回,更改状态
     public function audit_post()
     {
-        $ExpGoodsInit  = new \init\ExpGoodsInit();//体验卡   (ps:InitController)
-        $ExpGoodsModel = new \initmodel\ExpGoodsModel(); //体验卡   (ps:InitModel)
-        $params        = $this->request->param();
+        $MakeInit  = new \init\MakeInit();//预约记录   (ps:InitController)
+        $MakeModel = new \initmodel\MakeModel(); //预约记录   (ps:InitModel)
+        $params    = $this->request->param();
 
         /** 更改数据条件 && 或$params中存在id本字段可以忽略 **/
         $where = [];
@@ -292,7 +290,7 @@ class ExpGoodsController extends AdminBaseController
         /** 查询数据 **/
         $params["InterfaceType"] = "admin";//接口类型
         $params["DataFormat"]    = "find";//数据格式,find详情,list列表
-        $item                    = $ExpGoodsInit->get_find($where);
+        $item                    = $MakeInit->get_find($where);
         if (empty($item)) $this->error("暂无数据");
 
         /** 通过&拒绝时间 **/
@@ -300,7 +298,7 @@ class ExpGoodsController extends AdminBaseController
         if ($params['status'] == 3) $params['refuse_time'] = time();
 
         /** 提交数据 **/
-        $result = $ExpGoodsInit->edit_post_two($params, $where);
+        $result = $MakeInit->edit_post_two($params, $where);
         if (empty($result)) $this->error("失败请重试");
 
         $this->success("操作成功");
@@ -309,15 +307,15 @@ class ExpGoodsController extends AdminBaseController
     //删除
     public function delete()
     {
-        $ExpGoodsInit  = new \init\ExpGoodsInit();//体验卡   (ps:InitController)
-        $ExpGoodsModel = new \initmodel\ExpGoodsModel(); //体验卡   (ps:InitModel)
-        $params        = $this->request->param();
+        $MakeInit  = new \init\MakeInit();//预约记录   (ps:InitController)
+        $MakeModel = new \initmodel\MakeModel(); //预约记录   (ps:InitModel)
+        $params    = $this->request->param();
 
         if ($params["id"]) $id = $params["id"];
         if (empty($params["id"])) $id = $this->request->param("ids/a");
 
         /** 删除数据 **/
-        $result = $ExpGoodsInit->delete_post($id);
+        $result = $MakeInit->delete_post($id);
         if (empty($result)) $this->error("失败请重试");
 
         $this->success("删除成功");//   , "index{$this->params_url}"
@@ -327,15 +325,15 @@ class ExpGoodsController extends AdminBaseController
     //批量操作
     public function batch_post()
     {
-        $ExpGoodsInit  = new \init\ExpGoodsInit();//体验卡   (ps:InitController)
-        $ExpGoodsModel = new \initmodel\ExpGoodsModel(); //体验卡   (ps:InitModel)
-        $params        = $this->request->param();
+        $MakeInit  = new \init\MakeInit();//预约记录   (ps:InitController)
+        $MakeModel = new \initmodel\MakeModel(); //预约记录   (ps:InitModel)
+        $params    = $this->request->param();
 
         $id = $this->request->param("id/a");
         if (empty($id)) $id = $this->request->param("ids/a");
 
         //提交编辑
-        $result = $ExpGoodsInit->batch_post($id, $params);
+        $result = $MakeInit->batch_post($id, $params);
         if (empty($result)) $this->error("失败请重试");
 
         $this->success("保存成功");//   , "index{$this->params_url}"
@@ -345,12 +343,12 @@ class ExpGoodsController extends AdminBaseController
     //更新排序
     public function list_order_post()
     {
-        $ExpGoodsInit  = new \init\ExpGoodsInit();//体验卡   (ps:InitController)
-        $ExpGoodsModel = new \initmodel\ExpGoodsModel(); //体验卡   (ps:InitModel)
-        $params        = $this->request->param("list_order/a");
+        $MakeInit  = new \init\MakeInit();//预约记录   (ps:InitController)
+        $MakeModel = new \initmodel\MakeModel(); //预约记录   (ps:InitModel)
+        $params    = $this->request->param("list_order/a");
 
         //提交更新
-        $result = $ExpGoodsInit->list_order_post($params);
+        $result = $MakeInit->list_order_post($params);
         if (empty($result)) $this->error("失败请重试");
 
         $this->success("保存成功"); //   , "index{$this->params_url}"

@@ -247,54 +247,6 @@ class ExpOrderController extends AuthController
      *
      *
      *    @OA\Parameter(
-     *         name="shop_id",
-     *         in="query",
-     *         description="门店id",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *    @OA\Parameter(
-     *         name="type",
-     *         in="query",
-     *         description="预约项目",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *
-     *    @OA\Parameter(
-     *         name="username",
-     *         in="query",
-     *         description="姓名",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *
-     *    @OA\Parameter(
-     *         name="phone",
-     *         in="query",
-     *         description="手机号",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *
-     *
-     *    @OA\Parameter(
      *         name="coupon_id",
      *         in="query",
      *         description="优惠券id",
@@ -320,27 +272,6 @@ class ExpOrderController extends AuthController
      *
      *
      *
-     *    @OA\Parameter(
-     *         name="make_date",
-     *         in="query",
-     *         description="预约日期",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
-     *
-     *
-     *
-     *    @OA\Parameter(
-     *         name="make_time",
-     *         in="query",
-     *         description="预约时间",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
      *
      *
      *
@@ -390,7 +321,7 @@ class ExpOrderController extends AuthController
         $order_num               = $this->get_num_only();
         $insert['order_num']     = $order_num;
         $insert['openid']        = $this->openid;
-        $insert['shop_id']       = $params['shop_id'];
+        $insert['shop_id']       = $goods_info['shop_id'];
         $insert['user_id']       = $params['user_id'];
         $insert['username']      = $params['username'];
         $insert['phone']         = $params['phone'];

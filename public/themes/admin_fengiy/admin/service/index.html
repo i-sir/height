@@ -2,9 +2,9 @@
 <body xmlns="http://www.w3.org/1999/html">
 <div class="wrap js-check-wrap">
     <ul class="nav nav-tabs">
-        <li class="active"><a href="{:url('index',['pid'=>$pid,'params'=>$params])}">体验卡</a></li>
+        <li class="active"><a href="{:url('index',['pid'=>$pid,'params'=>$params])}">客服管理</a></li>
 
-        <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/exp_goods/add')">
+        <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/service/add')">
             <li><a href="{:url('add',['pid'=>$pid,'params'=>$params])}">添加</a></li>
         </if>
 
@@ -40,7 +40,7 @@
         <br>
         <div class="table-actions">
 
-            <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/exp_goods/list_order_post')">
+            <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/service/list_order_post')">
                 <button class="layui-btn layui-btn-primary layui-border-green layui-btn-xs js-ajax-submit" type="submit"
                         data-action="{:url('list_order_post',['page'=>$page,'pid'=>$pid,'params'=>$params])}">
                     排序
@@ -54,14 +54,13 @@
         <table class="table table-hover table-bordered">
             <thead>
             <tr>
-                <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/exp_goods/list_order_post')">
+                <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/service/list_order_post')">
                     <th style="">排序</th>
                 </if>
                 <th style="">ID</th>
-                <th style="">店铺</th>
-                <th style="">商品名称</th>
-                <th style="">价格</th>
-                <th style="">封面</th>
+                <th style="">类型</th>
+                <th style="">客服电话</th>
+                <th style="">工作时间</th>
                 <th style="">显示</th>
                 <th style="">创建时间</th>
 
@@ -71,7 +70,7 @@
             <tbody>
             <foreach name="list" item="vo">
                 <tr>
-                    <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/exp_goods/list_order_post')">
+                    <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/service/list_order_post')">
                         <td style="width: 90px;">
                             <input style="width: 100%;!important;" type="text"
                                    class="form-control input input-order valid post-params" name="list_order[{$vo.id}]"
@@ -79,21 +78,11 @@
                         </td>
                     </if>
                     <td>{$vo.id|default=''}</td>  <!--本我-->
-                    <td>{$vo.shop_name|default=''}</td>  <!--商品名称-->
-                    <td>{$vo.goods_name|default=''}</td>  <!--商品名称-->
-                    <td>{$vo.price|default=''}</td>  <!--价格-->
+                    <td>{$vo.type|default=''}</td>  <!--类型-->
+                    <td>{$vo.phone|default=''}</td>  <!--客服电话-->
+                    <td>{$vo.time|default=''}</td>  <!--工作时间-->
                     <td>
-                        <!--封面-->
-                        <if condition='!empty($vo.image)'>
-                            <a href="javascript:imagePreviewDialog('{:cmf_get_asset_url($vo.image)}');">
-                                <img src='{:cmf_get_asset_url($vo.image)}' style='height:40px;'>
-                            </a>
-                            <else/>
-                            暂无上传
-                        </if>
-                    </td>
-                    <td>
-                        <!--是否显示-->
+                        <!--显示-->
                         <div class='layui-form'>
                             <input type='checkbox' lay-skin='switch' lay-text='是|否' lay-filter='is_show' name='is_show'
                                    value='{$vo.id}'
@@ -105,18 +94,18 @@
                         ''}
                     </td>  <!--创建时间-->
                     <td>
-                        <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/exp_goods/edit')">
+                        <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/service/edit')">
                             <a class="layui-btn layui-btn-primary layui-border-green layui-btn-xs"
                                href="{:url('edit',['id'=>$vo.id,'pid'=>$pid,'page'=>$page,'params'=>$params])}">编辑</a>
                         </if>
                         <div style="display: none;">
-                            <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/exp_goods/edit')">
+                            <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/service/edit')">
                                 <a class="layui-btn layui-btn-primary layui-border-green layui-btn-xs"
                                    href="javascript:parent.openIframeLayer('{:url('edit',['id'=>$vo.id,'pid'=>$pid,'page'=>$page,'params'=>$params])}','编辑',{ area: ['65%', '85%'],move:'.layui-layer-title'},true);"
                                 >编辑(弹框-更改后台方法,跳转页面)</a>
                             </if>
                         </div>
-                        <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/exp_goods/delete')">
+                        <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/service/delete')">
                             <a class="layui-btn layui-btn-primary layui-border-red layui-btn-xs js-ajax-delete"
                                href="{:url('delete',['id'=>$vo.id,'pid'=>$pid,'page'=>$page,'params'=>$params])}">删除</a>
                         </if>
@@ -144,7 +133,7 @@
         var layer = layui.layer, form = layui.form;
 
 
-        //是否显示
+        //显示
         form.on('switch(is_show)', function (data) {
             batchPost(data.value, 'is_show', this.checked ? 1 : 2)
         });

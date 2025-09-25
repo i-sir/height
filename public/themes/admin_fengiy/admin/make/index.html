@@ -2,11 +2,8 @@
 <body xmlns="http://www.w3.org/1999/html">
 <div class="wrap js-check-wrap">
     <ul class="nav nav-tabs">
-        <li class="active"><a href="{:url('index',['pid'=>$pid,'params'=>$params])}">店铺管理</a></li>
+        <li class="active"><a href="{:url('index',['pid'=>$pid,'params'=>$params])}">预约记录</a></li>
 
-        <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/shop/add')">
-            <li><a href="{:url('add',['pid'=>$pid,'params'=>$params])}">添加</a></li>
-        </if>
 
     </ul>
 
@@ -41,69 +38,68 @@
         <div class="table-actions">
 
 
-
-
         </div>
 
 
         <table class="table table-hover table-bordered">
             <thead>
             <tr>
-
                 <th style="">ID</th>
-<!--                <th style="">类型</th>-->
-                <th style="">名称</th>
-                <th style="">logo</th>
-                <th style="">手机号</th>
-                <th style="">营业时间</th>
-                <th style="">地址信息</th>
+                <th style="">类型</th>
+                <th style="">店铺</th>
+                <th style="">用户信息</th>
+<!--                <th style="">订单号</th>-->
+                <th style="">预约日期</th>
+                <th style="">预约时间段</th>
+                <th style="">姓名</th>
+                <th style="">联系电话</th>
                 <th style="">创建时间</th>
 
-                <th>操作</th>
+<!--                <th>操作</th>-->
             </tr>
             </thead>
             <tbody>
             <foreach name="list" item="vo">
                 <tr>
-
                     <td>{$vo.id|default=''}</td>  <!--本我-->
-<!--                    <td>{$vo.class_names|default=''}</td>  &lt;!&ndash;分类id&ndash;&gt;-->
-                    <td>{$vo.name|default=''}</td>  <!--店铺名字-->
+                    <td>{$vo.type|default=''}</td>  <!--type-->
+                    <td>{$vo.shop_name|default=''}</td>  <!--shop_id-->
                     <td>
-                        <!--logo-->
-                        <if condition='!empty($vo.logo_image)'>
-                            <a href="javascript:imagePreviewDialog('{:cmf_get_asset_url($vo.logo_image)}');">
-                                <img src='{:cmf_get_asset_url($vo.logo_image)}' style='height:40px;'>
-                            </a>
+                        <!---->
+                        <if condition='!empty($vo.user_info)'>
+                            <div style="display: flex;align-items: center;">
+                                <a href="javascript:imagePreviewDialog('{:cmf_get_asset_url($vo.user_info.avatar)}');">
+                                    <img class='img-rounded' src='{:cmf_get_asset_url($vo.user_info.avatar)}'
+                                         style='height:40px;'>
+                                </a>
+                                <div style="margin-left: 6px;">
+                                    <p ondblclick="copyContent('{$vo.user_info.openid}')">
+                                        {$vo.user_info.nickname}({$vo.user_info.id})</p>
+                                    <p>{$vo.user_info.phone}</p>
+                                </div>
+                            </div>
                             <else/>
-                            暂无上传
+                            已删除
                         </if>
                     </td>
-                    <td>{$vo.phone|default=''}</td>  <!--手机号-->
-                    <td>{$vo.time|default=''}</td>  <!--营业时间-->
-                    <td>{$vo.address|default=''}</td>  <!--地址信息-->
+<!--                    <td>{$vo.order_num|default=''}</td>  &lt;!&ndash;订单号&ndash;&gt;-->
+                    <td>{$vo.make_date|default=''}</td>  <!--预约日期-->
+                    <td>{:isset($vo.make_time) && $vo.make_time > 10000 ? date('Y-m-d H:i:s', $vo.make_time) : ''}</td>
+                    <!--预约时间段-->
+                    <td>{$vo.username|default=''}</td>  <!--姓名-->
+                    <td>{$vo.phone|default=''}</td>  <!--联系电话-->
                     <td>{:isset($vo.create_time) && $vo.create_time > 10000 ? date('Y-m-d H:i:s', $vo.create_time) :
                         ''}
                     </td>  <!--创建时间-->
-                    <td>
-                        <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/shop/edit')">
-                            <a class="layui-btn layui-btn-primary layui-border-green layui-btn-xs"
-                               href="{:url('edit',['id'=>$vo.id,'pid'=>$pid,'page'=>$page,'params'=>$params])}">编辑</a>
-                        </if>
-                        <div style="display: none;">
-                            <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/shop/edit')">
-                                <a class="layui-btn layui-btn-primary layui-border-green layui-btn-xs"
-                                   href="javascript:parent.openIframeLayer('{:url('edit',['id'=>$vo.id,'pid'=>$pid,'page'=>$page,'params'=>$params])}','编辑',{ area: ['65%', '85%'],move:'.layui-layer-title'},true);"
-                                >编辑(弹框-更改后台方法,跳转页面)</a>
-                            </if>
-                        </div>
-                        <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/shop/delete')">
-                            <a class="layui-btn layui-btn-primary layui-border-red layui-btn-xs js-ajax-delete"
-                               href="{:url('delete',['id'=>$vo.id,'pid'=>$pid,'page'=>$page,'params'=>$params])}">删除</a>
-                        </if>
+<!--                    <td>-->
+<!--                        <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/make/find')">-->
+<!--                            <a class="layui-btn layui-btn-primary layui-border-blue layui-btn-xs"-->
+<!--                               href="javascript:parent.openIframeLayer('{:url('find',['id'=>$vo.id,'pid'=>$pid,'page'=>$page,'params'=>$params])}','查看',{ area: ['65%', '85%'],move:'.layui-layer-title'},false);"-->
+<!--                            >查看</a>-->
+<!--                        </if>-->
 
 
-                    </td>
+<!--                    </td>-->
                 </tr>
             </foreach>
             </tbody>
@@ -123,12 +119,6 @@
     //开关板块
     layui.use(['layer', 'form', 'slider'], function () {
         var layer = layui.layer, form = layui.form;
-
-
-        //推荐
-        form.on('switch(is_recommend)', function (data) {
-            batchPost(data.value, 'is_recommend', this.checked ? 1 : 2)
-        });
 
 
     });

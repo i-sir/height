@@ -5,15 +5,15 @@ namespace init;
 
 /**
  * @Init(
- *     "name"            =>"ExpGoods",
- *     "name_underline"  =>"exp_goods",
- *     "table_name"      =>"exp_goods",
- *     "model_name"      =>"ExpGoodsModel",
- *     "remark"          =>"体验卡",
+ *     "name"            =>"Make",
+ *     "name_underline"  =>"make",
+ *     "table_name"      =>"make",
+ *     "model_name"      =>"MakeModel",
+ *     "remark"          =>"预约记录",
  *     "author"          =>"",
- *     "create_time"     =>"2025-09-17 15:49:28",
+ *     "create_time"     =>"2025-09-25 17:03:26",
  *     "version"         =>"1.0",
- *     "use"             => new \init\ExpGoodsInit();
+ *     "use"             => new \init\MakeInit();
  * )
  */
 
@@ -21,24 +21,22 @@ use think\facade\Db;
 use app\admin\controller\ExcelController;
 
 
-class ExpGoodsInit extends Base
+class MakeInit extends Base
 {
-
-    public $is_show = [1 => '是', 2 => '否'];//是否显示
 
 
     protected $Field         = "*";//过滤字段,默认全部
     protected $Limit         = 100000;//如不分页,展示条数
     protected $PageSize      = 15;//分页每页,数据条数
-    protected $Order         = "list_order,id desc";//排序
+    protected $Order         = "id desc";//排序
     protected $InterfaceType = "api";//接口类型:admin=后台,api=前端
     protected $DataFormat    = "find";//数据格式,find详情,list列表
 
     //本init和model
     public function _init()
     {
-        $ExpGoodsInit  = new \init\ExpGoodsInit();//体验卡   (ps:InitController)
-        $ExpGoodsModel = new \initmodel\ExpGoodsModel(); //体验卡  (ps:InitModel)
+        $MakeInit  = new \init\MakeInit();//预约记录   (ps:InitController)
+        $MakeModel = new \initmodel\MakeModel(); //预约记录  (ps:InitModel)
     }
 
     /**
@@ -49,9 +47,8 @@ class ExpGoodsInit extends Base
      */
     public function common_item($item = [], $params = [])
     {
-        $ShopModel = new \initmodel\ShopModel(); //店铺管理   (ps:InitModel)
-
-
+        $ShopModel  = new \initmodel\ShopModel(); //店铺管理   (ps:InitModel)
+        $MemberInit = new \init\MemberInit();//会员管理 (ps:InitController)
         //接口类型
         if ($params['InterfaceType']) $this->InterfaceType = $params['InterfaceType'];
         //数据格式
@@ -64,20 +61,20 @@ class ExpGoodsInit extends Base
         $item['shop_name'] = $shop_info['name'];
 
 
-
         /** 处理文字描述 **/
-        $item['is_show_name'] = $this->is_show[$item['is_show']];//是否显示
+
+
+        //查询用户信息
+        $user_info         = $MemberInit->get_find(['id' => $item['user_id']]);
+        $item['user_info'] = $user_info;
 
 
         /** 处理数据 **/
         if ($this->InterfaceType == 'api') {
             /** api处理文件 **/
-            if ($item['image']) $item['image'] = cmf_get_asset_url($item['image']);//封面
-            if ($item['images']) $item['images'] = $this->getImagesUrl($item['images']);//图集
 
 
             /** 处理富文本 **/
-            if ($item['content']) $item['content'] = htmlspecialchars_decode(cmf_replace_content_file_url($item['content']));//图文详情
 
 
             if ($this->DataFormat == 'find') {
@@ -92,7 +89,6 @@ class ExpGoodsInit extends Base
 
         } else {
             /** admin处理文件 **/
-            if ($item['images']) $item['images'] = $this->getParams($item['images']);//图集
 
 
             if ($this->DataFormat == 'find') {
@@ -100,7 +96,6 @@ class ExpGoodsInit extends Base
 
 
                 /** 处理富文本 **/
-                if ($item['content']) $item['content'] = htmlspecialchars_decode(cmf_replace_content_file_url($item['content']));//图文详情
 
 
             } else {
@@ -129,11 +124,11 @@ class ExpGoodsInit extends Base
      */
     public function get_list($where = [], $params = [])
     {
-        $ExpGoodsModel = new \initmodel\ExpGoodsModel(); //体验卡  (ps:InitModel)
+        $MakeModel = new \initmodel\MakeModel(); //预约记录  (ps:InitModel)
 
 
         /** 查询数据 **/
-        $result = $ExpGoodsModel
+        $result = $MakeModel
             ->where($where)
             ->order($params['order'] ?? $this->Order)
             ->field($params['field'] ?? $this->Field)
@@ -163,11 +158,11 @@ class ExpGoodsInit extends Base
      */
     public function get_list_paginate($where = [], $params = [])
     {
-        $ExpGoodsModel = new \initmodel\ExpGoodsModel(); //体验卡  (ps:InitModel)
+        $MakeModel = new \initmodel\MakeModel(); //预约记录  (ps:InitModel)
 
 
         /** 查询数据 **/
-        $result = $ExpGoodsModel
+        $result = $MakeModel
             ->where($where)
             ->order($params['order'] ?? $this->Order)
             ->field($params['field'] ?? $this->Field)
@@ -196,10 +191,10 @@ class ExpGoodsInit extends Base
      */
     public function get_join_list($where = [], $params = [])
     {
-        $ExpGoodsModel = new \initmodel\ExpGoodsModel(); //体验卡  (ps:InitModel)
+        $MakeModel = new \initmodel\MakeModel(); //预约记录  (ps:InitModel)
 
         /** 查询数据 **/
-        $result = $ExpGoodsModel
+        $result = $MakeModel
             ->alias('a')
             ->join('member b', 'a.user_id = b.id')
             ->where($where)
@@ -231,14 +226,14 @@ class ExpGoodsInit extends Base
      */
     public function get_find($where = [], $params = [])
     {
-        $ExpGoodsModel = new \initmodel\ExpGoodsModel(); //体验卡  (ps:InitModel)
+        $MakeModel = new \initmodel\MakeModel(); //预约记录  (ps:InitModel)
 
         /** 可直接传id,或者where条件 **/
         if (is_string($where) || is_int($where)) $where = ["id" => (int)$where];
         if (empty($where)) return false;
 
         /** 查询数据 **/
-        $item = $ExpGoodsModel
+        $item = $MakeModel
             ->where($where)
             ->order($params['order'] ?? $this->Order)
             ->field($params['field'] ?? $this->Field)
@@ -267,7 +262,6 @@ class ExpGoodsInit extends Base
         $result = false;
 
         /** 接口提交,处理数据 **/
-        if ($params['images']) $params['images'] = $this->setParams($params['images']);//图集
 
 
         $result = $this->edit_post($params, $where);//api提交
@@ -288,7 +282,6 @@ class ExpGoodsInit extends Base
         $result = false;
 
         /** 后台提交,处理数据 **/
-        if ($params['images']) $params['images'] = $this->setParams($params['images']);//图集
 
 
         $result = $this->edit_post($params, $where);//admin提交
@@ -305,7 +298,7 @@ class ExpGoodsInit extends Base
      */
     public function edit_post($params, $where = [])
     {
-        $ExpGoodsModel = new \initmodel\ExpGoodsModel(); //体验卡  (ps:InitModel)
+        $MakeModel = new \initmodel\MakeModel(); //预约记录  (ps:InitModel)
 
 
         /** 查询详情数据 && 需要再打开 **/
@@ -319,20 +312,25 @@ class ExpGoodsInit extends Base
         /** 公共提交,处理数据 **/
 
 
+        //处理时间格式
+//        if ($params['make_date'] && is_string($params['make_date'])) $params['make_date'] = strtotime($params['make_date']);//预约日期
+//        if ($params['make_time'] && is_string($params['make_time'])) $params['make_time'] = strtotime($params['make_time']);//预约时间段
+
+
         if (!empty($where)) {
             //传入where条件,根据条件更新数据
             $params["update_time"] = time();
-            $result                = $ExpGoodsModel->where($where)->strict(false)->update($params);
+            $result                = $MakeModel->where($where)->strict(false)->update($params);
             //if ($result) $result = $item["id"];
         } elseif (!empty($params["id"])) {
             //如传入id,根据id编辑数据
             $params["update_time"] = time();
-            $result                = $ExpGoodsModel->where("id", "=", $params["id"])->strict(false)->update($params);
+            $result                = $MakeModel->where("id", "=", $params["id"])->strict(false)->update($params);
             //if($result) $result = $item["id"];
         } else {
             //无更新条件则添加数据
             $params["create_time"] = time();
-            $result                = $ExpGoodsModel->strict(false)->insert($params, true);
+            $result                = $MakeModel->strict(false)->insert($params, true);
         }
 
         return $result;
@@ -347,7 +345,7 @@ class ExpGoodsInit extends Base
      */
     public function edit_post_two($params, $where = [])
     {
-        $ExpGoodsModel = new \initmodel\ExpGoodsModel(); //体验卡  (ps:InitModel)
+        $MakeModel = new \initmodel\MakeModel(); //预约记录  (ps:InitModel)
 
 
         /** 可直接传id,或者where条件 **/
@@ -360,15 +358,15 @@ class ExpGoodsInit extends Base
         if (!empty($where)) {
             //传入where条件,根据条件更新数据
             $params["update_time"] = time();
-            $result                = $ExpGoodsModel->where($where)->strict(false)->update($params);
+            $result                = $MakeModel->where($where)->strict(false)->update($params);
         } elseif (!empty($params["id"])) {
             //如传入id,根据id编辑数据
             $params["update_time"] = time();
-            $result                = $ExpGoodsModel->where("id", "=", $params["id"])->strict(false)->update($params);
+            $result                = $MakeModel->where("id", "=", $params["id"])->strict(false)->update($params);
         } else {
             //无更新条件则添加数据
             $params["create_time"] = time();
-            $result                = $ExpGoodsModel->strict(false)->insert($params);
+            $result                = $MakeModel->strict(false)->insert($params);
         }
 
         return $result;
@@ -384,11 +382,11 @@ class ExpGoodsInit extends Base
      */
     public function delete_post($id, $type = 1, $params = [])
     {
-        $ExpGoodsModel = new \initmodel\ExpGoodsModel(); //体验卡  (ps:InitModel)
+        $MakeModel = new \initmodel\MakeModel(); //预约记录  (ps:InitModel)
 
 
-        if ($type == 1) $result = $ExpGoodsModel->destroy($id);//软删除 数据表字段必须有delete_time
-        if ($type == 2) $result = $ExpGoodsModel->destroy($id, true);//真实删除
+        if ($type == 1) $result = $MakeModel->destroy($id);//软删除 数据表字段必须有delete_time
+        if ($type == 2) $result = $MakeModel->destroy($id, true);//真实删除
 
         return $result;
     }
@@ -402,14 +400,14 @@ class ExpGoodsInit extends Base
      */
     public function batch_post($id, $params = [])
     {
-        $ExpGoodsModel = new \initmodel\ExpGoodsModel(); //体验卡  (ps:InitModel)
+        $MakeModel = new \initmodel\MakeModel(); //预约记录  (ps:InitModel)
 
         $where   = [];
         $where[] = ["id", "in", $id];//$id 为数组
 
 
         $params["update_time"] = time();
-        $result                = $ExpGoodsModel->where($where)->strict(false)->update($params);//修改状态
+        $result                = $MakeModel->where($where)->strict(false)->update($params);//修改状态
 
         return $result;
     }
@@ -423,12 +421,12 @@ class ExpGoodsInit extends Base
      */
     public function list_order_post($list_order, $params = [])
     {
-        $ExpGoodsModel = new \initmodel\ExpGoodsModel(); //体验卡   (ps:InitModel)
+        $MakeModel = new \initmodel\MakeModel(); //预约记录   (ps:InitModel)
 
         foreach ($list_order as $k => $v) {
             $where   = [];
             $where[] = ["id", "=", $k];
-            $result  = $ExpGoodsModel->where($where)->strict(false)->update(["list_order" => $v, "update_time" => time()]);//排序
+            $result  = $MakeModel->where($where)->strict(false)->update(["list_order" => $v, "update_time" => time()]);//排序
         }
 
         return $result;
@@ -441,10 +439,10 @@ class ExpGoodsInit extends Base
      */
     public function export_excel($where = [], $params = [])
     {
-        $ExpGoodsInit  = new \init\ExpGoodsInit();//体验卡   (ps:InitController)
-        $ExpGoodsModel = new \initmodel\ExpGoodsModel(); //体验卡  (ps:InitModel)
+        $MakeInit  = new \init\MakeInit();//预约记录   (ps:InitController)
+        $MakeModel = new \initmodel\MakeModel(); //预约记录  (ps:InitModel)
 
-        $result = $ExpGoodsInit->get_list($where, $params);
+        $result = $MakeInit->get_list($where, $params);
 
         $result = $result->toArray();
         foreach ($result as $k => &$item) {
@@ -482,7 +480,7 @@ class ExpGoodsInit extends Base
         //        ];
 
         $Excel = new ExcelController();
-        $Excel->excelExports($result, $headArrValue, ["fileName" => "体验卡"]);
+        $Excel->excelExports($result, $headArrValue, ["fileName" => "预约记录"]);
     }
 
 }

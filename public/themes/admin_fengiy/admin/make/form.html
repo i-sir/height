@@ -1,0 +1,94 @@
+<!--type-->
+<div class="form-group">
+    <label class="col-sm-2 control-label">type:</label>
+    <div class="layui-input-block col-sm-6">
+        <if condition="!empty($type)">
+            <select class="form-control post-params" lay-search lay-filter="type" name="type">
+                <foreach item="vo" key="key" name="type_list">
+                    <option value="{$key}"
+                    <if condition="$type eq $key ">selected</if>
+                    >{$vo}</option>
+                </foreach>
+            </select>
+            <else/>
+            <select class="form-control post-params" lay-search lay-filter="type" name="type">
+                <foreach item="vo" key="key" name="type_list">
+                    <option value="{$key}">{$vo}</option>
+                </foreach>
+            </select>
+        </if>
+    </div>
+</div>
+
+
+<!--shop_id-->
+<div class="form-group">
+    <label class="col-sm-2 control-label">shop_id:</label>
+    <div class="layui-input-block col-sm-6">
+        <input type="text" name="shop_id" class="form-control post-params item-left" value="{$shop_id|default=''}">
+    </div>
+</div>
+
+
+<!--user_id-->
+<div class="form-group">
+    <label class="col-sm-2 control-label">用户信息:</label>
+    <div class="layui-input-block col-sm-6">
+        <input type="text" name="user_id" class="form-control post-params item-left" value="{$user_id|default=''}">
+    </div>
+</div>
+
+
+<!--订单号-->
+<div class="form-group">
+    <label class="col-sm-2 control-label">订单号:</label>
+    <div class="layui-input-block col-sm-6">
+        <input type="text" name="order_num" class="form-control post-params item-left" value="{$order_num|default=''}">
+    </div>
+</div>
+
+
+<!--预约日期-->
+<div class="form-group">
+    <label class="col-sm-2 control-label">预约日期:</label>
+    <div class="layui-input-block col-sm-6">
+    </div>
+</div>
+
+
+<!--预约时间段-->
+<div class="form-group">
+    <label class="col-sm-2 control-label">预约时间段:</label>
+    <div class="layui-input-block col-sm-6">
+        <input class="form-control post-params item-left js-datetime" name="make_time" required
+               type="text"
+               value="{:isset($make_time) && $make_time > 10000 ? date('Y-m-d H:i', $make_time) : ''}">
+    </div>
+</div>
+
+
+<!--姓名-->
+<div class="form-group">
+    <label class="col-sm-2 control-label">姓名:</label>
+    <div class="layui-input-block col-sm-6">
+        <input type="text" name="username" class="form-control post-params item-left" value="{$username|default=''}">
+    </div>
+</div>
+
+
+<!--联系电话-->
+<div class="form-group">
+    <label class="col-sm-2 control-label">联系电话:</label>
+    <div class="layui-input-block col-sm-6">
+        <input type="text" name="phone" class="form-control post-params item-left" value="{$phone|default=''}">
+    </div>
+</div>
+
+
+
+
+
+
+
+
+

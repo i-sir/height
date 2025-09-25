@@ -1,3 +1,28 @@
+
+<div class="form-group">
+    <label class="col-sm-2 control-label">门店:</label>
+    <div class="layui-input-block col-sm-6" style="">
+        <if condition="!empty($shop_id)">
+            <select class="form-control post-params" lay-search lay-filter="shop_id" name="shop_id">
+                <foreach item="vo" key="key" name="shop_list">
+                    <option value="{$vo.id}"
+                    <if condition="$shop_id eq $vo.id ">selected</if>
+                    >{$vo.name}</option>
+                </foreach>
+            </select>
+            <else/>
+            <select class="form-control post-params" lay-search lay-filter="shop_id" name="shop_id">
+                <foreach item="vo" key="key" name="shop_list">
+                    <option value="{$vo.id}">{$vo.name}</option>
+                </foreach>
+            </select>
+        </if>
+    </div>
+</div>
+
+
+
+
 <!--商品名称-->
 <div class="form-group">
     <label class="col-sm-2 control-label">商品名称:</label>
