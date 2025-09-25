@@ -27,7 +27,6 @@ class CoursePlanInit extends Base
     public $is_show   = [1 => '是', 2 => '否'];//显示
     public $is_unlock = [1 => '可学习', 2 => '锁定', 3 => '已学习'];
 
-
     protected $Field         = "*";//过滤字段,默认全部
     protected $Limit         = 100000;//如不分页,展示条数
     protected $PageSize      = 15;//分页每页,数据条数
@@ -159,8 +158,11 @@ class CoursePlanInit extends Base
             ->select()
             ->each(function ($item, $key) use ($params) {
 
+
                 /** 处理公共数据 **/
-                $item = $this->common_item($item, $params);
+                $item             = $this->common_item($item, $params);
+                $day              = $this->numToChinese($key + 1);
+                $item['day_name'] = "第{$day}天";
 
                 return $item;
             });
@@ -192,8 +194,11 @@ class CoursePlanInit extends Base
             ->paginate(["list_rows" => $params["page_size"] ?? $this->PageSize, "query" => $params])
             ->each(function ($item, $key) use ($params) {
 
+
                 /** 处理公共数据 **/
-                $item = $this->common_item($item, $params);
+                $item             = $this->common_item($item, $params);
+                $day              = $this->numToChinese($key + 1);
+                $item['day_name'] = "第{$day}天";
 
                 return $item;
             });
@@ -512,5 +517,63 @@ class CoursePlanInit extends Base
         $Excel = new ExcelController();
         $Excel->excelExports($result, $headArrValue, ["fileName" => "计划管理"]);
     }
+
+
+    // 更健壮的版本，处理更多边界情况
+    function numToChinese($num)
+    {
+        if ($num == 0) return '零';
+
+        $numStr = (string)$num;
+        if (!ctype_digit($numStr)) return $num;
+
+        // 分段处理（每4位一段）
+        $sections = [];
+        while (strlen($numStr) > 0) {
+            $sections[] = substr($numStr, -4);
+            $numStr     = substr($numStr, 0, -4);
+        }
+        $sections = array_reverse($sections);
+
+        $digits       = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+        $units        = ['', '十', '百', '千'];
+        $sectionUnits = ['', '万', '亿', '兆', '京'];
+
+        $result = '';
+
+        foreach ($sections as $i => $section) {
+            $section       = str_pad($section, 4, '0', STR_PAD_LEFT);
+            $sectionResult = '';
+            $lastWasZero   = true;
+
+            for ($j = 0; $j < 4; $j++) {
+                $digit = (int)$section[$j];
+                if ($digit != 0) {
+                    // 如果之前是零且不是第一位，添加零
+                    if (!$lastWasZero && $sectionResult !== '') {
+                        $sectionResult .= '零';
+                    }
+                    $unit          = ($digit == 0) ? '' : $units[3 - $j];
+                    $sectionResult .= $digits[$digit] . $unit;
+                    $lastWasZero   = false;
+                } else {
+                    $lastWasZero = true;
+                }
+            }
+
+            if ($sectionResult !== '') {
+                $sectionResult .= $sectionUnits[count($sections) - $i - 1];
+                $result        .= $sectionResult;
+            }
+        }
+
+        // 处理一十开头的特殊情况
+        if (strpos($result, '一十') === 0) {
+            $result = substr($result, 1);
+        }
+
+        return $result;
+    }
+
 
 }

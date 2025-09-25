@@ -427,7 +427,6 @@ class CourseStudyController extends AuthController
      */
     public function statistics()
     {
-        $this->checkAuth();
         $params           = $this->request->param();
         $CourseStudyModel = new \initmodel\CourseStudyModel(); //学习记录   (ps:InitModel)
 

@@ -43,6 +43,7 @@ class MemberInit extends Base
     public function get_my_info($where = [], $params = [])
     {
         $MemberModel = new \initmodel\MemberModel(); //会员管理  (ps:InitModel)
+        $HeightModel = new \initmodel\HeightModel(); //身高数据   (ps:InitModel)
 
         //传入id直接查询
         if (is_string($where) || is_int($where)) $where = ["id" => (int)$where];
@@ -52,6 +53,13 @@ class MemberInit extends Base
 
         //处理公共数据
         if ($item['avatar']) $item['avatar'] = cmf_get_asset_url($item['avatar']);
+
+
+        //身高体重,信息
+        $height_info    = $HeightModel->where('user_id', '=', $item['od'])->order('id desc')->find();
+        $item['height'] = $height_info['height'] ?? '-';
+        $item['weight'] = $height_info['weight'] ?? '-';
+        $item['bmi']    = $height_info['bmi'] ?? '-';
 
 
         return $item;
