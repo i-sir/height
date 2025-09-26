@@ -24,8 +24,12 @@ namespace app\admin\controller;
 
 
 use api\wxapp\controller\WxBaseController;
-use cmf\controller\AdminBaseController;
 use init\StockInit;
+use initmodel\AssetModel;
+use initmodel\ShopOrderModel;
+use plugins\weipay\lib\PayController;
+use think\facade\Db;
+use cmf\controller\AdminBaseController;
 
 
 class ShopOrderRefundController extends AdminBaseController
@@ -119,6 +123,7 @@ class ShopOrderRefundController extends AdminBaseController
         $ShopOrderDetailModel = new \initmodel\ShopOrderDetailModel();//订单详情
         $StockInit            = new StockInit(); //规格方法引入
         $WxBaseController     = new WxBaseController();//微信基础类
+        $ShopOrderModel       = new \initmodel\ShopOrderModel(); //订单管理  (ps:InitModel)
 
         $params = $this->request->param();
 
@@ -129,18 +134,37 @@ class ShopOrderRefundController extends AdminBaseController
         $refund_info = $ShopOrderRefundModel->where($map)->find();
 
 
+        $order_info = $ShopOrderModel->where(['order_num' => $refund_info['order_num']])->find();
+
+
         //同意
         if ($params['status'] == 2) {
             $params['pass_time'] = time();
 
-            //售后类型:1退货退款,2换货
+            //售后类型:1退款,2换货
             if ($refund_info['type'] == 1) {
-                $pay_num       = $refund_info['pay_num'];
-                $refund_amount = $refund_info['amount'];//退款金额
-                $amount        = $refund_info['order_amount'];//总金额
 
-                $refund_result = $WxBaseController->wx_refund($pay_num, $refund_amount, $amount, $refund_info['refund_num']);//退货退款,同意退款直接
-                if ($refund_result['code'] == 0) $this->error($refund_result['msg']);
+                //退钱
+                if ($order_info['amount'] > 0) {
+                    $refund_result = $WxBaseController->wx_refund($order_info['pay_num'], $order_info['amount'], $order_info['amount']);//用户取消活动 ,退款金额 &&微信
+                    if ($refund_result['code'] == 0) $this->error($refund_result['msg']);
+                }
+
+
+                //退积分
+                if ($order_info['point'] > 0) {
+                    $remark = "操作人[订单退款];操作说明[订单退款];操作类型[订单退款];";//管理备注
+                    AssetModel::incAsset('订单退款 [223]', [
+                        'operate_type'  => 'point',//操作类型，balance|point ...
+                        'identity_type' => 'member',//身份类型，member| ...
+                        'user_id'       => $order_info['user_id'],
+                        'price'         => $order_info['point'],
+                        'order_num'     => $order_info['order_num'],
+                        'order_type'    => 223,
+                        'content'       => '订单退款',
+                        'remark'        => $remark,
+                    ]);
+                }
             }
 
         }
@@ -153,7 +177,7 @@ class ShopOrderRefundController extends AdminBaseController
             //售后类型:1退货退款,2换货
             if ($refund_info['type'] == 2) {
                 //拒绝了增加库存
-                //$StockInit->inc_stock('shop_goods', $refund_info['sku_id'], $refund_info['count']);
+                $StockInit->inc_stock('shop_goods', $refund_info['sku_id'], $refund_info['count']);
             }
         }
 

@@ -364,8 +364,8 @@ class ShopCouponController extends AuthController
             $map[] = ['full_amount', '<=', $params['amount']];
         }
 
-        $result = $ShopCouponUserInit->get_list_paginate($map, $params);
-
+        if ($params['is_paginate']) $result = $ShopCouponUserInit->get_list($map, $params);
+        if (empty($params['is_paginate'])) $result = $ShopCouponUserInit->get_list_paginate($map, $params);
         if (empty($result)) $this->error("失败请重试!");
 
         $this->success("获取成功!", $result);

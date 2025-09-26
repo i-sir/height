@@ -6,13 +6,25 @@
         <tbody>
         <tr>
             <th width="100">退款原因</th>
-            <td>{$info.cancel_reason}</td>
+            <td>{$refund_why}</td>
         </tr>
         <tr>
             <th>详细描述</th>
-            <td>{$info.cancel_desc}</td>
+            <td>{$content}</td>
         </tr>
         <tr>
+            <th>物流公司</th>
+            <td>{$refund_exp_name}</td>
+        </tr>
+        <tr>
+            <th>物流单号</th>
+            <td>{$refund_exp_num}</td>
+        </tr>
+        <tr style="display: none;">
+            <th>退款金额</th>
+            <td>{$refund_amount}</td>
+        </tr>
+        <tr style="display: none;">
             <th>图片</th>
             <td id="reason-pic">
                 <notempty name="$info.cancel_image">

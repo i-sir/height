@@ -190,12 +190,24 @@ class ExpOrderController extends AuthController
      *     ),
      *
      *
+     *
+     *    @OA\Parameter(
+     *         name="cav_code",
+     *         in="query",
+     *         description="cav_code 订单号二选一",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
      *     @OA\Response(response="200", description="An example resource"),
      *     @OA\Response(response="default", description="An example resource")
      * )
      *
      *   test_environment: http://height.ikun:9090/api/wxapp/exp_order/find_order
-     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/exp_order/find_order
+     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/exp_order/find_order?id=14
      *   api:  /wxapp/exp_order/find_order
      *   remark_name: 体验卡订单管理 详情
      *
@@ -213,6 +225,7 @@ class ExpOrderController extends AuthController
         $where = [];
         if ($params['id']) $where[] = ["id", "=", $params["id"]];
         if ($params['order_num']) $where[] = ["order_num", "=", $params["order_num"]];
+        if ($params['cav_code']) $where[] = ["cav_code", "=", $params["cav_code"]];
 
         /** 查询数据 **/
         $params["InterfaceType"] = "api";//接口类型

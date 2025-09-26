@@ -49,6 +49,7 @@ class CourseClassInit extends Base
      */
     public function common_item($item = [], $params = [])
     {
+        $BaseLikeModel = new \initmodel\BaseLikeModel(); //点赞&收藏   (ps:InitModel)
 
 
         //接口类型
@@ -68,6 +69,14 @@ class CourseClassInit extends Base
         if ($this->InterfaceType == 'api') {
             /** api处理文件 **/
             if ($item['image']) $item['image'] = cmf_get_asset_url($item['image']);//图片
+
+            //是否收藏
+            $map             = [];
+            $map[]           = ['user_id', '=', $params['user_id']];
+            $map[]           = ['pid', '=', $item['id']];
+            $map[]           = ['type', '=', 'goods_class'];
+            $is_like         = $BaseLikeModel->where($map)->count();
+            $item['is_like'] = $is_like ? true : false;
 
 
             /** 处理富文本 **/

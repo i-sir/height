@@ -135,7 +135,7 @@ class ShopOrderRefundController extends AuthController
      *    @OA\Parameter(
      *         name="type",
      *         in="query",
-     *         description="售后类型:1退货退款,2换货",
+     *         description="售后类型:1退款,2换货",
      *         required=false,
      *         @OA\Schema(
      *             type="string",
@@ -261,13 +261,14 @@ class ShopOrderRefundController extends AuthController
         //参数
         $params               = $this->request->param();
         $params["user_id"]    = $this->user_id;
-        $params["refund_num"] = $this->get_num_only('refund_num');
+        $params["refund_num"] = $this->get_num_only();
 
 
         //订单详情
         $order_detail        = $ShopOrderDetailModel->where('id', '=', $params['detail_id'])->find();
         $params['count']     = $order_detail['count'];
         $params['order_num'] = $order_detail['order_num'];
+        $params['point']     = $order_detail['point'];
         if (empty($params['amount'])) $params['amount'] = $order_detail['max_refund_amount'];
 
 
@@ -313,7 +314,7 @@ class ShopOrderRefundController extends AuthController
             //$StockInit->inc_stock($order_detail['sku_id'], $order_detail['count']);
 
             //换货的减少库存
-            //$StockInit->dec_stock('shop_goods', $params['sku_id'], $order_detail['count']);
+            $StockInit->dec_stock('shop_goods', $params['sku_id'], $order_detail['count']);
         }
 
 
@@ -406,8 +407,8 @@ class ShopOrderRefundController extends AuthController
 
 
         /** 更改数据条件 && 或$params中存在id本字段可以忽略 **/
-        $where = [];
-        if ($params['id']) $where[] = ['id', '=', $params['id']];
+        $where   = [];
+        $where[] = ['detail_id', '=', $params['detail_id']];
 
 
         /** 提交更新 **/

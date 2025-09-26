@@ -1253,6 +1253,219 @@ class ShopOrderController extends AuthController
 
 
     /**
+     * 申请退款  整个订单退款
+     * @OA\Post(
+     *     tags={"订单管理"},
+     *     path="/wxapp/shop_order/refund_order",
+     *
+     *
+     *    @OA\Parameter(
+     *         name="openid",
+     *         in="query",
+     *         description="openid",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
+     *
+     *  @OA\Parameter(
+     *         name="order_num",
+     *         in="query",
+     *         description="订单号 或 id二选一",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
+     *    @OA\Parameter(
+     *         name="id",
+     *         in="query",
+     *         description="id 或 订单号二选一",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
+     *
+     *     @OA\Response(response="200", description="An example resource"),
+     *     @OA\Response(response="default", description="An example resource")
+     * )
+     *
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/shop_order/refund_order
+     *   official_environment: http://shop_template.com/api/wxapp/shop_order/refund_order
+     *   api: /wxapp/shop_order/refund_order
+     *   remark_name: 申请退款
+     *
+     */
+    public function refund_order()
+    {
+        $this->checkAuth();
+
+        // 启动事务
+        Db::startTrans();
+
+        $ShopOrderModel = new \initmodel\ShopOrderModel();//订单管理
+
+
+        $params = $this->request->param();
+
+
+        $where   = [];
+        $where[] = ['user_id', '=', $this->user_id];
+        if ($params['id']) $where[] = ['id', '=', $params['id']];
+        if ($params['order_num']) $where[] = ['order_num', '=', $params['order_num']];
+
+        //取消订单
+        $order_info = $ShopOrderModel->where($where)->find();
+        if (empty($order_info)) $this->error('暂无数据!');
+        if (!in_array($order_info['status'], [2, 4, 8])) $this->error('非法操作!!');
+        if (in_array($order_info['status'], [12, 14, 16])) $this->error('请勿重复提交!');
+
+
+        //处理订单
+        $update['status']        = 12;
+        $update['refund_why']    = $params['refund_why'];
+        $update['content']       = $params['content'];
+        $update['refund_amount'] = $params['refund_amount'];
+        $update['refund_time']   = time();
+        $update['update_time']   = time();
+        $result                  = $ShopOrderModel->where($where)->strict(false)->update($update);
+        if (empty($result)) $this->error('失败请重试');
+
+
+        // 提交事务
+        Db::commit();
+
+
+        $this->success("操作成功");
+    }
+
+
+    /**
+     *  上传订单号
+     * @OA\Post(
+     *     tags={"订单管理"},
+     *     path="/wxapp/shop_order/set_exp",
+     *
+     *
+     *    @OA\Parameter(
+     *         name="openid",
+     *         in="query",
+     *         description="openid",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
+     *
+     *  @OA\Parameter(
+     *         name="order_num",
+     *         in="query",
+     *         description="订单号 或 id二选一",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
+     *    @OA\Parameter(
+     *         name="id",
+     *         in="query",
+     *         description="id 或 订单号二选一",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
+     *
+     *
+     *
+     *    @OA\Parameter(
+     *         name="refund_exp_name",
+     *         in="query",
+     *         description="快递单号",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
+     *
+     *    @OA\Parameter(
+     *         name="refund_exp_num",
+     *         in="query",
+     *         description="快递名称",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
+     *     @OA\Response(response="200", description="An example resource"),
+     *     @OA\Response(response="default", description="An example resource")
+     * )
+     *
+     *   test_environment: http://shop_template.ikun:9090/api/wxapp/shop_order/set_exp
+     *   official_environment: http://shop_template.com/api/wxapp/shop_order/set_exp
+     *   api: /wxapp/shop_order/set_exp
+     *   remark_name: 上传订单号
+     *
+     */
+    public function set_exp()
+    {
+        $this->checkAuth();
+
+        // 启动事务
+        Db::startTrans();
+
+        $ShopOrderModel = new \initmodel\ShopOrderModel();//订单管理
+
+
+        $params = $this->request->param();
+
+
+        $where   = [];
+        $where[] = ['user_id', '=', $this->user_id];
+        if ($params['id']) $where[] = ['id', '=', $params['id']];
+        if ($params['order_num']) $where[] = ['order_num', '=', $params['order_num']];
+
+        //取消订单
+        $order_info = $ShopOrderModel->where($where)->find();
+        if (empty($order_info)) $this->error('暂无数据!');
+
+
+        //处理订单
+        $update['refund_exp_name'] = $params['refund_exp_name'];
+        $update['refund_exp_num']  = $params['refund_exp_num'];
+        $update['refund_time']     = time();
+        $update['update_time']     = time();
+        $result                    = $ShopOrderModel->where($where)->strict(false)->update($update);
+        if (empty($result)) $this->error('失败请重试');
+
+
+        // 提交事务
+        Db::commit();
+
+
+        $this->success("操作成功");
+    }
+
+
+    /**
      * 删除
      * @OA\Post(
      *     tags={"订单管理"},

@@ -523,6 +523,7 @@ class CourseStudyController extends AuthController
 
         $params          = $this->request->param();
         $params['order'] = 'study_day desc,id desc';
+        $params['limit'] = 100;
 
 
         $result = $MemberInit->get_list([], $params);

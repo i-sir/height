@@ -118,6 +118,80 @@ class CourseController extends AuthController
         $this->success("请求成功!", $result);
     }
 
+    /**
+     * 分类详情
+     * @OA\Post(
+     *     tags={"课程计划"},
+     *     path="/wxapp/course/find_class",
+     *
+     *
+     *
+     *
+     *    @OA\Parameter(
+     *         name="openid",
+     *         in="query",
+     *         description="openid",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
+     *
+     *
+     *    @OA\Parameter(
+     *         name="id",
+     *         in="query",
+     *         description="id",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *     @OA\Response(response="200", description="An example resource"),
+     *     @OA\Response(response="default", description="An example resource")
+     * )
+     *
+     *
+     *   test_environment: http://height.ikun:9090/api/wxapp/course/find_class
+     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/course/find_class
+     *   api:  /wxapp/course/find_class
+     *   remark_name: 分类详情
+     *
+     */
+    public function find_class()
+    {
+        $CourseClassInit  = new \init\CourseClassInit();//分类管理   (ps:InitController)
+        $CourseClassModel = new \initmodel\CourseClassModel(); //分类管理   (ps:InitModel)
+
+        /** 获取参数 **/
+        $params            = $this->request->param();
+        $params["user_id"] = $this->user_id;
+
+        /** 查询条件 **/
+        $where   = [];
+        $where[] = ['id', '=', $params['id']];
+
+
+        /** 查询数据 **/
+        $params["InterfaceType"] = "api";//接口类型
+        $params["DataFormat"]    = "list";//数据格式,find详情,list列表
+        $params["field"]         = "*";//过滤字段
+        $result                  = $CourseClassInit->get_find($where, $params);
+        if (empty($result)) $this->error("暂无信息!");
+
+        $this->success("请求成功!", $result);
+    }
 
     /**
      * 课程计划 列表

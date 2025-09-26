@@ -395,6 +395,27 @@ class HeightController extends AuthController
      *     ),
      *
      *
+     *    @OA\Parameter(
+     *         name="begin_time",
+     *         in="query",
+     *         description="开始时间 2025-09-09",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *    @OA\Parameter(
+     *         name="end_time",
+     *         in="query",
+     *         description="结束时间 2025-09-09",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
      *
      *     @OA\Response(response="200", description="An example resource"),
      *     @OA\Response(response="default", description="An example resource")
@@ -411,10 +432,12 @@ class HeightController extends AuthController
         $this->checkAuth();
 
         $HeightModel = new \initmodel\HeightModel(); //身高数据
+        $params      = $this->request->param();
 
         $map   = [];
         $map[] = ['user_id', '=', $this->user_id];
         $map[] = ['delete_time', '=', 0]; // 添加未删除的条件
+        $map[] = $this->getBetweenTime($params['begin_time'], $params['end_time']);
         $list  = $HeightModel->where($map)->order('time asc')->select(); // 改为升序以便处理时间序列
 
         if (empty($list)) {

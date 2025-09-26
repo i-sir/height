@@ -255,14 +255,14 @@
                                 <span class="layui-btn-xs layui-btn layui-btn-primary layui-border-orange{$vo.status_color}">
                                     {$vo.status_name}
                                 </span>
-                                <!--                                <if condition="10 < $vo.status">-->
-                                <!--                                    <a data-toggle="tooltip"-->
-                                <!--                                       href="javascript:openIframeLayer('{:url('reason',['id'=>$vo.id])}','查看退款原因',{area: ['800px', '460px']})"-->
-                                <!--                                       style="margin-left: 5px"-->
-                                <!--                                       title="退款原因">-->
-                                <!--                                        <i class="layui-icon layui-icon-question layui-font-22 layui-font-red"></i>-->
-                                <!--                                    </a>-->
-                                <!--                                </if>-->
+                                <if condition="10 < $vo.status">
+                                    <a data-toggle="tooltip"
+                                       href="javascript:openIframeLayer('{:url('reason',['id'=>$vo.id])}','查看退款原因',{area: ['800px', '460px']})"
+                                       style="margin-left: 5px"
+                                       title="退款原因">
+                                        <i class="layui-icon layui-icon-question layui-font-22 layui-font-red"></i>
+                                    </a>
+                                </if>
                             </div>
                         </td>
 
@@ -305,43 +305,52 @@
                                     <!--                                    </a>-->
                                 </if>
 
+                                <if condition="$vo.status==13">
+                                    <a class="layui-bg-gray-light layui-circle op-btn"
+                                       data-id="{$vo.id}"
+                                       data-toggle="tooltip"
+                                       lay-on="pass-reject3"
+                                       title="确认退款？">
+                                        <i class="layui-icon layui-icon-face-smile"></i>
+                                    </a>
+                                </if>
 
-                                <!--                                <if condition="$vo.status==12">-->
-                                <!--                                    <a class="layui-bg-gray-light layui-circle op-btn"-->
-                                <!--                                       data-id="{$vo.id}"-->
-                                <!--                                       data-toggle="tooltip"-->
-                                <!--                                       lay-on="pass-reject"-->
-                                <!--                                       title="确认退款？">-->
-                                <!--                                        <i class="layui-icon layui-icon-face-smile"></i>-->
-                                <!--                                    </a>-->
+                                <if condition="$vo.status==12">
+                                    <a class="layui-bg-gray-light layui-circle op-btn"
+                                       data-id="{$vo.id}"
+                                       data-toggle="tooltip"
+                                       lay-on="pass-reject"
+                                       title="确认同意售后？">
+                                        <i class="layui-icon layui-icon-face-smile"></i>
+                                    </a>
 
-                                <!--                                    &lt;!&ndash;弹出框填写退款金额&ndash;&gt;-->
-                                <!--                                    <a class="layui-bg-gray-light layui-circle op-btn"-->
-                                <!--                                       data-id="{$vo.id}"-->
-                                <!--                                       data-toggle="tooltip"-->
-                                <!--                                       lay-on="pass-reject2"-->
-                                <!--                                       title="确认退款？">-->
-                                <!--                                        <i class="layui-icon layui-icon-face-smile"></i>-->
-                                <!--                                    </a>-->
+                                    <!--弹出框填写退款金额-->
+                                    <!--                                    <a class="layui-bg-gray-light layui-circle op-btn"-->
+                                    <!--                                       data-id="{$vo.id}"-->
+                                    <!--                                       data-toggle="tooltip"-->
+                                    <!--                                       lay-on="pass-reject2"-->
+                                    <!--                                       title="确认退款？">-->
+                                    <!--                                        <i class="layui-icon layui-icon-face-smile"></i>-->
+                                    <!--                                    </a>-->
 
-                                <!--                                    &lt;!&ndash;无拒绝理由&ndash;&gt;-->
-                                <!--                                    <a class="layui-bg-gray-light layui-circle op-btn"-->
-                                <!--                                       data-id="{$vo.id}"-->
-                                <!--                                       data-toggle="tooltip"-->
-                                <!--                                       lay-on="refund-reject"-->
-                                <!--                                       title="拒绝退款？">-->
-                                <!--                                        <i class="layui-icon layui-icon-face-cry"></i>-->
-                                <!--                                    </a>-->
+                                    <!--无拒绝理由-->
+                                    <a class="layui-bg-gray-light layui-circle op-btn"
+                                       data-id="{$vo.id}"
+                                       data-toggle="tooltip"
+                                       lay-on="refund-reject"
+                                       title="拒绝退款？">
+                                        <i class="layui-icon layui-icon-face-cry"></i>
+                                    </a>
 
-                                <!--                                    &lt;!&ndash; 拒绝退款填写理由&ndash;&gt;-->
-                                <!--                                    <a class="layui-bg-gray-light layui-circle op-btn"-->
-                                <!--                                       data-toggle="tooltip"-->
-                                <!--                                       href="javascript:parent.openIframeLayer('{:url('refuse',['id'=>$vo.id])}','拒绝',{area: ['80%', '80%']})"-->
-                                <!--                                       title="拒绝">-->
-                                <!--                                        <i class="layui-icon layui-icon-face-cry"></i>-->
-                                <!--                                    </a>-->
+                                    <!-- 拒绝退款填写理由-->
+                                    <!--                                    <a class="layui-bg-gray-light layui-circle op-btn"-->
+                                    <!--                                       data-toggle="tooltip"-->
+                                    <!--                                       href="javascript:parent.openIframeLayer('{:url('refuse',['id'=>$vo.id])}','拒绝',{area: ['80%', '80%']})"-->
+                                    <!--                                       title="拒绝">-->
+                                    <!--                                        <i class="layui-icon layui-icon-face-cry"></i>-->
+                                    <!--                                    </a>-->
 
-                                <!--                                </if>-->
+                                </if>
 
 
                                 <a class="layui-bg-gray-light layui-circle op-btn"
@@ -726,7 +735,32 @@
             'pass-reject': function () {
                 var orderId = $(this).attr("data-id"); //当前订单ID
                 console.log(orderId)
-                layer.confirm('确认退款？', {icon: 3}, function () {
+                layer.confirm('确认同意售后？', {icon: 3}, function () {
+                    $.ajax({
+                        type: "POST",
+                        url: "reject_post",
+                        data: {id: orderId, status: 13},
+                        success: function (res) {
+                            if (res.code == 1) {
+                                layer.msg('操作成功!', {icon: 1, time: 1000}, function () {
+                                    location.reload();
+                                });
+                            } else {
+                                layer.msg(res.msg, {icon: 7});
+                            }
+                        },
+                    })
+                }, function () {
+                    layer.msg('已取消!', {icon: 2});
+                });
+            },
+
+
+            //同意退款
+            'pass-reject3': function () {
+                var orderId = $(this).attr("data-id"); //当前订单ID
+                console.log(orderId)
+                layer.confirm('确认同意退款？', {icon: 3}, function () {
                     $.ajax({
                         type: "POST",
                         url: "reject_post",

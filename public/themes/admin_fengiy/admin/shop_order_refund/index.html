@@ -40,18 +40,18 @@
         <table class="table table-hover table-bordered">
             <thead>
             <tr>
-                <th style="width: 60px">ID</th>
-                <th style="width: 60px">用户信息</th>
-                <th style="width: 60px">售后类型</th>
-                <th style="width: 60px">换货原因</th>
-                <th style="width: 60px">退款金额</th>
-<!--                <th style="width: 60px">更换规格</th>-->
-<!--                <th style="width: 60px">快递信息</th>-->
-                <th style="width: 60px">拒绝理由</th>
-                <th style="width: 60px">状态</th>
-                <th style="width: 60px">创建时间</th>
+                <th style="">ID</th>
+                <th style="">用户信息</th>
+                <th style="">售后类型</th>
+                <th style="">原因</th>
+                <th style="">退款金额</th> 
+<!--                <th style="">更换规格</th>-->
+                <th style="">快递信息</th>
+                <th style="">拒绝理由</th>
+                <th style="">状态</th>
+                <th style="">创建时间</th>
 
-                <th style="width: 80px">操作</th>
+                <th style="">操作</th>
             </tr>
             </thead>
             <tbody>
@@ -78,14 +78,17 @@
                     </td>
                     <td>{$vo.type_name|default=''}</td>  <!--售后类型:1退货退款,2换货-->
                     <td>{$vo.refund_why|default=''}</td>  <!--换货原因-->
-                    <td>{$vo.amount|default=''}</td>  <!--退款金额-->
+                    <td>
+                        <div class="price">积分:&yen; {$vo.point}</div>
+                        <div class="price">现金:&yen; {$vo.amount}</div>
+                    </td>  <!--退款金额-->
 <!--                    <td>{$vo.sku_name|default=''}</td>  &lt;!&ndash;更换规格&ndash;&gt;-->
-<!--                    <td>-->
-<!--                        <if condition="$vo.type != 2999">-->
-<!--                            <p>快递单号:{$vo.exp_num|default=''}</p>-->
-<!--                            <p>快递名称:{$vo.exp_name|default=''}</p>-->
-<!--                        </if>-->
-<!--                    </td>  &lt;!&ndash;快递单号&ndash;&gt;-->
+                    <td>
+                        <if condition="$vo.type != 2999">
+                            <p>快递单号:{$vo.exp_num|default=''}</p>
+                            <p>快递名称:{$vo.exp_name|default=''}</p>
+                        </if>
+                    </td>  <!--快递单号-->
                     <td>{$vo.refuse|default=''}</td>  <!--拒绝理由-->
                     <td>{$vo.status_name|default=''}</td>  <!--状态:1售后中, 2售后完成,3已拒绝,4已取消-->
 
@@ -105,8 +108,8 @@
                         <if condition="$vo.status == 1">
                             <if condition="$vo.type == 1">
                                 <a class="layui-btn layui-btn-primary layui-border-green layui-btn-xs js-ajax-dialog-btn"
-                                   data-msg="确认同意退款？"
-                                   href="{:url('refuse_post',['id'=>$vo.id,'status'=>2])}">同意退款</a>
+                                   data-msg="确认同意退货？"
+                                   href="{:url('refuse_post',['id'=>$vo.id,'status'=>5])}">确认同意退货</a>
                             </if>
 
                             <if condition="$vo.type == 2">
@@ -118,6 +121,13 @@
                             <a class="layui-btn layui-btn-primary layui-border-red layui-btn-xs"
                                href="javascript:parent.openIframeLayer('{:url('refuse',['id'=>$vo.id,'status'=>3])}','',{ area: ['65%', '85%'],move:'.layui-layer-title'},true);"
                             >拒绝</a>
+                        </if>
+
+
+                        <if condition="$vo.status == 5">
+                            <a class="layui-btn layui-btn-primary layui-border-green layui-btn-xs js-ajax-dialog-btn"
+                               data-msg="确认同意退款？"
+                               href="{:url('refuse_post',['id'=>$vo.id,'status'=>2])}">同意退款</a>
                         </if>
 
 

@@ -131,7 +131,7 @@ class BaseLikeController extends AuthController
         //参数
         $params            = $this->request->param();
         $params["user_id"] = $this->user_id;
-
+        $params["type"]    = $params["type"] ?? 'goods_class';
 
         //查询条件
         $where   = [];
@@ -216,10 +216,10 @@ class BaseLikeController extends AuthController
         //参数
         $params            = $this->request->param();
         $params["user_id"] = $this->user_id;
-
+        $params['type']    = $params['type'] ?? 'goods_class';
 
         //处理 点赞数量
-        if ($params['type'] == 'community') $Model =  0; //论坛管理   (ps:InitModel)
+        if ($params['type'] == 'community') $Model = 0; //论坛管理   (ps:InitModel)
 
         //操作点赞数量的类型
         $operate_like_count = ['community'];
@@ -236,7 +236,7 @@ class BaseLikeController extends AuthController
             $BaseLikeInit->edit_post($update, $where);
 
             //处理点赞数量
-           // if (in_array($params['type'], $operate_like_count)) $Model->where('id', '=', $params['pid'])->dec('like_count')->update();
+            // if (in_array($params['type'], $operate_like_count)) $Model->where('id', '=', $params['pid'])->dec('like_count')->update();
             $this->success("取消成功");
         } else {
             $BaseLikeInit->edit_post($params);
