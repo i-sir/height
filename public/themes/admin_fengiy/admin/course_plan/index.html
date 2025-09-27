@@ -78,7 +78,7 @@
                 <tr>
                     <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/course_plan/list_order_post')">
                         <td style="width: 90px;">
-                            <input style="width: 100%;!important;" type="text"
+                            <input style="width: 100%;!important;" type="number" min="1"
                                    class="form-control input input-order valid post-params" name="list_order[{$vo.id}]"
                                    value="{$vo.list_order}">
                         </td>
