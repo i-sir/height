@@ -84,8 +84,6 @@ class QrInit
     }
 
 
-
-
     /**
      * 创建文件夹
      * 根据oos名称创建文件夹
@@ -110,7 +108,7 @@ class QrInit
         $dz_dir2 = "$dz/$child_file_name/";//传输线上路径
 
         //判断目录是否存在
-        $dir     = app()->getRootPath() . "public/$dz_dir";
+        $dir = app()->getRootPath() . "public/$dz_dir";
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
         if ($type == 1) return $dz_dir;

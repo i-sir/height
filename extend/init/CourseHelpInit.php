@@ -60,7 +60,6 @@ class CourseHelpInit extends Base
         /** 数据格式(公共部分),find详情&&list列表 共存数据 **/
 
 
-
         /** 处理文字描述 **/
         $item['is_show_name'] = $this->is_show[$item['is_show']];//显示
 
@@ -173,7 +172,7 @@ class CourseHelpInit extends Base
 
         /** 根据接口类型,返回不同数据类型 **/
         if ($params['InterfaceType']) $this->InterfaceType = $params['InterfaceType'];
-        if ($this->InterfaceType == 'api' && $result->isEmpty()) return false;
+        if ($this->InterfaceType == 'api' && $result->isEmpty()) return [null];
 
 
         return $result;

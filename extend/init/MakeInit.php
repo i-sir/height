@@ -177,7 +177,7 @@ class MakeInit extends Base
 
         /** 根据接口类型,返回不同数据类型 **/
         if ($params['InterfaceType']) $this->InterfaceType = $params['InterfaceType'];
-        if ($this->InterfaceType == 'api' && $result->isEmpty()) return false;
+        if ($this->InterfaceType == 'api' && $result->isEmpty()) return [null];
 
 
         return $result;
@@ -313,8 +313,8 @@ class MakeInit extends Base
 
 
         //处理时间格式
-//        if ($params['make_date'] && is_string($params['make_date'])) $params['make_date'] = strtotime($params['make_date']);//预约日期
-//        if ($params['make_time'] && is_string($params['make_time'])) $params['make_time'] = strtotime($params['make_time']);//预约时间段
+        //        if ($params['make_date'] && is_string($params['make_date'])) $params['make_date'] = strtotime($params['make_date']);//预约日期
+        //        if ($params['make_time'] && is_string($params['make_time'])) $params['make_time'] = strtotime($params['make_time']);//预约时间段
 
 
         if (!empty($where)) {

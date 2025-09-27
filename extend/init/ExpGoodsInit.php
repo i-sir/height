@@ -64,7 +64,6 @@ class ExpGoodsInit extends Base
         $item['shop_name'] = $shop_info['name'];
 
 
-
         /** 处理文字描述 **/
         $item['is_show_name'] = $this->is_show[$item['is_show']];//是否显示
 
@@ -182,7 +181,7 @@ class ExpGoodsInit extends Base
 
         /** 根据接口类型,返回不同数据类型 **/
         if ($params['InterfaceType']) $this->InterfaceType = $params['InterfaceType'];
-        if ($this->InterfaceType == 'api' && $result->isEmpty()) return false;
+        if ($this->InterfaceType == 'api' && $result->isEmpty()) return [null];
 
 
         return $result;

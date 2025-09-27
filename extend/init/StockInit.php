@@ -31,8 +31,6 @@ class StockInit
         $ShopStockModel = new \initmodel\ShopStockModel();
 
 
-
-
         //商城商品
         if ($operate_type == 'shop_goods') {
             $SkuModel   = new \initmodel\sku\ShopGoodsSkuModel();//规格
@@ -54,7 +52,7 @@ class StockInit
         if (empty($sku_id) && $goods_id) $GoodsModel->where('id', '=', $goods_id)->inc('stock', $count)->update();
 
 
-            //售出数量扣除
+        //售出数量扣除
         $GoodsModel->where('id', '=', $goods_id)->dec('sell_count', $count)->update();
 
 

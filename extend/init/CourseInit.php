@@ -88,7 +88,6 @@ class CourseInit extends Base
             ->count();
 
 
-
         //完成进度条
         $item['progress'] = $item['total_number'] > 0 ? round($item['accomplish_number'] / $item['total_number'] * 100) : 0;
 
@@ -205,7 +204,7 @@ class CourseInit extends Base
 
         /** 根据接口类型,返回不同数据类型 **/
         if ($params['InterfaceType']) $this->InterfaceType = $params['InterfaceType'];
-        if ($this->InterfaceType == 'api' && $result->isEmpty()) return false;
+        if ($this->InterfaceType == 'api' && $result->isEmpty()) return [null];
 
 
         return $result;

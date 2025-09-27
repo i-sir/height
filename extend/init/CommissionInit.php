@@ -7,7 +7,7 @@ namespace init;
  */
 class CommissionInit
 {
- 
+
     /**
      * 处理订单分销,加佣金
      * @param $order_num 订单号

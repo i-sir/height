@@ -134,9 +134,6 @@ class Base
     }
 
 
- 
-
-
     /**
      * 处理上传内容数组打散字符串
      * @param $params
@@ -206,8 +203,6 @@ class Base
         }
         return $where;
     }
-
-
 
 
 }

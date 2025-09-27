@@ -4,18 +4,18 @@ namespace init;
 
 
 /**
-    * @Init(
-    *     "name"            =>"Cooperation",
-    *     "name_underline"  =>"cooperation",
-    *     "table_name"      =>"cooperation",
-    *     "model_name"      =>"CooperationModel",
-    *     "remark"          =>"合作申请",
-    *     "author"          =>"",
-    *     "create_time"     =>"2025-09-17 10:47:34",
-    *     "version"         =>"1.0",
-    *     "use"             => new \init\CooperationInit();
-    * )
-    */
+ * @Init(
+ *     "name"            =>"Cooperation",
+ *     "name_underline"  =>"cooperation",
+ *     "table_name"      =>"cooperation",
+ *     "model_name"      =>"CooperationModel",
+ *     "remark"          =>"合作申请",
+ *     "author"          =>"",
+ *     "create_time"     =>"2025-09-17 10:47:34",
+ *     "version"         =>"1.0",
+ *     "use"             => new \init\CooperationInit();
+ * )
+ */
 
 use think\facade\Db;
 use app\admin\controller\ExcelController;
@@ -24,7 +24,7 @@ use app\admin\controller\ExcelController;
 class CooperationInit extends Base
 {
 
-    public $pay_type =[1=>'微信支付',2=>'余额支付',3=>'积分支付',4=>'支付宝支付',5=>'组合支付(微信+余额)',6=>'免费兑换'];//支付类型 
+    public $pay_type = [1 => '微信支付', 2 => '余额支付', 3 => '积分支付', 4 => '支付宝支付', 5 => '组合支付(微信+余额)', 6 => '免费兑换'];//支付类型
 
 
     protected $Field         = "*";//过滤字段,默认全部
@@ -34,82 +34,76 @@ class CooperationInit extends Base
     protected $InterfaceType = "api";//接口类型:admin=后台,api=前端
     protected $DataFormat    = "find";//数据格式,find详情,list列表
 
-        //本init和model
-        public function _init()
-        {
-            $CooperationInit  = new \init\CooperationInit();//合作申请   (ps:InitController)
-            $CooperationModel = new \initmodel\CooperationModel(); //合作申请  (ps:InitModel)
-        }
+    //本init和model
+    public function _init()
+    {
+        $CooperationInit  = new \init\CooperationInit();//合作申请   (ps:InitController)
+        $CooperationModel = new \initmodel\CooperationModel(); //合作申请  (ps:InitModel)
+    }
 
-        /**
-         * 处理公共数据
-         * @param array $item 单条数据
-         * @param array $params 参数
-         * @return array|mixed
-         */
-        public function common_item($item = [], $params = [])
-        {
-            
-            $MemberInit= new \init\MemberInit();//会员管理 (ps:InitController)
-            //接口类型
-            if ($params['InterfaceType']) $this->InterfaceType = $params['InterfaceType'];
-            //数据格式
-            if ($params['DataFormat']) $this->DataFormat = $params['DataFormat'];
+    /**
+     * 处理公共数据
+     * @param array $item   单条数据
+     * @param array $params 参数
+     * @return array|mixed
+     */
+    public function common_item($item = [], $params = [])
+    {
 
-
-            /** 数据格式(公共部分),find详情&&list列表 共存数据 **/
-
-            
+        $MemberInit = new \init\MemberInit();//会员管理 (ps:InitController)
+        //接口类型
+        if ($params['InterfaceType']) $this->InterfaceType = $params['InterfaceType'];
+        //数据格式
+        if ($params['DataFormat']) $this->DataFormat = $params['DataFormat'];
 
 
-
-            /** 处理文字描述 **/
-            $item['pay_type_name']=$this->pay_type[$item['pay_type']];//支付类型 
+        /** 数据格式(公共部分),find详情&&list列表 共存数据 **/
 
 
-
-            //查询用户信息
- $user_info=$MemberInit->get_find(['id'=>$item['user_id']]);
- $item['user_info']=$user_info;
+        /** 处理文字描述 **/
+        $item['pay_type_name'] = $this->pay_type[$item['pay_type']];//支付类型
 
 
-            /** 处理数据 **/
-            if ($this->InterfaceType == 'api') {
-                /** api处理文件 **/
-                
+        //查询用户信息
+        $user_info         = $MemberInit->get_find(['id' => $item['user_id']]);
+        $item['user_info'] = $user_info;
 
-                /** 处理富文本 **/
-                
+
+        /** 处理数据 **/
+        if ($this->InterfaceType == 'api') {
+            /** api处理文件 **/
+
+
+            /** 处理富文本 **/
+
 
             if ($this->DataFormat == 'find') {
                 /** find详情数据格式 **/
 
 
-
-
-                } else {
+            } else {
                 /** list列表数据格式 **/
 
             }
 
 
-            }else{
-                /** admin处理文件 **/
-                
+        } else {
+            /** admin处理文件 **/
 
-              if ($this->DataFormat == 'find') {
+
+            if ($this->DataFormat == 'find') {
                 /** find详情数据格式 **/
 
 
-                    /** 处理富文本 **/
-                    
+                /** 处理富文本 **/
 
-                    } else {
-                    /** list列表数据格式 **/
 
-                }
+            } else {
+                /** list列表数据格式 **/
 
             }
+
+        }
 
 
         /** 导出数据处理 **/
@@ -118,29 +112,29 @@ class CooperationInit extends Base
             $item["update_time"] = date("Y-m-d H:i:s", $item["update_time"]);
         }
 
-            return $item;
-        }
+        return $item;
+    }
 
 
-        /**
-        * 获取列表
-        * @param $where 条件
-        * @param $params 扩充参数 order=排序  field=过滤字段 limit=限制条数  InterfaceType=admin|api后端,前端
-        * @return false|mixed
-        */
-        public function get_list($where=[], $params = [])
-        {
-            $CooperationModel = new \initmodel\CooperationModel(); //合作申请  (ps:InitModel)
+    /**
+     * 获取列表
+     * @param $where  条件
+     * @param $params 扩充参数 order=排序  field=过滤字段 limit=限制条数  InterfaceType=admin|api后端,前端
+     * @return false|mixed
+     */
+    public function get_list($where = [], $params = [])
+    {
+        $CooperationModel = new \initmodel\CooperationModel(); //合作申请  (ps:InitModel)
 
 
-            /** 查询数据 **/
-            $result = $CooperationModel
+        /** 查询数据 **/
+        $result = $CooperationModel
             ->where($where)
             ->order($params['order'] ?? $this->Order)
             ->field($params['field'] ?? $this->Field)
             ->limit($params["limit"] ?? $this->Limit)
             ->select()
-            ->each(function ($item, $key) use($params)  {
+            ->each(function ($item, $key) use ($params) {
 
                 /** 处理公共数据 **/
                 $item = $this->common_item($item, $params);
@@ -148,330 +142,309 @@ class CooperationInit extends Base
                 return $item;
             });
 
-            /** 根据接口类型,返回不同数据类型 **/
-            if ($params['InterfaceType']) $this->InterfaceType = $params['InterfaceType'];
-            if ($this->InterfaceType == 'api' && empty(count($result))) return false;
+        /** 根据接口类型,返回不同数据类型 **/
+        if ($params['InterfaceType']) $this->InterfaceType = $params['InterfaceType'];
+        if ($this->InterfaceType == 'api' && empty(count($result))) return false;
 
-            return $result;
-        }
-
-
+        return $result;
+    }
 
 
+    /**
+     * 分页查询
+     * @param $where  条件
+     * @param $params 扩充参数 order=排序  field=过滤字段 page_size=每页条数  InterfaceType=admin|api后端,前端
+     * @return mixed
+     */
+    public function get_list_paginate($where = [], $params = [])
+    {
+        $CooperationModel = new \initmodel\CooperationModel(); //合作申请  (ps:InitModel)
 
-        /**
-        * 分页查询
-        * @param $where 条件
-        * @param $params 扩充参数 order=排序  field=过滤字段 page_size=每页条数  InterfaceType=admin|api后端,前端
-        * @return mixed
-        */
-        public function get_list_paginate($where=[],  $params = [])
-        {
-                $CooperationModel = new \initmodel\CooperationModel(); //合作申请  (ps:InitModel)
 
+        /** 查询数据 **/
+        $result = $CooperationModel
+            ->where($where)
+            ->order($params['order'] ?? $this->Order)
+            ->field($params['field'] ?? $this->Field)
+            ->paginate(["list_rows" => $params["page_size"] ?? $this->PageSize, "query" => $params])
+            ->each(function ($item, $key) use ($params) {
 
-                /** 查询数据 **/
-                $result = $CooperationModel
-                ->where($where)
-                ->order($params['order'] ?? $this->Order)
-                ->field($params['field'] ?? $this->Field)
-                ->paginate(["list_rows" => $params["page_size"] ?? $this->PageSize, "query" => $params])
-                ->each(function ($item, $key) use($params) {
-
-                    /** 处理公共数据 **/
-                    $item = $this->common_item($item, $params);
+                /** 处理公共数据 **/
+                $item = $this->common_item($item, $params);
 
                 return $item;
-        });
+            });
 
         /** 根据接口类型,返回不同数据类型 **/
         if ($params['InterfaceType']) $this->InterfaceType = $params['InterfaceType'];
-        if ($this->InterfaceType == 'api' && $result->isEmpty()) return false;
+        if ($this->InterfaceType == 'api' && $result->isEmpty()) return [null];
 
 
         return $result;
-        }
+    }
 
     /**
-    * 获取列表
-    * @param $where 条件
-    * @param $params 扩充参数 order=排序  field=过滤字段 limit=限制条数  InterfaceType=admin|api后端,前端
-    * @return false|mixed
-    */
-    public function get_join_list($where=[], $params = [])
+     * 获取列表
+     * @param $where  条件
+     * @param $params 扩充参数 order=排序  field=过滤字段 limit=限制条数  InterfaceType=admin|api后端,前端
+     * @return false|mixed
+     */
+    public function get_join_list($where = [], $params = [])
     {
         $CooperationModel = new \initmodel\CooperationModel(); //合作申请  (ps:InitModel)
 
         /** 查询数据 **/
         $result = $CooperationModel
             ->alias('a')
-            ->join('member b','a.user_id = b.id')
+            ->join('member b', 'a.user_id = b.id')
             ->where($where)
             ->order('a.id desc')
             ->field('a.*')
             ->paginate(["list_rows" => $params["page_size"] ?? $this->PageSize, "query" => $params])
-            ->each(function ($item, $key) use($params)  {
+            ->each(function ($item, $key) use ($params) {
 
                 /** 处理公共数据 **/
                 $item = $this->common_item($item, $params);
 
 
-            return $item;
-        });
+                return $item;
+            });
 
         /** 根据接口类型,返回不同数据类型 **/
         if ($params['InterfaceType']) $this->InterfaceType = $params['InterfaceType'];
         if ($this->InterfaceType == 'api' && empty(count($result))) return false;
 
         return $result;
+    }
+
+
+    /**
+     * 获取详情
+     * @param $where     条件 或 id值
+     * @param $params    扩充参数 field=过滤字段  InterfaceType=admin|api后端,前端
+     * @return false|mixed
+     */
+    public function get_find($where = [], $params = [])
+    {
+        $CooperationModel = new \initmodel\CooperationModel(); //合作申请  (ps:InitModel)
+
+        /** 可直接传id,或者where条件 **/
+        if (is_string($where) || is_int($where)) $where = ["id" => (int)$where];
+        if (empty($where)) return false;
+
+        /** 查询数据 **/
+        $item = $CooperationModel
+            ->where($where)
+            ->order($params['order'] ?? $this->Order)
+            ->field($params['field'] ?? $this->Field)
+            ->find();
+
+
+        if (empty($item)) return false;
+
+
+        /** 处理公共数据 **/
+        $item = $this->common_item($item, $params);
+
+
+        return $item;
+    }
+
+
+    /**
+     * 前端  编辑&添加
+     * @param $params 参数
+     * @param $where  where条件
+     * @return void
+     */
+    public function api_edit_post($params = [], $where = [])
+    {
+        $result = false;
+
+        /** 接口提交,处理数据 **/
+
+
+        $result = $this->edit_post($params, $where);//api提交
+
+        return $result;
+    }
+
+
+    /**
+     * 后台  编辑&添加
+     * @param $model  类
+     * @param $params 参数
+     * @param $where  更新提交(编辑数据使用)
+     * @return void
+     */
+    public function admin_edit_post($params = [], $where = [])
+    {
+        $result = false;
+
+        /** 后台提交,处理数据 **/
+
+
+        $result = $this->edit_post($params, $where);//admin提交
+
+        return $result;
+    }
+
+
+    /**
+     * 提交 编辑&添加
+     * @param $params
+     * @param $where where条件(或传id)
+     * @return void
+     */
+    public function edit_post($params, $where = [])
+    {
+        $CooperationModel = new \initmodel\CooperationModel(); //合作申请  (ps:InitModel)
+
+
+        /** 查询详情数据 && 需要再打开 **/
+        //if (!empty($params["id"])) $item = $this->get_find(["id" => $params["id"]],["DataFormat"=>"list"]);
+        //if (empty($params["id"]) && !empty($where)) $item = $this->get_find($where,["DataFormat"=>"list"]);
+
+        /** 可直接传id,或者where条件 **/
+        if (is_string($where) || is_int($where)) $where = ["id" => (int)$where];
+
+
+        /** 公共提交,处理数据 **/
+
+
+        //处理时间格式
+        if ($params['pay_time'] && is_string($params['pay_time'])) $params['pay_time'] = strtotime($params['pay_time']);//支付时间
+
+
+        if (!empty($where)) {
+            //传入where条件,根据条件更新数据
+            $params["update_time"] = time();
+            $result                = $CooperationModel->where($where)->strict(false)->update($params);
+            //if ($result) $result = $item["id"];
+        } elseif (!empty($params["id"])) {
+            //如传入id,根据id编辑数据
+            $params["update_time"] = time();
+            $result                = $CooperationModel->where("id", "=", $params["id"])->strict(false)->update($params);
+            //if($result) $result = $item["id"];
+        } else {
+            //无更新条件则添加数据
+            $params["create_time"] = time();
+            $result                = $CooperationModel->strict(false)->insert($params, true);
         }
 
+        return $result;
+    }
 
 
-        /**
-        * 获取详情
-        * @param $where     条件 或 id值
-        * @param $params    扩充参数 field=过滤字段  InterfaceType=admin|api后端,前端
-        * @return false|mixed
-        */
-        public function get_find($where=[],$params=[])
-        {
-            $CooperationModel = new \initmodel\CooperationModel(); //合作申请  (ps:InitModel)
-
-            /** 可直接传id,或者where条件 **/
-            if (is_string($where) || is_int($where)) $where = ["id" => (int)$where];
-            if (empty($where)) return false;
-
-            /** 查询数据 **/
-            $item = $CooperationModel
-                ->where($where)
-                ->order($params['order'] ?? $this->Order)
-                ->field($params['field'] ?? $this->Field)
-                ->find();
+    /**
+     * 提交(副本,无任何操作,不查询详情,不返回id) 编辑&添加
+     * @param $params
+     * @param $where where 条件(或传id)
+     * @return void
+     */
+    public function edit_post_two($params, $where = [])
+    {
+        $CooperationModel = new \initmodel\CooperationModel(); //合作申请  (ps:InitModel)
 
 
-            if (empty($item)) return false;
+        /** 可直接传id,或者where条件 **/
+        if (is_string($where) || is_int($where)) $where = ["id" => (int)$where];
 
 
-            /** 处理公共数据 **/
-            $item = $this->common_item($item, $params);
+        /** 公共提交,处理数据 **/
 
 
-
-            return $item;
+        if (!empty($where)) {
+            //传入where条件,根据条件更新数据
+            $params["update_time"] = time();
+            $result                = $CooperationModel->where($where)->strict(false)->update($params);
+        } elseif (!empty($params["id"])) {
+            //如传入id,根据id编辑数据
+            $params["update_time"] = time();
+            $result                = $CooperationModel->where("id", "=", $params["id"])->strict(false)->update($params);
+        } else {
+            //无更新条件则添加数据
+            $params["create_time"] = time();
+            $result                = $CooperationModel->strict(false)->insert($params);
         }
 
+        return $result;
+    }
 
 
-        /**
-        * 前端  编辑&添加
-        * @param $params 参数
-        * @param $where where条件
-        * @return void
-        */
-        public function api_edit_post($params = [],$where=[])
-        {
-            $result = false;
-
-            /** 接口提交,处理数据 **/
-            
-
-            $result = $this->edit_post($params,$where);//api提交
-
-            return $result;
-        }
-
-
-        /**
-        * 后台  编辑&添加
-        * @param $model 类
-        * @param $params 参数
-        * @param $where 更新提交(编辑数据使用)
-        * @return void
-        */
-        public function admin_edit_post($params = [], $where = [])
-        {
-            $result = false;
-
-            /** 后台提交,处理数据 **/
-            
-
-            $result = $this->edit_post($params, $where);//admin提交
-
-            return $result;
-        }
-
-
-        /**
-        * 提交 编辑&添加
-        * @param $params
-        * @param $where where条件(或传id)
-        * @return void
-        */
-        public function edit_post($params,$where=[])
-        {
-            $CooperationModel = new \initmodel\CooperationModel(); //合作申请  (ps:InitModel)
-
-
-            /** 查询详情数据 && 需要再打开 **/
-            //if (!empty($params["id"])) $item = $this->get_find(["id" => $params["id"]],["DataFormat"=>"list"]);
-            //if (empty($params["id"]) && !empty($where)) $item = $this->get_find($where,["DataFormat"=>"list"]);
-
-            /** 可直接传id,或者where条件 **/
-            if (is_string($where) || is_int($where)) $where = ["id" => (int)$where];
-
-
-
-            /** 公共提交,处理数据 **/
-
-
-
-
-
-            //处理时间格式
-if($params['pay_time'] && is_string($params['pay_time'])) $params['pay_time']=strtotime($params['pay_time']);//支付时间
-
-
-
-
-
-
-          if(!empty($where)){
-                //传入where条件,根据条件更新数据
-                $params["update_time"] = time();
-                $result                = $CooperationModel->where($where)->strict(false)->update($params);
-                //if ($result) $result = $item["id"];
-            } elseif (!empty($params["id"])) {
-                //如传入id,根据id编辑数据
-                $params["update_time"] = time();
-                $result                = $CooperationModel->where("id","=",$params["id"])->strict(false)->update($params);
-                //if($result) $result = $item["id"];
-           } else {
-                //无更新条件则添加数据
-                $params["create_time"] = time();
-                $result                = $CooperationModel->strict(false)->insert($params,true);
-            }
-
-            return $result;
-        }
-
-
-
-        /**
-        * 提交(副本,无任何操作,不查询详情,不返回id) 编辑&添加
-        * @param $params
-        * @param $where where 条件(或传id)
-        * @return void
-        */
-        public function edit_post_two($params,$where=[])
-        {
-            $CooperationModel = new \initmodel\CooperationModel(); //合作申请  (ps:InitModel)
-
-
-            /** 可直接传id,或者where条件 **/
-            if (is_string($where) || is_int($where)) $where = ["id" => (int)$where];
-
-
-
-            /** 公共提交,处理数据 **/
-
-
-            if(!empty($where)){
-                //传入where条件,根据条件更新数据
-                $params["update_time"] = time();
-                $result                = $CooperationModel->where($where)->strict(false)->update($params);
-            }elseif (!empty($params["id"])) {
-                //如传入id,根据id编辑数据
-                $params["update_time"] = time();
-                $result                = $CooperationModel->where("id","=",$params["id"])->strict(false)->update($params);
-            } else {
-                //无更新条件则添加数据
-                $params["create_time"] = time();
-                $result                = $CooperationModel->strict(false)->insert($params);
-            }
-
-            return $result;
-        }
-
-
-        /**
-        * 删除数据 软删除
-        * @param $id   传id  int或array都可以
-        * @param $type   1软删除 2真实删除
-        * @param $params 扩充参数
-        * @return void
-        */
-        public function delete_post($id, $type=1,$params=[])
-        {
-        $CooperationModel= new \initmodel\CooperationModel(); //合作申请  (ps:InitModel)
+    /**
+     * 删除数据 软删除
+     * @param $id     传id  int或array都可以
+     * @param $type   1软删除 2真实删除
+     * @param $params 扩充参数
+     * @return void
+     */
+    public function delete_post($id, $type = 1, $params = [])
+    {
+        $CooperationModel = new \initmodel\CooperationModel(); //合作申请  (ps:InitModel)
 
 
         if ($type == 1) $result = $CooperationModel->destroy($id);//软删除 数据表字段必须有delete_time
-        if ($type == 2) $result = $CooperationModel->destroy($id,true);//真实删除
+        if ($type == 2) $result = $CooperationModel->destroy($id, true);//真实删除
 
         return $result;
-        }
+    }
 
 
-        /**
-        * 后台批量操作
-        * @param $id
-        * @param $params 修改值
-        * @return void
-        */
-        public function batch_post($id, $params=[])
-        {
-            $CooperationModel = new \initmodel\CooperationModel(); //合作申请  (ps:InitModel)
+    /**
+     * 后台批量操作
+     * @param $id
+     * @param $params 修改值
+     * @return void
+     */
+    public function batch_post($id, $params = [])
+    {
+        $CooperationModel = new \initmodel\CooperationModel(); //合作申请  (ps:InitModel)
 
+        $where   = [];
+        $where[] = ["id", "in", $id];//$id 为数组
+
+
+        $params["update_time"] = time();
+        $result                = $CooperationModel->where($where)->strict(false)->update($params);//修改状态
+
+        return $result;
+    }
+
+
+    /**
+     * 后台  排序
+     * @param $list_order 排序
+     * @param $params     扩充参数
+     * @return void
+     */
+    public function list_order_post($list_order, $params = [])
+    {
+        $CooperationModel = new \initmodel\CooperationModel(); //合作申请   (ps:InitModel)
+
+        foreach ($list_order as $k => $v) {
             $where   = [];
-            $where[] = ["id", "in", $id];//$id 为数组
-
-
-            $params["update_time"] = time();
-            $result = $CooperationModel->where($where)->strict(false)->update($params);//修改状态
-
-            return $result;
+            $where[] = ["id", "=", $k];
+            $result  = $CooperationModel->where($where)->strict(false)->update(["list_order" => $v, "update_time" => time()]);//排序
         }
 
+        return $result;
+    }
 
 
-        /**
-        * 后台  排序
-        * @param $list_order 排序
-        * @param $params 扩充参数
-        * @return void
-        */
-        public function list_order_post($list_order,$params=[])
-        {
-            $CooperationModel = new \initmodel\CooperationModel(); //合作申请   (ps:InitModel)
+    /**
+     * 导出数据
+     * @param array $where 条件
+     */
+    public function export_excel($where = [], $params = [])
+    {
+        $CooperationInit  = new \init\CooperationInit();//合作申请   (ps:InitController)
+        $CooperationModel = new \initmodel\CooperationModel(); //合作申请  (ps:InitModel)
 
-            foreach ($list_order as $k => $v) {
-                $where   = [];
-                $where[] = ["id", "=", $k];
-                $result  = $CooperationModel->where($where)->strict(false)->update(["list_order" => $v, "update_time" => time()]);//排序
-            }
+        $result = $CooperationInit->get_list($where, $params);
 
-            return $result;
-        }
-
-
-
-
-
-
-        /**
-        * 导出数据
-        * @param array $where 条件
-        */
-        public function export_excel($where = [], $params = [])
-        {
-            $CooperationInit  = new \init\CooperationInit();//合作申请   (ps:InitController)
-            $CooperationModel = new \initmodel\CooperationModel(); //合作申请  (ps:InitModel)
-
-            $result       = $CooperationInit->get_list($where, $params);
-
-            $result = $result->toArray();
-            foreach ($result as $k => &$item) {
+        $result = $result->toArray();
+        foreach ($result as $k => &$item) {
 
             //订单号过长问题
             if ($item["order_num"]) $item["order_num"] = $item["order_num"] . "\t";
@@ -487,26 +460,26 @@ if($params['pay_time'] && is_string($params['pay_time'])) $params['pay_time']=st
 
             //背景颜色
             if ($item['unit'] == '测试8') $item['BackgroundColor'] = 'red';
-            }
+        }
 
-            $headArrValue = [
+        $headArrValue = [
             ["rowName" => "ID", "rowVal" => "id", "width" => 10],
             ["rowName" => "用户信息", "rowVal" => "userInfo", "width" => 30],
             ["rowName" => "名字", "rowVal" => "name", "width" => 20],
             ["rowName" => "年龄", "rowVal" => "age", "width" => 20],
             ["rowName" => "测试", "rowVal" => "test", "width" => 20],
             ["rowName" => "创建时间", "rowVal" => "create_time", "width" => 30],
-            ];
+        ];
 
 
-            //副标题 纵单元格
-            //        $subtitle = [
-            //            ["rowName" => "列1", "acrossCells" => count($headArrValue)/2],
-            //            ["rowName" => "列2", "acrossCells" => count($headArrValue)/2],
-            //        ];
+        //副标题 纵单元格
+        //        $subtitle = [
+        //            ["rowName" => "列1", "acrossCells" => count($headArrValue)/2],
+        //            ["rowName" => "列2", "acrossCells" => count($headArrValue)/2],
+        //        ];
 
-            $Excel = new ExcelController();
-            $Excel->excelExports($result, $headArrValue, ["fileName" => "合作申请"]);
-        }
+        $Excel = new ExcelController();
+        $Excel->excelExports($result, $headArrValue, ["fileName" => "合作申请"]);
+    }
 
 }

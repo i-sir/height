@@ -174,7 +174,7 @@ class ShopCouponInit extends Base
 
         /** 根据接口类型,返回不同数据类型 **/
         if ($params['InterfaceType']) $this->InterfaceType = $params['InterfaceType'];
-        if ($this->InterfaceType == 'api' && $result->isEmpty()) return false;
+        if ($this->InterfaceType == 'api' && $result->isEmpty()) return [null];
 
 
         return $result;
@@ -306,7 +306,7 @@ class ShopCouponInit extends Base
 
         /** 公共提交,处理数据 **/
         if ($params['start_time']) $params['start_time'] = strtotime($params['start_time']);
-        if($params['end_time']) $params['end_time'] = strtotime($params['end_time']." 23:59:59");
+        if ($params['end_time']) $params['end_time'] = strtotime($params['end_time'] . " 23:59:59");
 
 
         if (!empty($params["id"])) {
