@@ -1,0 +1,67 @@
+<!--class_id-->
+<div class="form-group" style="display: none;">
+    <label class="col-sm-2 control-label">class_id:</label>
+    <div class="layui-input-block col-sm-6">
+        <input type="text" name="class_id" class="form-control post-params item-left"
+               value="{$class_id|default=''}">
+    </div>
+</div>
+
+
+<div class="form-group">
+    <label class="col-sm-2 control-label">课程:</label>
+    <div class="layui-input-block col-sm-6">
+        <foreach item="course_value" name="course_list">
+            <input class="form-control post-params" lay-skin="tag" name="course_ids[{$course_value.id}]"
+                   title="{$course_value.name}"
+                   type="checkbox"
+            <if condition="in_array($course_value.id,$course_ids)">
+                checked
+            </if>
+            >
+        </foreach>
+    </div>
+</div>
+
+
+<!--备注-->
+<div class="form-group">
+    <label class="col-sm-2 control-label">备注:</label>
+    <div class="layui-input-block col-sm-6">
+        <input type="text" name="name" class="form-control post-params item-left" value="{$name|default=''}">
+    </div>
+</div>
+
+
+<!--价格-->
+<div class="form-group">
+    <label class="col-sm-2 control-label">价格:</label>
+    <div class="layui-input-block col-sm-6">
+        <input type="number" class="form-control post-params item-left" name="price" value="{$price|default=''}">
+    </div>
+</div>
+
+
+<!--佣金-->
+<div class="form-group">
+    <label class="col-sm-2 control-label">直推佣金:</label>
+    <div class="layui-input-block col-sm-6">
+        <input type="text" name="commission" class="form-control post-params item-left"
+               value="{$commission|default='0'}">
+    </div>
+</div>
+
+<!--佣金-->
+<div class="form-group">
+    <label class="col-sm-2 control-label">间推佣金:</label>
+    <div class="layui-input-block col-sm-6">
+        <input type="text" name="commission2" class="form-control post-params item-left"
+               value="{$commission2|default='0'}">
+    </div>
+</div>
+
+
+
+
+
+

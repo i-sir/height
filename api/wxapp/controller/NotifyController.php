@@ -318,7 +318,7 @@ class NotifyController extends AuthController
         $ExpOrderModel       = new \initmodel\ExpOrderModel(); //体验卡订单管理   (ps:InitModel)
         $ShopCouponUserModel = new \initmodel\ShopCouponUserModel(); //优惠券领取记录   (ps:InitModel)
         $CourseOrderModel    = new \initmodel\CourseOrderModel(); //课程订单   (ps:InitModel)
-
+        $InitController      = new InitController();
 
         /** 查询出支付信息,以及关联的订单号 */
         $pay_info = $OrderPayModel->where('pay_num', $pay_num)->find();
@@ -383,45 +383,18 @@ class NotifyController extends AuthController
             $ShopCouponUserModel->where('id', '=', $order_info['coupon_id'])->update(['used' => 2, 'update_time' => time()]);
         }
 
+
+
         //课程计划 & 类型注意
         if ($pay_info['order_type'] == 40) {
             $map100   = [];
             $map100[] = ['order_num', 'in', $this->getParams($order_num)];
 
-            $result = $CourseOrderModel->where($map100)->strict(false)->update($update);//更新订单信息
+            $result     = $CourseOrderModel->where($map100)->strict(false)->update($update);//更新订单信息
+            $order_info = $CourseOrderModel->where($map100)->find();//查询订单信息
 
-            //计算价格
-            $coupon_amount = $CourseOrderModel->where($map100)->sum('coupon_amount');
-
-
-            $code     = 'Y' . uniqid(mt_rand());
-            $qr_image = '';
-
-
-            //给下单用户赠送优惠券
-            $coupon_validity_period = cmf_config('coupon_validity_period'); //下单成功赠送订单金额的优惠,有效期n天
-
-
-            /** 发放优惠券 **/
-            $ShopCouponUserModel->strict(false)->insert([
-                'user_id'     => $pay_info['user_id'],
-                'coupon_id'   => 0,
-                'name'        => '优惠券',
-                'full_amount' => $coupon_amount + 0.01,
-                'amount'      => $coupon_amount,
-                'discount'    => '购买课程送优惠券',
-                'type'        => 2,
-                'coupon_type' => 1,
-                'end_time'    => time() + ($coupon_validity_period * 86400),
-                'code'        => $code,
-                'qr_image'    => $qr_image,
-                'order_num'   => $pay_num,
-                'start_time'  => time(),
-                'create_time' => time(),
-            ]);
-
-
-            $order_info = $ExpOrderModel->where($map100)->find();//查询订单信息
+            //发放优惠券,发放佣金
+            $InitController->payCourseOrderAccomplish($this->getParams($order_num), $pay_info['user_id'], $pay_num);
         }
 
 

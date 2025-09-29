@@ -132,6 +132,7 @@ class ExpOrderController extends AuthController
      */
     public function find_order_list()
     {
+        $this->checkAuth();
         $ExpOrderInit  = new \init\ExpOrderInit();//体验卡订单管理   (ps:InitController)
         $ExpOrderModel = new \initmodel\ExpOrderModel(); //体验卡订单管理   (ps:InitModel)
 
@@ -142,6 +143,7 @@ class ExpOrderController extends AuthController
         /** 查询条件 **/
         $where   = [];
         $where[] = ['id', '>', 0];
+        $where[] = ['user_id', '=', $this->user_id];
         $where[] = ["status", "in", [2, 8, 11]];
         if ($params["keyword"]) $where[] = ["order_num|username|phone|goods_name", "like", "%{$params['keyword']}%"];
         if ($params["status"]) $where[] = ["status", "=", $params["status"]];
@@ -352,6 +354,8 @@ class ExpOrderController extends AuthController
         $insert['create_time']   = time();
         $insert['cav_code']      = $this->get_num_only('cav_code', 12, 4, 'T');
         $insert['cav_qr_code']   = $QrInit->get_qr($insert['cav_code']);
+        $insert['commission']    = round($insert['amount'] * ($goods_info['commission'] / 100), 2);
+        $insert['commission2']   = round($insert['amount'] * ($goods_info['commission2'] / 100), 2);
 
 
         /** 提交更新 **/
@@ -509,7 +513,9 @@ class ExpOrderController extends AuthController
     public function verification_order()
     {
         $this->checkAuth(2);
-        $ExpOrderModel = new \initmodel\ExpOrderModel(); //体验卡订单管理   (ps:InitModel)
+        $ExpOrderModel  = new \initmodel\ExpOrderModel(); //体验卡订单管理   (ps:InitModel)
+        $InitController = new InitController();
+
 
         /** 获取参数 **/
         $params            = $this->request->param();
@@ -534,6 +540,10 @@ class ExpOrderController extends AuthController
             "accomplish_time" => time(),
         ]);
         if (empty($result)) $this->error("暂无数据");
+
+        //发放佣金
+        $InitController->sendExpOrderAccomplish($order_info['order_num']);
+
 
         $this->success("核销成功");
     }
@@ -584,6 +594,7 @@ class ExpOrderController extends AuthController
         /** 查询条件 **/
         $where   = [];
         $where[] = ['id', '>', 0];
+        $where[] = ['cav_user_id', '=', $this->user_id];
         $where[] = ["status", "in", [2, 8, 11]];
         if ($params["keyword"]) $where[] = ["order_num|username|phone|goods_name", "like", "%{$params['keyword']}%"];
         if ($params["status"]) $where[] = ["status", "=", $params["status"]];

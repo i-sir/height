@@ -41,6 +41,7 @@
                 <th style="width: 60px">用户信息</th>
                 <th style="width: 60px">手机号</th>
                 <th style="width: 60px">余额</th>
+                <th style="width: 60px">核销员</th>
                 <th style="width: 60px">分销员</th>
                 <th style="width: 60px">创建时间</th>
                 <th style="width: 160px">操作</th>
@@ -74,6 +75,15 @@
                             >
                         </div>
                     </td>
+                    <td>
+                        <div class="layui-form">
+                            <input type="checkbox" lay-skin="switch" lay-text="是|否" lay-filter="is_distribution"
+                                   name="is_distribution"
+                                   value="{$vo.id}"
+                            <if condition="$vo.is_distribution == 1">checked</if>
+                            >
+                        </div>
+                    </td>
 
 
                     <!--                    <td>-->
@@ -87,10 +97,9 @@
                     <td>
 
 
-
                         <if condition="APP_DEBUG">
-<!--                            <a class="layui-btn layui-btn-primary layui-border-red layui-btn-xs js-ajax-delete"-->
-<!--                               href="{:url('delete',array('id'=>$vo.id,'page'=>$page,'params'=>$params))}">删除</a>-->
+                            <!--                            <a class="layui-btn layui-btn-primary layui-border-red layui-btn-xs js-ajax-delete"-->
+                            <!--                               href="{:url('delete',array('id'=>$vo.id,'page'=>$page,'params'=>$params))}">删除</a>-->
                         </if>
 
                         <a class="layui-btn layui-btn-primary layui-border-blue layui-btn-xs"
@@ -103,9 +112,9 @@
                         >记录</a>
 
 
-<!--                        <a class="layui-btn layui-btn-primary layui-border-purple layui-btn-xs"-->
-<!--                           href="javascript:parent.openIframeLayer('{:url('children',array('pid'=>$vo.id))}','[{$vo.nickname}]关系',{ area: ['65%', '85%'],move:'.layui-layer-title'},false);"-->
-<!--                        >关系</a>-->
+                        <!--                        <a class="layui-btn layui-btn-primary layui-border-purple layui-btn-xs"-->
+                        <!--                           href="javascript:parent.openIframeLayer('{:url('children',array('pid'=>$vo.id))}','[{$vo.nickname}]关系',{ area: ['65%', '85%'],move:'.layui-layer-title'},false);"-->
+                        <!--                        >关系</a>-->
                     </td>
                 </tr>
             </foreach>
@@ -127,6 +136,10 @@
 
         form.on('switch(is_admin)', function (data) {
             batchPost(data.value, 'is_admin', this.checked ? 1 : 2)
+        });
+
+        form.on('switch(is_distribution)', function (data) {
+            batchPost(data.value, 'is_distribution', this.checked ? 1 : 2)
         });
 
 

@@ -350,7 +350,7 @@ class ShopCouponController extends AdminBaseController
 
         foreach ($params['ids'] as $user_id) {
             //生成优惠券码
-            $code     = $this->get_num_only('code', 10, 4, 'C');
+            $code     = $this->get_num_only('code', 10, 4, 'C',$ShopCouponUserModel);
             $qr_image = $PublicController->wx_qrcode($code, 'pages/index/index', 2);//二维码
 
             $ShopCouponUserModel->strict(false)->insert([

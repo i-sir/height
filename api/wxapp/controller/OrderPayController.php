@@ -81,6 +81,7 @@ class OrderPayController extends AuthController
         $ExpOrderModel    = new \initmodel\ExpOrderModel(); //体验卡订单管理   (ps:InitModel)
         $CourseOrderModel = new \initmodel\CourseOrderModel(); //课程订单   (ps:InitModel)
         $ShopCouponUserModel = new \initmodel\ShopCouponUserModel(); //优惠券领取记录   (ps:InitModel)
+        $CourseSetModel   = new \initmodel\CourseSetModel(); //收费配置   (ps:InitModel)
 
         $map   = [];
         $map[] = ['order_num', '=', $params['order_num']];

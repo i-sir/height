@@ -58,7 +58,87 @@ class InitController
 
 
     /**
-     * 订单完成,赠送积分
+     * 课程支付成功,发放佣金
+     * @param $order_nums 多个 数组
+     */
+    public function payCourseOrderAccomplish($order_nums, $user_id, $pay_num)
+    {
+        $CourseOrderModel    = new \initmodel\CourseOrderModel(); //课程订单   (ps:InitModel)
+        $MemberModel         = new \initmodel\MemberModel();//用户管理
+        $ShopCouponUserModel = new \initmodel\ShopCouponUserModel(); //优惠券领取记录   (ps:InitModel)
+
+
+        $map   = [];
+        $map[] = ['order_num', 'in', $order_nums];
+
+
+        //计算价格
+        $coupon_amount = $CourseOrderModel->where($map)->sum('coupon_amount');
+        $code          = 'Y' . uniqid(mt_rand());
+        $qr_image      = '';
+        //给下单用户赠送优惠券
+        $coupon_validity_period = cmf_config('coupon_validity_period'); //下单成功赠送订单金额的优惠,有效期n天
+        /** 发放优惠券 **/
+        $ShopCouponUserModel->strict(false)->insert([
+            'user_id'     => $user_id,
+            'coupon_id'   => 0,
+            'name'        => '优惠券',
+            'full_amount' => $coupon_amount + 0.01,
+            'amount'      => $coupon_amount,
+            'discount'    => '购买课程送优惠券',
+            'type'        => 2,
+            'coupon_type' => 1,
+            'end_time'    => time() + ($coupon_validity_period * 86400),
+            'code'        => $code,
+            'qr_image'    => $qr_image,
+            'order_num'   => $pay_num,
+            'start_time'  => time(),
+            'create_time' => time(),
+        ]);
+
+
+        $commission  = $CourseOrderModel->where($map)->sum('commission');
+        $commission2 = $CourseOrderModel->where($map)->sum('commission2');
+
+
+        //查询上级
+        $p_user_id = $MemberModel->where('id', '=', $user_id)->value('pid');
+        if ($p_user_id && $commission) {
+            $remark = "操作人[下单得佣金];操作说明[下单得佣金];操作类型[下单得佣金];";//管理备注
+            AssetModel::incAsset('下单得佣金,给上级发放佣金 [160]', [
+                'operate_type'  => 'balance',//操作类型，balance|point ...
+                'identity_type' => 'member',//身份类型，member| ...
+                'user_id'       => $p_user_id,
+                'price'         => $commission,
+                'order_num'     => $pay_num,
+                'order_type'    => 160,
+                'content'       => '课程下单奖励',
+                'remark'        => $remark,
+            ]);
+
+            //查询上上级
+            $sp_user_id = $MemberModel->where('id', '=', $p_user_id)->value('pid');
+            if ($sp_user_id && $commission2) {
+                $remark = "操作人[下单得佣金];操作说明[下单得佣金];操作类型[下单得佣金];";//管理备注
+                AssetModel::incAsset('下单得佣金,给上级发放佣金 [170]', [
+                    'operate_type'  => 'balance',//操作类型，balance|point ...
+                    'identity_type' => 'member',//身份类型，member| ...
+                    'user_id'       => $sp_user_id,
+                    'price'         => $commission2,
+                    'order_num'     => $pay_num,
+                    'order_type'    => 170,
+                    'content'       => '课程下单奖励',
+                    'remark'        => $remark,
+                ]);
+            }
+        }
+
+        return true;
+    }
+
+
+    /**
+     * 商城订单完成,发放佣金
      * @param $order_num
      */
     public function sendShopOrderAccomplish($order_num)
@@ -136,7 +216,58 @@ class InitController
     }
 
 
+    /**
+     * 体验卡订单完成,发放佣金
+     * @param $order_num
+     */
+    public function sendExpOrderAccomplish($order_num)
+    {
+        $ExpOrderModel = new \initmodel\ExpOrderModel(); //体验卡订单管理   (ps:InitModel)
+        $MemberModel   = new \initmodel\MemberModel();//用户管理
 
+
+        $map        = [];
+        $map[]      = ['order_num', '=', $order_num];
+        $order_info = $ExpOrderModel->where($map)->find();
+        if (empty($order_info)) return false;
+
+
+        //查询上级
+        $p_user_id = $MemberModel->where('id', '=', $order_info['user_id'])->value('pid');
+        if ($p_user_id && $order_info['commission']) {
+            $remark = "操作人[下单得佣金];操作说明[下单得佣金];操作类型[下单得佣金];";//管理备注
+            AssetModel::incAsset('下单得佣金,给上级发放佣金 [140]', [
+                'operate_type'  => 'balance',//操作类型，balance|point ...
+                'identity_type' => 'member',//身份类型，member| ...
+                'user_id'       => $p_user_id,
+                'price'         => $order_info['commission'],
+                'order_num'     => $order_num,
+                'order_type'    => 140,
+                'content'       => '体验卡下单奖励',
+                'remark'        => $remark,
+                'order_id'      => $order_info['id'],
+            ]);
+
+            //查询上上级
+            $sp_user_id = $MemberModel->where('id', '=', $p_user_id)->value('pid');
+            if ($sp_user_id && $order_info['commission2']) {
+                $remark = "操作人[下单得佣金];操作说明[下单得佣金];操作类型[下单得佣金];";//管理备注
+                AssetModel::incAsset('下单得佣金,给上级发放佣金 [150]', [
+                    'operate_type'  => 'balance',//操作类型，balance|point ...
+                    'identity_type' => 'member',//身份类型，member| ...
+                    'user_id'       => $sp_user_id,
+                    'price'         => $order_info['commission2'],
+                    'order_num'     => $order_num,
+                    'order_type'    => 150,
+                    'content'       => '体验卡下单奖励',
+                    'remark'        => $remark,
+                    'order_id'      => $order_info['id'],
+                ]);
+            }
+        }
+
+        return true;
+    }
 
 
     /**
@@ -166,11 +297,6 @@ class InitController
 
         return $childIds;
     }
-
-
-
-
-
 
 
 }

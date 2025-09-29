@@ -141,7 +141,7 @@ class BaseLikeController extends AuthController
 
 
         $result = $BaseLikeInit->get_join_list($where, $params);
-        if (empty($result)) $this->error("暂无信息!");
+        if (empty($result)) $this->success("暂无信息!", []);
 
         $this->success("请求成功!", $result);
     }

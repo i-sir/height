@@ -442,8 +442,6 @@ class PublicController extends AuthController
     }
 
 
-
-
     /**
      * 小程序授权手机号(授权登录)
      * @throws \WeChat\Exceptions\InvalidDecryptException
@@ -547,9 +545,13 @@ class PublicController extends AuthController
 
 
         if (empty($findUserInfo)) {
+            $AvatarModel = new \initmodel\AvatarModel(); //头像库   (ps:InitModel)
+            //随机查询一个头像
+            $avatar = $AvatarModel->where('is_show', '=', 1)->orderRaw('RAND()')->value('image') ?? cmf_config('app_logo');
+
             //向数据库插入新用户信息
             $insert['nickname']    = $this->get_member_wx_nickname();
-            $insert['avatar']      = cmf_get_asset_url(cmf_config('app_logo'));
+            $insert['avatar']      = cmf_get_asset_url($avatar);
             $insert['openid']      = $user_openid;
             $insert['mini_openid'] = $user_openid;
             $insert['invite_code'] = $this->get_num_only('invite_code', 5, 4, '', 'member');
@@ -582,8 +584,6 @@ class PublicController extends AuthController
 
         $this->success("授权成功!", $findUserInfo);
     }
-
-
 
 
     /**
@@ -716,8 +716,6 @@ class PublicController extends AuthController
 
         $this->success("请求成功！", $url);
     }
-
-
 
 
     /**

@@ -250,9 +250,9 @@ class CourseOrderController extends AuthController
      *
      *
      *    @OA\Parameter(
-     *         name="course_ids",
+     *         name="course_id",
      *         in="query",
-     *         description="数组格式  [1,2,3]",
+     *         description="课程id",
      *         required=false,
      *         @OA\Schema(
      *             type="string",
@@ -260,17 +260,6 @@ class CourseOrderController extends AuthController
      *     ),
      *
      *
-     *
-     *
-     *    @OA\Parameter(
-     *         name="is_all",
-     *         in="query",
-     *         description="全部购买",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
      *
      *
      *
@@ -292,16 +281,15 @@ class CourseOrderController extends AuthController
 
         $CourseOrderModel = new \initmodel\CourseOrderModel(); //课程订单   (ps:InitModel)
         $CourseModel      = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
+        $CourseSetModel   = new \initmodel\CourseSetModel(); //收费配置   (ps:InitModel)
 
         /** 获取参数 **/
         $params = $this->request->param();
-
 
         $order_nums        = '';
         $insert['user_id'] = $this->user_id;
         $insert['phone']   = $this->user_info['phone'];
         $insert['openid']  = $this->openid;
-
 
         //用户已支付的课程
         $map             = [];
@@ -309,47 +297,111 @@ class CourseOrderController extends AuthController
         $map[]           = ['status', '=', 2];//已支付
         $not_course_list = $CourseOrderModel->where($map)->column('course_id');
 
+        if (empty($params['course_id'])) $this->error("请选择课程");
 
-        if ($params["is_all"]) {
-            //下单全部
-            $map100      = [];
-            $map100[]    = ['is_show', '=', 1];
-            $map100[]    = ['class_id', '=', $params['class_id'] ?? 1];
-            $course_list = $CourseModel->where($map100)->select();
-        } elseif ($params['course_ids']) {
-            //下单指定
-            $map100      = [];
-            $map100[]    = ['id', 'in', $params['course_ids']];
-            $course_list = $CourseModel->where($map100)->select();
+        //如果有收费配置,优先使用收费配置
+        $map      = [];
+        $map[]    = ['', 'EXP', Db::raw("FIND_IN_SET({$params['course_id']},course_ids)")];
+        $set_info = $CourseSetModel
+            ->where($map)
+            ->order('id desc')
+            ->find();
+
+        if ($set_info) {
+            $map100   = [];
+            $map100[] = ['id', 'in', $this->getParams($set_info['course_ids'])];
         } else {
-            $this->error("请选择课程");
+            //下单指定
+            $map100   = [];
+            $map100[] = ['id', 'in', $this->getParams($params['course_id'])];
         }
 
+        //查询列表
+        $course_list = $CourseModel->where($map100)->select();
 
-        //插入数据
-        foreach ($course_list as $key => $course_info) {
+        // 插入数据
+        $order_nums  = []; // 使用数组存储订单号，最后再拼接，避免处理逗号
+        $courseIds   = [];
+        $totalAmount = 0;
+
+        // 先收集需要处理的课程ID
+        if ($set_info) {
+            $courseIds   = $this->getParams($set_info['course_ids']);
+            $totalAmount = $set_info['price']; // 目标总金额
+        }
+
+        // 计算需要分配的课程数量
+        $totalCourses  = count($courseIds);
+        $normalCourses = [];
+
+        // 先筛选出符合条件的课程
+        foreach ($course_list as $course_info) {
             if (!in_array($course_info['id'], $not_course_list)) {
-                $order_num               = $this->get_num_only();
-                $insert['order_num']     = $order_num;
-                $insert['course_id']     = $course_info['id'];
-                $insert['amount']        = $course_info['price'];
-                $insert['name']          = $course_info['name'];
-                $insert['coupon_amount'] = $course_info['price'];
-                $insert['class_id']      = $course_info['class_id'];
-                $insert['create_time']   = time();
-
-                $result = $CourseOrderModel->strict(false)->insert($insert);
-                if (empty($result)) $this->error("失败请重试");
-
-                $order_nums .= $order_num . ',';
+                $normalCourses[] = $course_info;
             }
         }
 
-        if (empty($order_nums)) $this->error("暂无课程");
+        // 计算精确的分配金额
+        $amounts = [];
+        if ($set_info && $totalCourses > 0) {
+            // 基础金额 = 总金额 / 课程数量（向下取整到分）
+            $baseAmount = bcdiv($totalAmount, $totalCourses, 2);
+            // 计算总基础金额
+            $totalBase = bcmul($baseAmount, $totalCourses, 2);
+            // 计算差额（需要补到最后一个课程上）
+            $diff = bcsub($totalAmount, $totalBase, 2);
 
+            // 为每个课程分配基础金额
+            foreach ($normalCourses as $index => $course_info) {
+                $amount = $baseAmount;
+                // 如果是最后一个课程，加上差额
+                if ($index == count($normalCourses) - 1 && $diff > 0) {
+                    $amount = bcadd($amount, $diff, 2);
+                }
+                $amounts[$course_info['id']] = $amount;
+            }
+        }
+
+        // 插入数据
+        foreach ($normalCourses as $course_info) {
+            $order_num           = $this->get_num_only();
+            $insert['order_num'] = $order_num;
+            $insert['course_id'] = $course_info['id'];
+            $insert['name']      = $course_info['name'];
+            $insert['class_id']  = $course_info['class_id'];
+
+            // 应用计算好的金额
+            if ($set_info && $totalCourses > 0) {
+                $insert['amount'] = $amounts[$course_info['id']];
+            } else {
+                $insert['amount'] = $course_info['price'];
+            }
+
+            $insert['coupon_amount'] = $course_info['amount'];//优惠金额
+            $insert['create_time']   = time();
+
+            //算佣金
+            if ($set_info) {
+                $insert['commission']  = round($insert['amount'] * ($set_info['commission'] / 100), 2);
+                $insert['commission2'] = round($insert['amount'] * ($set_info['commission2'] / 100), 2);
+            } else {
+                $insert['commission']  = round($insert['amount'] * ($course_info['commission'] / 100), 2);
+                $insert['commission2'] = round($insert['amount'] * ($course_info['commission2'] / 100), 2);
+            }
+
+            $result = $CourseOrderModel->strict(false)->insert($insert);
+            if (empty($result)) $this->error("失败请重试");
+
+
+            $order_nums[] = $order_num;
+        }
+
+        // 最后拼接订单号
+        $order_nums = implode(',', $order_nums);
+
+        if (empty($order_nums)) $this->error("暂无课程");
 
         $this->success('下单成功请支付', ['order_type' => 40, 'order_num' => rtrim($order_nums, ',')]);
     }
-
 
 }

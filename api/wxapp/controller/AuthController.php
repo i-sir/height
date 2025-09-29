@@ -548,15 +548,21 @@ class AuthController extends RestBaseController
         return $str;
     }
 
+
     /**
-     * 获取微信昵称
-     * @return void
+     * 获取微信昵称（包含5位格式化ID）
+     * @return string
      */
     protected function get_member_wx_nickname()
     {
         $MemberModel = new \initmodel\MemberModel();//用户管理
         $max_id      = $MemberModel->max('id');
-        return '微信用户_' . ($max_id + 1);
+        $new_id      = $max_id + 1;
+
+        // 将新ID格式化为5位数字（不足补0）
+        $formattedId = str_pad($new_id, 5, '0', STR_PAD_LEFT);
+
+        return 'UpForm' . $formattedId;
     }
 
 }
