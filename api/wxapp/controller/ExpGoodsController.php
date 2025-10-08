@@ -135,7 +135,7 @@ class ExpGoodsController extends AuthController
 
 
         /** 查询数据 **/
-        $params["InterfaceType"] = "api";//接口类型
+        $params["InterfaceType"] = "api";//接口类型.
         $params["DataFormat"]    = "list";//数据格式,find详情,list列表
         $params["field"]         = "*";//过滤字段
         if ($params['is_paginate']) $result = $ExpGoodsInit->get_list($where, $params);

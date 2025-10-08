@@ -371,6 +371,7 @@ class CourseStudyController extends AuthController
         $CourseStudyInit  = new \init\CourseStudyInit();//学习记录    (ps:InitController)
         $CourseStudyModel = new \initmodel\CourseStudyModel(); //学习记录   (ps:InitModel)
         $MemberModel      = new \initmodel\MemberModel();//用户管理
+        $CoursePlanModel = new \initmodel\CoursePlanModel(); //计划管理   (ps:InitModel)
 
         /** 获取参数 **/
         $params            = $this->request->param();
@@ -389,6 +390,10 @@ class CourseStudyController extends AuthController
                 'study_day'  => $this->user_info['study_day'] + 1,
             ]);
         }
+
+
+        //增加参加人数
+        $CoursePlanModel->where('id', '=', $params['plan_id'])->inc('attend_number')->update();
 
 
         $this->success('记录成功');

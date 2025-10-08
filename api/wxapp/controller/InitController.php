@@ -66,6 +66,7 @@ class InitController
         $CourseOrderModel    = new \initmodel\CourseOrderModel(); //课程订单   (ps:InitModel)
         $MemberModel         = new \initmodel\MemberModel();//用户管理
         $ShopCouponUserModel = new \initmodel\ShopCouponUserModel(); //优惠券领取记录   (ps:InitModel)
+        $CourseModel         = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
 
 
         $map   = [];
@@ -132,6 +133,14 @@ class InitController
                 ]);
             }
         }
+
+
+        //增加课程,销量
+        $order_list = $CourseOrderModel->where($map)->field('course_id,id,order_num')->select();
+        foreach ($order_list as $order_info) {
+            $CourseModel->where('id', '=', $order_info['course_id'])->inc('attend_number', 1)->update();
+        }
+
 
         return true;
     }
@@ -206,6 +215,70 @@ class InitController
                     'order_num'     => $order_num,
                     'order_type'    => 130,
                     'content'       => '商城下单奖励',
+                    'remark'        => $remark,
+                    'order_id'      => $order_info['id'],
+                ]);
+            }
+        }
+
+        return true;
+    }
+
+
+    /**
+     * 成为分销员,发放佣金
+     * @param $order_num
+     */
+    public function sendCooperationOrderAccomplish($order_num)
+    {
+        $CooperationModel = new \initmodel\CooperationModel(); //合作申请   (ps:InitModel)
+        $MemberModel      = new \initmodel\MemberModel();//用户管理
+
+
+        $map        = [];
+        $map[]      = ['order_num', '=', $order_num];
+        $order_info = $CooperationModel->where($map)->find();
+        if (empty($order_info)) return false;
+
+
+        //合作直推佣金(%)
+        $collaborative_direct_promotion = cmf_config('collaborative_direct_promotion');
+
+        $commission = $order_info['amount'] * ($collaborative_direct_promotion / 100);
+
+        //查询上级
+        $p_user_id = $MemberModel->where('id', '=', $order_info['user_id'])->value('pid');
+        if ($p_user_id && $commission) {
+            $remark = "操作人[下单得佣金];操作说明[下单得佣金];操作类型[下单得佣金];";//管理备注
+            AssetModel::incAsset('下单得佣金,给上级发放佣金 [180]', [
+                'operate_type'  => 'balance',//操作类型，balance|point ...
+                'identity_type' => 'member',//身份类型，member| ...
+                'user_id'       => $p_user_id,
+                'price'         => $commission,
+                'order_num'     => $order_num,
+                'order_type'    => 180,
+                'content'       => '成为分销员下单奖励',
+                'remark'        => $remark,
+                'order_id'      => $order_info['id'],
+            ]);
+
+
+            //合作间推佣金(%)
+            $collaboration_promotion = cmf_config('collaboration_promotion');
+
+            $commission2 = $order_info['amount'] * ($collaboration_promotion / 100);
+            //查询上上级
+            $sp_user_id = $MemberModel->where('id', '=', $p_user_id)->value('pid');
+            if ($sp_user_id && $commission2) {
+                $remark = "操作人[下单得佣金];操作说明[下单得佣金];操作类型[下单得佣金];";//管理备注
+                AssetModel::incAsset('下单得佣金,给上级发放佣金 [190]', [
+                    'operate_type'  => 'balance',//操作类型，balance|point ...
+                    'identity_type' => 'member',//身份类型，member| ...
+                    'user_id'       => $sp_user_id,
+                    'price'         => $commission2,
+                    'order_num'     => $order_num,
+                    'order_type'    => 190,
+                    'content'       => '成为分销员下单奖励',
                     'remark'        => $remark,
                     'order_id'      => $order_info['id'],
                 ]);

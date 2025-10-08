@@ -33,7 +33,7 @@
 
 
 <!--总分钟数-->
-<div class="form-group">
+<div class="form-group" style="display: none;">
     <label class="col-sm-2 control-label">总分钟数:</label>
     <div class="layui-input-block col-sm-6">
         <input type="text" name="total_minute" class="form-control post-params item-left"
@@ -127,24 +127,24 @@
         gap: 10px;
     }
 
-    .form-image-preview {
-        height: 45px;
-        width: 45px;
-        cursor: pointer;
-    }
-
     .form-actions {
         gap: 5px;
     }
 
     .data-value {
-        margin-left: 30px;
+        /*margin-left: 30px;*/
     }
 
     .layui-btn .layui-icon {
         vertical-align: middle !important;
     }
+
+    .video-path-display {
+        width: 700px;
+        margin-bottom: 5px;
+    }
 </style>
+
 <div class="form-group">
     <div class="layui-form-item">
         <label class="col-sm-2 control-label">动作要领:</label>
@@ -154,22 +154,18 @@
                 <foreach item="value" key="key" name="$action">
                     <div class="custom-form-container">
                         <div class="custom-form-group">
-                            <input class="form-control post-params" id="photo_{$key}" name="data_image[]" type="hidden"
-                                   value="{$value.image|default=''}">
-                            <a href="javascript:imagePreviewDialog('{:cmf_get_image_preview_url($value.image)}');">
-                                <img class="form-image-preview" id="photo_{$key}-preview"
-                                     src="{:cmf_get_image_preview_url($value.image)}"
-                                     onerror="this.src='/static/images/default.png'">
-                            </a>
+                            <input class="form-control post-params video-path-display" id="video_{$key}"
+                                   name="data_image[]" type="text" readonly="readonly"
+                                   value="{$value.image|default=''}" placeholder="请上传视频">
                             <div class="form-actions">
-                                <a href="javascript:uploadOneImage('图片上传','#photo_{$key}');">上传</a>
+                                <a href="javascript:uploadOne('视频上传','#video_{$key}','video');">上传</a>
                                 <br>
-                                <a onclick="resetImage('#photo_{$key}')">取消</a>
+                                <a onclick="$('#video_{$key}').val('');return false;">取消</a>
                             </div>
                         </div>
                         <div class="custom-form-group data-value">
-                            <textarea rows="4" class="form-control post-params item-left" cols="60" placeholder="描述"
-                                      name="data_value[]">{$value.value}</textarea>
+                            <textarea rows="4" class="form-control post-params item-left" cols="94"
+                                      placeholder="描述" name="data_value[]">{$value.value}</textarea>
                             <button class="layui-btn layui-btn-danger layui-btn-sm remove-item" type="button">
                                 <i class="layui-icon">&#xe67e;</i>
                             </button>
@@ -181,17 +177,18 @@
             <!-- 新增项模板 -->
             <div class="custom-form-container">
                 <div class="custom-form-group">
-                    <input class="form-control post-params" id="photo_new_aa99999" name="data_image[]" type="hidden">
-                    <img class="form-image-preview" id="photo_new_aa99999-preview" src="/static/images/default.png">
+                    <input class="form-control post-params video-path-display" id="video_new_aa99999"
+                           name="data_image[]" type="text" readonly="readonly"
+                           value="" placeholder="请上传视频">
                     <div class="form-actions">
-                        <a href="javascript:uploadOneImage('图片上传','#photo_new_aa99999');">上传</a>
+                        <a href="javascript:uploadOne('视频上传','#video_new_aa99999','video');">上传</a>
                         <br>
-                        <a onclick="resetImage('#photo_new_aa99999')">取消</a>
+                        <a onclick="$('#video_new_aa99999').val('');return false;">取消</a>
                     </div>
                 </div>
                 <div class="custom-form-group data-value">
-                    <textarea rows="4" class="form-control post-params item-left" cols="60" placeholder="描述"
-                                 name="data_value[]"></textarea>
+                    <textarea rows="4" class="form-control post-params item-left" cols="94"
+                              placeholder="描述" name="data_value[]"></textarea>
                     <button class="layui-btn layui-btn-warm layui-btn-sm add-item" type="button">
                         <i class="layui-icon">&#xe654;</i>
                     </button>
@@ -200,6 +197,7 @@
         </div>
     </div>
 </div>
+
 <script>
     layui.use(['jquery', 'form'], function () {
         var $ = layui.$,
@@ -208,35 +206,30 @@
         // 计数器用于生成唯一ID
         var itemCounter = 1;
 
-        // 重置图片函数
-        window.resetImage = function (selector) {
-            $(selector + '-preview').attr('src', '/static/images/default.png');
-            $(selector).val('');
-        };
-
         // 添加新项
         $('body').on('click', '.add-item', function () {
-            var newId = 'photo_new_' + itemCounter++;
+            var newId = 'video_new_' + itemCounter++;
             var newItem = `
-        <div class="custom-form-container">
-            <div class="custom-form-group">
-                <input class="form-control post-params" id="${newId}" name="data_image[]" type="hidden">
-                <img class="form-image-preview" id="${newId}-preview" src="/static/images/default.png"  onclick="imagePreviewDialog(this.src);">
-                <div class="form-actions" style="display: block;!important;">
-                    <a href="javascript:uploadOneImage('图片上传','#${newId}');">上传</a>
-                    <br>
-                    <a onclick="resetImage('#${newId}')">取消</a>
+                <div class="custom-form-container">
+                    <div class="custom-form-group">
+                        <input class="form-control post-params video-path-display" id="${newId}"
+                               name="data_image[]" type="text" readonly="readonly"
+                               value="" placeholder="请上传视频">
+                        <div class="form-actions">
+                            <a href="javascript:uploadOne('视频上传','#${newId}','video');">上传</a>
+                            <br>
+                            <a onclick="$('#${newId}').val('');return false;">取消</a>
+                        </div>
+                    </div>
+                    <div class="custom-form-group data-value">
+                        <textarea rows="4" class="form-control post-params item-left" cols="94"
+                                  placeholder="描述" name="data_value[]"></textarea>
+                        <button class="layui-btn layui-btn-danger layui-btn-sm remove-item" type="button">
+                            <i class="layui-icon">&#xe67e;</i>
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <div class="custom-form-group data-value">
-                 <textarea rows="4" class="form-control post-params item-left" cols="60" placeholder="描述"
-                                 name="data_value[]"></textarea>
-                <button class="layui-btn layui-btn-danger layui-btn-sm remove-item" type="button">
-                    <i class="layui-icon">&#xe67e;</i>
-                </button>
-            </div>
-        </div>
-        `;
+            `;
 
             $('#data_value_container').append(newItem);
             form.render();
@@ -247,8 +240,6 @@
             $(this).closest('.custom-form-container').remove();
         });
     });
-
-
 </script>
 
 

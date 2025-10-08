@@ -366,6 +366,9 @@ class NotifyController extends AuthController
                 'update_time'       => time(),
             ]);
 
+
+            //分佣
+            $InitController->sendCooperationOrderAccomplish($order_info['order_num']);
         }
 
 

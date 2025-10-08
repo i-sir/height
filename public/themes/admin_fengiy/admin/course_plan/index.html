@@ -63,7 +63,7 @@
                 <th style="">ID</th>
                 <th style="">名称</th>
                 <th style="">描述</th>
-                <th style="">总分钟数</th>
+                <th style="display: none;">总分钟数</th>
                 <th style="">组数</th>
                 <th style="">参加人数</th>
                 <th style="">虚拟人数</th>
@@ -86,7 +86,7 @@
                     <td>{$vo.id|default=''}</td>  <!--本我-->
                     <td>{$vo.name|default=''}</td>  <!--名称-->
                     <td>{$vo.description|default=''}</td>  <!--描述-->
-                    <td>{$vo.total_minute|default=''}</td>  <!--总分钟数-->
+                    <td style="display: none;">{$vo.total_minute|default=''}</td>  <!--总分钟数-->
                     <td>{$vo.min_group|default=''} ~ {$vo.max_group|default=''}</td>  <!--组数-->
                     <td>{$vo.attend_number|default=''}</td>  <!--参加人数-->
                     <td>{$vo.virtual_number|default=''}</td>  <!--虚拟人数-->

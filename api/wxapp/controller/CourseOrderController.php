@@ -377,7 +377,7 @@ class CourseOrderController extends AuthController
                 $insert['amount'] = $course_info['price'];
             }
 
-            $insert['coupon_amount'] = $course_info['amount'];//优惠金额
+            $insert['coupon_amount'] = $course_info['amount'];//优惠金额.
             $insert['create_time']   = time();
 
             //算佣金
