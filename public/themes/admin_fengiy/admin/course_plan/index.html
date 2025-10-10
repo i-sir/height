@@ -85,7 +85,15 @@
                     </if>
                     <td>{$vo.id|default=''}</td>  <!--本我-->
                     <td>{$vo.name|default=''}</td>  <!--名称-->
-                    <td>{$vo.description|default=''}</td>  <!--描述-->
+<!--                    <td>{$vo.description|default=''}</td>  &lt;!&ndash;描述&ndash;&gt;-->
+                    <td>
+                        <div data-toggle="tooltip"
+                             title="{$vo.description}"
+                             style="width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                        >
+                            {$vo.description}
+                        </div>
+                    </td>
                     <td style="display: none;">{$vo.total_minute|default=''}</td>  <!--总分钟数-->
                     <td>{$vo.min_group|default=''} ~ {$vo.max_group|default=''}</td>  <!--组数-->
                     <td>{$vo.attend_number|default=''}</td>  <!--参加人数-->

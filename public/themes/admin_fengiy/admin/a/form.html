@@ -479,6 +479,7 @@ if($params['end_time']) $params['end_time'] = strtotime($params['end_time']." 23
 </div>
 
 
+
 <!--自定义表单 图片+input框  -->
 <!--控制器写法
 
@@ -636,6 +637,8 @@ if($params['end_time']) $params['end_time'] = strtotime($params['end_time']." 23
 
 
 </script>
+
+
 
 
 <!--自定义表单 一个input-->
@@ -2002,10 +2005,10 @@ $this->assign('show_type_list', $RecommendInit->show_type);
 
 <!--音频|mp3-->
 <div class="form-group">
-    <label class="col-sm-2 control-label">视频:</label>
+    <label class="col-sm-2 control-label">音频:</label>
     <div class="layui-input-block col-sm-6">
         <input id="audio-00000001" class="form-control post-params" type="text" name="mp3"
-               readonly="readonly" value="{$mp3|default=''}" placeholder="请上传视频">
+               readonly="readonly" value="{$mp3|default=''}" placeholder="请上传音频">
         <notempty name="$mp3">
             <a id="audio-preview" href="{:cmf_get_file_download_url($mp3)}"
                target="_blank">下载</a>

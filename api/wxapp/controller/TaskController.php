@@ -38,6 +38,7 @@ class TaskController
     {
         $task = new \init\TaskInit();
         $task->operation_vip();//处理vip
+        $task->operation_punch();//打卡数量 随机增加
         $task->operation_cancel_order();//自动取消订单
         $task->operation_accomplish_order();//自动完成订单
 

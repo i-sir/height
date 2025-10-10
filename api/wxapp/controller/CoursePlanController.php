@@ -136,6 +136,7 @@ class CoursePlanController extends AuthController
         $CoursePlanInit   = new \init\CoursePlanInit();//计划管理   (ps:InitController)
         $CoursePlanModel  = new \initmodel\CoursePlanModel(); //计划管理   (ps:InitModel)
         $CourseStudyModel = new \initmodel\CourseStudyModel(); //学习记录   (ps:InitModel)
+        $CourseModel      = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
 
         /** 获取参数 **/
         $params            = $this->request->param();
@@ -183,11 +184,42 @@ class CoursePlanController extends AuthController
                 ->order('id desc')
                 ->value('date') ?? date('Y-m-d', strtotime('-1 day'));
 
+
+        //检测上个阶段是否全部学习 如果没有本阶段全部解锁
+        $is_all_unlock = false;
+        $course_info   = $CourseModel->where('id', '=', $params['course_id'])->find();
+
+        //获取上一个阶段
+        $front_course_info = $CourseModel
+            ->where('list_order', '<', $course_info['list_order'])
+            ->where('is_show', 1)
+            ->order('id desc')
+            ->find();
+
+
+        //不属于第一个阶段,检测上个阶段是否全部学习
+        if ($front_course_info) {
+            $frontPlanIds = $CoursePlanModel
+                ->where('course_id', '=', $front_course_info['id'])
+                ->where('is_show', 1)
+                ->column('id');
+
+            $studyPlanIds = $CourseStudyModel
+                ->where('user_id', $params['user_id'])
+                ->where('course_id', '=', $front_course_info['id'] ?? 0)
+                ->where('status', 2)
+                ->group('plan_id')
+                ->column('plan_id');
+
+            if (count($studyPlanIds) != count($frontPlanIds)) $is_all_unlock = true;//全锁
+        }
+
         //参数
         $next_list_order           = $next_plan ? $next_plan['list_order'] : 0;
         $params['paid_plan_ids']   = $paidPlanIds;
         $params['next_list_order'] = $next_list_order;
         $params['new_date']        = $new_date;
+        $params['is_all_unlock']   = $is_all_unlock;
 
 
         /** 查询数据 **/

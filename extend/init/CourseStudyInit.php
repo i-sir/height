@@ -49,8 +49,6 @@ class CourseStudyInit extends Base
      */
     public function common_item($item = [], $params = [])
     {
-
-        $MemberInit = new \init\MemberInit();//会员管理 (ps:InitController)
         //接口类型
         if ($params['InterfaceType']) $this->InterfaceType = $params['InterfaceType'];
         //数据格式

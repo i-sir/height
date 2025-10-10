@@ -371,7 +371,7 @@ class CourseStudyController extends AuthController
         $CourseStudyInit  = new \init\CourseStudyInit();//学习记录    (ps:InitController)
         $CourseStudyModel = new \initmodel\CourseStudyModel(); //学习记录   (ps:InitModel)
         $MemberModel      = new \initmodel\MemberModel();//用户管理
-        $CoursePlanModel = new \initmodel\CoursePlanModel(); //计划管理   (ps:InitModel)
+        $CoursePlanModel  = new \initmodel\CoursePlanModel(); //计划管理   (ps:InitModel)
 
         /** 获取参数 **/
         $params            = $this->request->param();
@@ -449,21 +449,21 @@ class CourseStudyController extends AuthController
 
         if ($params['is_me']) {
             $map100   = [];
-            $map100[] = ['status', '=', 2];
-            $map100[] = ['class_id', '=', $params['class_id']];
+            //$map100[] = ['status', '=', 2];
+            $map100[] = ['class_id', '=', $params['class_id'] ?? 1];
             $map100[] = ['user_id', '=', $this->user_id];
 
             //累计天数
-            $result["total_day"] = $this->user_info['study_day'];
+            $result["total_day"] = $CourseStudyModel->where($map100)->group('date')->count();
 
 
             //累计时长
-            $result["total_time"] = $CourseStudyModel->where($map100)->sum('second') ?? 0 / 60;
+            $result["total_time"] = (int)(($CourseStudyModel->where($map100)->sum('second') ?? 0) / 60);
 
 
             //今日时长
             $map100[]             = ['date', '=', date('Y-m-d')];
-            $result["today_time"] = $CourseStudyModel->where($map100)->sum('second') ?? 0 / 60;
+            $result["today_time"] = (int)(($CourseStudyModel->where($map100)->sum('second') ?? 0) / 60);
 
         } else {
 
@@ -476,9 +476,9 @@ class CourseStudyController extends AuthController
 
 
             //设置虚拟数+实际人数
-            $time_number          = $CourseStudyModel->where($map100)->sum('second') ?? 0 / 60;
+            $time_number          = (int)(($CourseStudyModel->where($map100)->sum('second') ?? 0) / 60);
             $cumulative_duration  = cmf_config('cumulative_duration');
-            $result["total_time"] = (int)$cumulative_duration + $time_number;  //累计时长(分钟)
+            $result["total_time"] = (int)($cumulative_duration + $time_number);  //累计时长(分钟)
 
             //设置虚拟数+实际人数
             $map100[]                     = ['date', '=', date('Y-m-d')];
