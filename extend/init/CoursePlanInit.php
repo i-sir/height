@@ -69,8 +69,8 @@ class CoursePlanInit extends Base
             }
         }
         if ($params['is_all_unlock'] == true) $item['is_unlock'] = 2; // 上个阶段未学习完成,这个阶段全部锁定
-
         $item['is_unlock_name'] = $this->is_unlock[$item['is_unlock']];
+        $item['is_all_unlock']  = $params['is_all_unlock'];
 
 
         /** 处理文字描述 **/
