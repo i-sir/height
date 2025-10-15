@@ -22,34 +22,35 @@ class TaskInit
     {
         $randomly_increase_number = cmf_config('randomly_increase_number'); //随机增加数
 
+        if (date('H:i') == "00:00") {
+            //累计打卡人数
+            $map                = [];
+            $map[]              = ['name', '=', 'accumulated_number'];
+            $accumulated_number = cmf_config('accumulated_number'); //设置虚拟数+实际人数
+            Db::name('base_config')->where($map)->strict(false)->update([
+                'value'       => serialize($accumulated_number + rand(30, 60)),
+                'update_time' => time(),
+            ]);
 
-        //累计打卡人数
-        $map                = [];
-        $map[]              = ['name', '=', 'accumulated_number'];
-        $accumulated_number = cmf_config('accumulated_number'); //设置虚拟数+实际人数
-        Db::name('base_config')->where($map)->strict(false)->update([
-            'value'       => serialize($accumulated_number + rand(0, $randomly_increase_number)),
-            'update_time' => time(),
-        ]);
+            //今日打卡人数
+            $map200       = [];
+            $map200[]     = ['name', '=', 'number_clock'];
+            $number_clock = cmf_config('number_clock');//设置虚拟数+实际人数
+            Db::name('base_config')->where($map200)->strict(false)->update([
+                'value'       => serialize($number_clock + rand(30, 60)),
+                'update_time' => time(),
+            ]);
+        }
+
 
         //累计时长
-        $map100              = [];
-        $map100[]            = ['name', '=', 'cumulative_duration'];
-        $cumulative_duration = cmf_config('cumulative_duration');//设置虚拟数+实际人数
-        Db::name('base_config')->where($map100)->strict(false)->update([
-            'value'       => serialize($cumulative_duration + rand(0, $randomly_increase_number)),
-            'update_time' => time(),
-        ]);
-
-
-        //今日打卡人数
-        $map200       = [];
-        $map200[]     = ['name', '=', 'number_clock'];
-        $number_clock = cmf_config('number_clock');//设置虚拟数+实际人数
-        Db::name('base_config')->where($map200)->strict(false)->update([
-            'value'       => serialize($number_clock + rand(0, $randomly_increase_number)),
-            'update_time' => time(),
-        ]);
+        //        $map100              = [];
+        //        $map100[]            = ['name', '=', 'cumulative_duration'];
+        //        $cumulative_duration = cmf_config('cumulative_duration');//设置虚拟数+实际人数
+        //        Db::name('base_config')->where($map100)->strict(false)->update([
+        //            'value'       => serialize($cumulative_duration + rand(0, $randomly_increase_number)),
+        //            'update_time' => time(),
+        //        ]);
 
 
         echo("打卡数量 随机增加,执行成功\n" . cmf_random_string(80) . "\n" . date('Y-m-d H:i:s') . "\n");

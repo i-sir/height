@@ -54,6 +54,99 @@ class CourseStudyController extends AuthController
 
 
     /**
+     * 获取日历列表
+     * @OA\Post(
+     *     tags={"学习记录"},
+     *     path="/wxapp/course_study/date_list",
+     *
+     *
+     *
+     *
+     *    @OA\Parameter(
+     *         name="openid",
+     *         in="query",
+     *         description="openid",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *    @OA\Parameter(
+     *         name="date",
+     *         in="query",
+     *         description="日期2025-09 如不传默认本月",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
+     *
+     *
+     *
+     *     @OA\Response(response="200", description="An example resource"),
+     *     @OA\Response(response="default", description="An example resource")
+     * )
+     *
+     *
+     *   test_environment: http://height.ikun:9090/api/wxapp/course_study/date_list
+     *   official_environment: https://xcxkf173.aubye.com/api/wxapp/course_study/date_list
+     *   api:  /wxapp/course_study/date_list
+     *   remark_name: 日历列表
+     *
+     */
+    public function date_list()
+    {
+        $CourseStudyModel = new \initmodel\CourseStudyModel(); //学习记录   (ps:InitModel)
+
+        $date = $this->request->param('date') ?? date('Y-m');
+
+        $result        = [];
+        $month         = date('Y-m', strtotime($date));
+        $daysInMonth   = date('t', strtotime($date));
+        $weekdayText   = ['日', '一', '二', '三', '四', '五', '六'];
+        $weekdayNumber = [7, 1, 2, 3, 4, 5, 6];
+
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            $currentDate = $month . '-' . sprintf('%02d', $day);
+            $weekday     = date('w', strtotime($currentDate));
+
+
+            $is_study = false;
+            if ($this->user_id) {
+                $map      = [];
+                $map[]    = ['user_id', '=', $this->user_id];
+                $map[]    = ['date', '=', $currentDate];
+                $study    = $CourseStudyModel->where($map)->count();
+                $is_study = $study ? true : false;
+            }
+
+            $result[] = [
+                'is_study'     => $is_study,
+                'date'         => $currentDate,
+                'month_day'    => date('m-d', strtotime($currentDate)),
+                'day'          => sprintf('%02d', $day),
+                'weekday_key'  => $weekdayNumber[$weekday],
+                'weekday_name' => '周' . $weekdayText[$weekday],
+            ];
+        }
+
+        $this->success('请求成功!', $result);
+    }
+
+
+    /**
      * 学习记录 列表
      * @OA\Post(
      *     tags={"学习记录"},
@@ -448,7 +541,7 @@ class CourseStudyController extends AuthController
 
 
         if ($params['is_me']) {
-            $map100   = [];
+            $map100 = [];
             //$map100[] = ['status', '=', 2];
             $map100[] = ['class_id', '=', $params['class_id'] ?? 1];
             $map100[] = ['user_id', '=', $this->user_id];

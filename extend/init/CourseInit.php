@@ -50,9 +50,10 @@ class CourseInit extends Base
      */
     public function common_item($item = [], $params = [])
     {
-        $CourseStudyModel = new \initmodel\CourseStudyModel(); //学习记录   (ps:InitModel)
-        $CoursePlanModel  = new \initmodel\CoursePlanModel(); //计划管理   (ps:InitModel)
-        $CourseSetModel   = new \initmodel\CourseSetModel(); //收费配置   (ps:InitModel)
+        $CourseStudyModel     = new \initmodel\CourseStudyModel(); //学习记录   (ps:InitModel)
+        $CoursePlanModel      = new \initmodel\CoursePlanModel(); //计划管理   (ps:InitModel)
+        $CourseSetModel       = new \initmodel\CourseSetModel(); //收费配置   (ps:InitModel)
+        $CourseMarketingModel = new \initmodel\CourseMarketingModel(); //营销管理   (ps:InitModel)
 
 
         //接口类型
@@ -75,13 +76,13 @@ class CourseInit extends Base
 
 
         //检测是否需要关联购买,获取价格
-        $map   = [];
-        $map[] = ['', 'EXP', Db::raw("FIND_IN_SET({$item['id']},course_ids)")];
-        $price = $CourseSetModel
+        $map      = [];
+        $map[]    = ['', 'EXP', Db::raw("FIND_IN_SET({$item['id']},course_ids)")];
+        $set_info = $CourseSetModel
             ->where($map)
             ->order('id desc')
-            ->value('price');
-        if ($price) $item['price'] = $price;
+            ->find();
+        if ($set_info) $item['price'] = $set_info['price'];
 
         //完成课时
         $item['accomplish_number'] = $CourseStudyModel
@@ -101,6 +102,53 @@ class CourseInit extends Base
 
         //完成进度条
         $item['progress'] = $item['total_number'] > 0 ? round($item['accomplish_number'] / $item['total_number'] * 100) : 0;
+
+
+        //营销板块
+        if ($set_info['is_marketing'] == 1) {
+            //营销次数,营销倒计时
+            $item['marketing_time']   = 0;
+            $item['marketing_number'] = 0;
+
+            //第一次营销
+            $map1000        = [];
+            $map1000[]      = ['user_id', '=', $params['user_id']];
+            $map1000[]      = ['course_id', '=', $item['id']];
+            $map1000[]      = ['number', '=', 1];
+            $marketing_info = $CourseMarketingModel
+                ->where($map1000)
+                ->order('id')
+                ->find();
+            if ($marketing_info) {
+                if ($marketing_info['end_time'] < time()) {
+                    //第一次营销 结束
+                    $map2000         = [];
+                    $map2000[]       = ['user_id', '=', $params['user_id']];
+                    $map2000[]       = ['course_id', '=', $item['id']];
+                    $map2000[]       = ['number', '=', 2];
+                    $marketing_info2 = $CourseMarketingModel
+                        ->where($map2000)
+                        ->order('id')
+                        ->find();
+                    if ($marketing_info2) {
+                        $item['marketing_number'] = 2;
+                        if ($marketing_info2['end_time'] > time()) {
+                            $item['marketing_time'] = $marketing_info2['end_time'] - time();
+                            //第二次营销价格
+                            $item['price'] = $set_info['marketing_price'];
+                        }
+                    } else {
+                        $item['marketing_number'] = 1;
+                    }
+
+
+                } else {
+                    $item['marketing_time']   = $marketing_info['end_time'] - time();
+                    $item['price']            = $set_info['marketing_price'];
+                    $item['marketing_number'] = 1;
+                }
+            }
+        }
 
 
         /** 处理文字描述 **/

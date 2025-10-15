@@ -85,7 +85,7 @@ class CoursePlanInit extends Base
         //完成次数
         $item['accomplish_number'] = $CourseStudyModel
                 ->where('user_id', $params['user_id'])
-                ->where('course_id', '=', $params['course_id'] ?? 0)
+                ->where('course_id', '=', $item['course_id'] ?? 0)
                 ->where('plan_id', '=', $item['id'])
                 ->where('status', 2)
                 ->sum('number') ?? 0;

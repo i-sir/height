@@ -279,9 +279,10 @@ class CourseOrderController extends AuthController
     {
         $this->checkAuth();
 
-        $CourseOrderModel = new \initmodel\CourseOrderModel(); //课程订单   (ps:InitModel)
-        $CourseModel      = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
-        $CourseSetModel   = new \initmodel\CourseSetModel(); //收费配置   (ps:InitModel)
+        $CourseOrderModel     = new \initmodel\CourseOrderModel(); //课程订单   (ps:InitModel)
+        $CourseModel          = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
+        $CourseSetModel       = new \initmodel\CourseSetModel(); //收费配置   (ps:InitModel)
+        $CourseMarketingModel = new \initmodel\CourseMarketingModel(); //营销管理   (ps:InitModel)
 
         /** 获取参数 **/
         $params = $this->request->param();
@@ -328,6 +329,38 @@ class CourseOrderController extends AuthController
         if ($set_info) {
             $courseIds   = $this->getParams($set_info['course_ids']);
             $totalAmount = $set_info['price']; // 目标总金额
+
+
+            //营销板块
+            if ($set_info['is_marketing'] == 1) {
+                //第一次营销
+                $map1000        = [];
+                $map1000[]      = ['user_id', '=', $this->user_id];
+                $map1000[]      = ['course_id', 'in',$courseIds];
+                $map1000[]      = ['number', '=', 1];
+                $marketing_info = $CourseMarketingModel
+                    ->where($map1000)
+                    ->order('id')
+                    ->find();
+                if ($marketing_info) {
+                    if ($marketing_info['end_time'] < time()) {
+                        //第一次营销 结束
+                        $map2000         = [];
+                        $map2000[]       = ['user_id', '=', $this->user_id];
+                        $map2000[]       = ['course_id', 'in',$courseIds];
+                        $map2000[]       = ['number', '=', 2];
+                        $marketing_info2 = $CourseMarketingModel
+                            ->where($map2000)
+                            ->order('id')
+                            ->find();
+                        if ($marketing_info2 && $marketing_info2['end_time'] > time()) {
+                            $totalAmount = $set_info['marketing_price'];
+                        }
+                    } else {
+                        $totalAmount = $set_info['marketing_price'];
+                    }
+                }
+            }
         }
 
         // 计算需要分配的课程数量

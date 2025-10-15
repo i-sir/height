@@ -75,8 +75,10 @@ class InitController
 
         //计算价格
         $coupon_amount = $CourseOrderModel->where($map)->sum('coupon_amount');
-        $code          = 'Y' . uniqid(mt_rand());
-        $qr_image      = '';
+        if ($coupon_amount == 0 || $coupon_amount <= 0) $coupon_amount = 0.01;
+
+        $code     = 'Y' . uniqid(mt_rand());
+        $qr_image = '';
         //给下单用户赠送优惠券
         $coupon_validity_period = cmf_config('coupon_validity_period'); //下单成功赠送订单金额的优惠,有效期n天
         /** 发放优惠券 **/

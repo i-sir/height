@@ -33,15 +33,6 @@
 </div>
 
 
-<!--价格-->
-<div class="form-group">
-    <label class="col-sm-2 control-label">价格:</label>
-    <div class="layui-input-block col-sm-6">
-        <input type="number" class="form-control post-params item-left" name="price" value="{$price|default=''}">
-    </div>
-</div>
-
-
 <!--佣金-->
 <div class="form-group">
     <label class="col-sm-2 control-label">直推佣金(%):</label>
@@ -61,7 +52,72 @@
 </div>
 
 
+<!--价格-->
+<div class="form-group">
+    <label class="col-sm-2 control-label">价格:</label>
+    <div class="layui-input-block col-sm-6">
+        <input type="number" class="form-control post-params item-left" name="price" value="{$price|default=''}">
+    </div>
+</div>
 
+
+<div class="form-group">
+    <label class="col-sm-2 control-label">营销:</label>
+    <div class="col-md-6 col-sm-10">
+        <select name="is_marketing" class="form-control" lay-filter="show_type" id="show_type">
+            <option value="2"
+            <if condition="$is_marketing eq '2' ">selected</if>
+            >关闭</option>
+            <option value="1"
+            <if condition="$is_marketing eq '1' ">selected</if>
+            >开启</option>
+        </select>
+    </div>
+</div>
+
+
+<div class="form-group show_type show_type1">
+    <label class="col-sm-2 control-label">营销价格:</label>
+    <div class="layui-input-block col-sm-6">
+        <input type="number" class="form-control post-params item-left" name="marketing_price"
+               value="{$marketing_price|default=''}">
+    </div>
+</div>
+
+
+<div class="form-group show_type show_type1">
+    <label class="col-sm-2 control-label">营销时间(小时):</label>
+    <div class="layui-input-block col-sm-6">
+        <input type="number" class="form-control post-params item-left" name="end_time" value="{$end_time|default=''}">
+    </div>
+</div>
+
+
+<div class="form-group show_type show_type1">
+    <label class="col-sm-2 control-label">营销时间(小时):</label>
+    <div class="layui-input-block col-sm-6">
+        <input type="number" class="form-control post-params item-left" name="end_time2"
+               value="{$end_time2|default=''}">
+    </div>
+</div>
+
+
+<script>
+    layui.use(['layer', 'form'], function () {
+        let layer = layui.layer, form = layui.form;
+        const showType = $("#show_type").val();
+        setShow(showType)
+        form.on('select(show_type)', function (data) {
+            setShow(data.value)
+        })
+
+        function setShow(showType) {
+            $('.show_type').css('display', 'none');
+            $('.show_type' + showType).css('display', 'block');
+            //可以初始化值为空
+        }
+    });
+</script>
 
 
 

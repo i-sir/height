@@ -75,7 +75,8 @@ class MemberController extends AdminBaseController
         $this->assign("excel", $params);//导出使用
 
 
-        $where = [];
+        $where   = [];
+        $where[] = ['is_virtual', '=', 2];
         if ($params["keyword"]) $where[] = ["nickname|phone", "like", "%{$params["keyword"]}%"];
 
 
@@ -337,8 +338,6 @@ class MemberController extends AdminBaseController
     }
 
 
-
-
     //会员关系图
     public function children_tree()
     {
@@ -375,8 +374,6 @@ class MemberController extends AdminBaseController
 
         $this->success("请求成功", '', $result);
     }
-
-
 
 
     //关系树状图 (废弃)
