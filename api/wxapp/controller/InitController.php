@@ -63,19 +63,19 @@ class InitController
      */
     public function payCourseOrderAccomplish($order_nums, $user_id, $pay_num)
     {
-        $CourseOrderModel    = new \initmodel\CourseOrderModel(); //课程订单   (ps:InitModel)
+        $OrderPayModel       = new \initmodel\OrderPayModel();//支付记录表
         $MemberModel         = new \initmodel\MemberModel();//用户管理
         $ShopCouponUserModel = new \initmodel\ShopCouponUserModel(); //优惠券领取记录   (ps:InitModel)
         $CourseModel         = new \initmodel\CourseModel(); //课程计划   (ps:InitModel)
+        $CourseOrderModel    = new \initmodel\CourseOrderModel(); //课程订单   (ps:InitModel)
 
 
-        $map   = [];
-        $map[] = ['order_num', 'in', $order_nums];
+        $map100   = [];
+        $map100[] = ['pay_num', '=', $pay_num];
 
 
         //计算价格
-        $coupon_amount = $CourseOrderModel->where($map)->sum('coupon_amount');
-        if ($coupon_amount == 0 || $coupon_amount <= 0) $coupon_amount = 0.01;
+        $coupon_amount = $OrderPayModel->where($map100)->value('amount');
 
         $code     = 'Y' . uniqid(mt_rand());
         $qr_image = '';
@@ -100,6 +100,9 @@ class InitController
         ]);
 
 
+        //查看佣金
+        $map         = [];
+        $map[]       = ['order_num', 'in', $order_nums];
         $commission  = $CourseOrderModel->where($map)->sum('commission');
         $commission2 = $CourseOrderModel->where($map)->sum('commission2');
 

@@ -387,7 +387,6 @@ class NotifyController extends AuthController
         }
 
 
-
         //课程计划 & 类型注意
         if ($pay_info['order_type'] == 40) {
             $map100   = [];
