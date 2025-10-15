@@ -1,0 +1,72 @@
+
+
+
+
+    <!--用户id-->    <div class="form-group">
+        <label class="col-sm-2 control-label">用户信息:</label>
+        <div class="layui-input-block col-sm-6">
+                            <input type="text" name="user_id" class="form-control post-params item-left" value="{$user_id|default=''}">
+                    </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+    <!--课程id-->    <div class="form-group">
+        <label class="col-sm-2 control-label">课程id:</label>
+        <div class="layui-input-block col-sm-6">
+                            <input type="text" name="course_id" class="form-control post-params item-left" value="{$course_id|default=''}">
+                    </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+    <!--结束时间-->    <div class="form-group">
+        <label class="col-sm-2 control-label">结束时间:</label>
+        <div class="layui-input-block col-sm-6">
+                                                    <input class="form-control post-params item-left js-date" name="end_time" required
+                           type="text"
+                           value="{:isset($end_time) && $end_time > 10000 ? date('Y-m-d', $end_time) : ''}">
+         </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+    <!--第几次营销-->    <div class="form-group">
+        <label class="col-sm-2 control-label">第几次营销:</label>
+        <div class="layui-input-block col-sm-6">
+                                <input type="number" class="form-control post-params item-left" name="number" value="{$number|default=''}">
+                        </div>
+    </div>
+
+
+
+
+
+
+
+
+
