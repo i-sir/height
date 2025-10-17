@@ -108,30 +108,14 @@ class PublicController extends AuthController
         Log::write($result);
 
 
-        $MemberModel = new \initmodel\MemberModel();//用户管理
-
-        for ($i = 0; $i < 300; $i++) {
-            $AvatarModel = new \initmodel\AvatarModel(); //头像库   (ps:InitModel)
-            //随机查询一个头像
-            $avatar = $AvatarModel->where('is_show', '=', 1)->orderRaw('RAND()')->value('image') ?? cmf_config('app_logo');
-
-            //向数据库插入新用户信息
-            $insert['nickname']    = $this->get_member_wx_nickname();
-            $insert['avatar']      = cmf_get_asset_url($avatar);
-            $insert['openid']      = uniqid('M_');
-            $insert['mini_openid'] = uniqid('M_');
-            $insert['invite_code'] = $this->get_num_only('invite_code', 5, 4, '', 'member');
-            $insert['phone']       = '1858888888' . $i;
-            $insert['unionid']     = uniqid('M_');
-            $insert['pid']         = 0;
-            $insert['create_time'] = time();
-            $insert['login_time']  = time();
-            $insert['ip']          = get_client_ip();
-            $insert['study_day']   = rand(40, 500);
-            $insert['is_virtual']   = 1;
-            $insert['login_city']  = $this->get_ip_to_city();
-
-            $MemberModel->strict(false)->insert($insert);
+        $ali_sms = cmf_get_plugin_class("HuYi");
+        $sms     = new $ali_sms();
+        $params = ["mobile" => 18582300163, 'content' => '您有一个新的门店预约单，请登录后台查看预约信息！'];
+        $result = $sms->sendMobileText($params);
+        if ($result['code'] == 0) {
+            $this->success($result['msg']);
+        } else {
+            $this->error($result['msg']);
         }
 
 

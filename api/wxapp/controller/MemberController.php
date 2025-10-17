@@ -198,7 +198,7 @@ class MemberController extends AuthController
 
 
         if (empty($member)) $this->error("该会员不存在!");
-        if ($member['pid']) unset($params['pid']);
+        if ($member['pid'] || $params['pid'] == $this->user_id) unset($params['pid']);
 
 
         //修改密码

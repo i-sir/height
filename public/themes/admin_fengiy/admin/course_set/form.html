@@ -24,15 +24,6 @@
 </div>
 
 
-<!--备注-->
-<div class="form-group">
-    <label class="col-sm-2 control-label">备注:</label>
-    <div class="layui-input-block col-sm-6">
-        <input type="text" name="name" class="form-control post-params item-left" value="{$name|default=''}">
-    </div>
-</div>
-
-
 <!--佣金-->
 <div class="form-group">
     <label class="col-sm-2 control-label">直推佣金(%):</label>
@@ -72,6 +63,22 @@
             <if condition="$is_marketing eq '1' ">selected</if>
             >开启</option>
         </select>
+    </div>
+</div>
+
+
+<!--标题-->
+<div class="form-group show_type show_type1">
+    <label class="col-sm-2 control-label">标题:</label>
+    <div class="layui-input-block col-sm-6">
+        <input type="text" name="name" class="form-control post-params item-left" value="{$name|default=''}">
+    </div>
+</div>
+
+<div class="form-group show_type show_type1">
+    <label class="col-sm-2 control-label">营销内容:</label>
+    <div class="layui-input-block col-sm-6">
+        <textarea class="form-control post-params item-left" name="content">{$content|default=''}</textarea>
     </div>
 </div>
 
@@ -118,6 +125,9 @@
         }
     });
 </script>
+
+
+
 
 
 

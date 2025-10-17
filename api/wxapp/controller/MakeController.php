@@ -94,6 +94,19 @@ class MakeController extends AuthController
      *     ),
      *
      *
+     *
+     *
+     *    @OA\Parameter(
+     *         name="shop_id",
+     *         in="query",
+     *         description="店铺id 如果存在优先查找",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *
+     *
      *     @OA\Parameter(
      *         name="keyword",
      *         in="query",
@@ -141,7 +154,8 @@ class MakeController extends AuthController
         /** 查询条件 **/
         $where   = [];
         $where[] = ['id', '>', 0];
-        $where[] = ['user_id', '=', $this->user_id];
+        if (empty($params['shop_id'])) $where[] = ['user_id', '=', $this->user_id];
+        if (($params['shop_id'])) $where[] = ['shop_id', '=', $params['shop_id']];
         if ($params["keyword"]) $where[] = ["order_num|make_date|username|phone", "like", "%{$params['keyword']}%"];
         if ($params["status"]) $where[] = ["status", "=", $params["status"]];
         if ($params['type']) $where[] = ['type', '=', $params['type']];
@@ -325,6 +339,7 @@ class MakeController extends AuthController
     {
         $MakeInit  = new \init\MakeInit();//预约记录    (ps:InitController)
         $MakeModel = new \initmodel\MakeModel(); //预约记录   (ps:InitModel)
+        $ShopModel = new \initmodel\ShopModel(); //店铺管理   (ps:InitModel)
 
         /** 获取参数 **/
         $params              = $this->request->param();
@@ -335,11 +350,19 @@ class MakeController extends AuthController
         $where = [];
         if ($params['id']) $where[] = ['id', '=', $params['id']];
 
+        $shop_info = $ShopModel->where('id', '=', $params['shop_id'])->find();
+        if (empty($shop_info)) $this->error("暂无店铺信息");
 
         /** 提交更新 **/
         $result = $MakeInit->api_edit_post($params, $where);
         if (empty($result)) $this->error("失败请重试");
 
+
+        //通知店铺 关联手机号
+        $ali_sms   = cmf_get_plugin_class("HuYi");
+        $sms       = new $ali_sms();
+        $send_data = ["mobile" => $shop_info['phone'], 'content' => '您有一个新的门店预约单，请登录后台查看预约信息！'];
+        $sms->sendMobileText($send_data);
 
         $this->success('预约成功');
     }

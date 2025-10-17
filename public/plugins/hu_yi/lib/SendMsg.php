@@ -37,6 +37,25 @@ class SendMsg
     }
 
 
+    //发送短信 模板信息
+    public function sendText($mobile, $content)
+    {
+        //短信接口地址
+        if (empty($mobile) || empty($content)) {
+            return ['code' => 0, 'msg' => '手机号或发送内容为空'];
+        }
+        $target = "http://106.ihuyi.com/webservice/sms.php?method=Submit";
+
+        $post_data = 'account=' . $this->apiid . '&password=' . $this->apikey . '&mobile=' . $mobile . '&content=' . $content;
+        $gets      = self::xml_to_array(self::curl_post($post_data, $target));
+
+        Log::write($mobile, '互亿短信发送手机号');
+        Log::write($content, '互亿短信发送信息');
+        Log::write($gets['SubmitResult'], '互亿短信发送结果');
+
+        return $gets['SubmitResult'];
+    }
+
     //发送语音通知
     public function sendVoiceMsg($mobile, $content = '')
     {

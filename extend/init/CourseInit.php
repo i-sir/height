@@ -72,6 +72,7 @@ class CourseInit extends Base
                 $item['is_unlock'] = 2; // 不可解锁
             }
         }
+        $item['is_unlock'] = 3; // 已购买//测试用
         $item['is_unlock_name'] = $this->is_unlock[$item['is_unlock']];
 
 
@@ -82,7 +83,11 @@ class CourseInit extends Base
             ->where($map)
             ->order('id desc')
             ->find();
-        if ($set_info) $item['price'] = $set_info['price'];
+        if ($set_info) {
+            $item['price']   = $set_info['price'];
+            $item['y_price'] = $item['price'];
+            $item['title']   = $set_info['name'];
+        }
 
         //完成课时
         $item['accomplish_number'] = $CourseStudyModel

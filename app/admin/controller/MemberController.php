@@ -353,6 +353,7 @@ class MemberController extends AdminBaseController
 
         //条件
         $map = [];
+        $map[] = ['is_virtual', '=', 2];
         if (empty($params['nickname']) && empty($params['phone'])) $map[] = ['pid', '=', $params['pid'] ?? 0];
         if (isset($params['nickname']) && $params['nickname']) $map[] = ['nickname', 'like', "%{$params['nickname']}%"];
         if (isset($params['phone']) && $params['phone']) $map[] = ['phone', '=', $params['phone']];
