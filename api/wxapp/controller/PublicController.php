@@ -89,6 +89,8 @@ class PublicController extends AuthController
      */
     public function index()
     {
+        $CourseOrderModel = new \initmodel\CourseOrderModel(); //课程订单   (ps:InitModel)
+
         $code                  = cmf_random_string(2);
         $result['order_num']   = cmf_order_sn();
         $result['code']        = $code;
@@ -108,18 +110,65 @@ class PublicController extends AuthController
         Log::write($result);
 
 
-        $ali_sms = cmf_get_plugin_class("HuYi");
-        $sms     = new $ali_sms();
-        $params = ["mobile" => 18582300163, 'content' => '您有一个新的门店预约单，请登录后台查看预约信息！'];
-        $result = $sms->sendMobileText($params);
-        if ($result['code'] == 0) {
-            $this->success($result['msg']);
-        } else {
-            $this->error($result['msg']);
-        }
+        //        $ali_sms = cmf_get_plugin_class("HuYi");
+        //        $sms     = new $ali_sms();
+        //        $params  = ["mobile" => 18582300163, 'content' => '您有一个新的门店预约单，请登录后台查看预约信息！'];
+        //        $result  = $sms->sendMobileText($params);
+        //        if ($result['code'] == 0) {
+        //            $this->success($result['msg']);
+        //        } else {
+        //            $this->error($result['msg']);
+        //        }
 
 
-        $this->success('请求成功!', ['result' => $result, 'formData' => $formData]);
+        $phoneNumbers = [
+            '18871795704',
+            '18909701939',
+            '18297619032',
+            '13592803594',
+            '13666660155',
+            '18822282839',
+            '18096279536',
+            '18669736556',
+            '15052770597',
+            '15607068110',
+            '18992037514',
+            '15601912887',
+            '19859622831'
+        ];
+
+
+        $is_existence = 0;
+
+//        for ($i = 0; $i < count($phoneNumbers); $i++) {
+//            $phoneNumber = $phoneNumbers[$i];
+//            $user        = MemberModel::where('phone', $phoneNumber)->find();
+//
+//            if ($user) {
+//                $insert = [];
+//                $insert['user_id']     = $user['id'];
+//                $insert['phone']       = $user['phone'];
+//                $insert['openid']      = $user['openid'];
+//                $insert['course_id']   = 3;
+//                $insert['class_id']    = 1;
+//                $insert['status']      = 2;
+//                $insert['name']        = '第三阶段｜Day61–90｜突破拉伸期';
+//                $insert['order_num']   = cmf_order_sn();
+//                $insert['pay_num']     = '6666' . cmf_order_sn();
+//                $insert['amount']      = 0;
+//                $insert['commission']  = 0;
+//                $insert['commission2'] = 0;
+//                $insert['pay_type']    = 6;
+//                $insert['create_time'] = time();
+//
+//                $CourseOrderModel->strict(false)->insert($insert);
+//            }
+//
+//
+//        }
+
+
+        $this->success('请求成功!', ['result' => $result, 'formData' => $is_existence]);
     }
 
 

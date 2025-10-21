@@ -72,7 +72,7 @@ class CourseInit extends Base
                 $item['is_unlock'] = 2; // 不可解锁
             }
         }
-        $item['is_unlock']      = 3; // 已购买//测试用
+        //$item['is_unlock']      = 3; // 已购买//测试用
         $item['is_unlock_name'] = $this->is_unlock[$item['is_unlock']];
 
 

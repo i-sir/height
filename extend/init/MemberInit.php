@@ -44,7 +44,8 @@ class MemberInit extends Base
     {
         $MemberModel = new \initmodel\MemberModel(); //会员管理  (ps:InitModel)
         $HeightModel = new \initmodel\HeightModel(); //身高数据   (ps:InitModel)
-        $ShopModel = new \initmodel\ShopModel(); //店铺管理   (ps:InitModel)
+        $ShopModel   = new \initmodel\ShopModel(); //店铺管理   (ps:InitModel)
+        $MakeModel   = new \initmodel\MakeModel(); //预约记录   (ps:InitModel)
 
         //传入id直接查询
         if (is_string($where) || is_int($where)) $where = ["id" => (int)$where];
@@ -64,8 +65,14 @@ class MemberInit extends Base
 
         //关联店铺
         $item['shop_id'] = null;
-        $shop_id = $ShopModel->where('phone', '=', $item['phone'])->value('id');
-        if ($shop_id)  $item['shop_id'] = $shop_id;
+        $shop_id         = $ShopModel->where('phone', '=', $item['phone'])->value('id');
+        if ($shop_id) {
+            $item['shop_id'] = $shop_id;
+
+            $map                = [];
+            $map[]              = ['shop_id', '=', $shop_id];
+            $item['make_count'] = $MakeModel->where($map)->count();
+        }
 
 
         return $item;
