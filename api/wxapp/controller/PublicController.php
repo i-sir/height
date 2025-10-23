@@ -121,51 +121,79 @@ class PublicController extends AuthController
         //        }
 
 
-        $phoneNumbers = [
-            '18871795704',
-            '18909701939',
-            '18297619032',
-            '13592803594',
-            '13666660155',
-            '18822282839',
-            '18096279536',
-            '18669736556',
-            '15052770597',
-            '15607068110',
-            '18992037514',
-            '15601912887',
-            '19859622831'
-        ];
+        $phoneNumbers = [];
+
+//                $phoneNumbers = [
+//                    '15607935424',
+////                    '15935951528',
+////                    '15888536088'
+//                ];
 
 
-        $is_existence = 0;
+        for ($i = 0; $i < count($phoneNumbers); $i++) {
+            $phoneNumber = $phoneNumbers[$i];
+            $user        = MemberModel::where('phone', $phoneNumber)->find();
 
-//        for ($i = 0; $i < count($phoneNumbers); $i++) {
-//            $phoneNumber = $phoneNumbers[$i];
-//            $user        = MemberModel::where('phone', $phoneNumber)->find();
-//
-//            if ($user) {
-//                $insert = [];
-//                $insert['user_id']     = $user['id'];
-//                $insert['phone']       = $user['phone'];
-//                $insert['openid']      = $user['openid'];
-//                $insert['course_id']   = 3;
-//                $insert['class_id']    = 1;
-//                $insert['status']      = 2;
-//                $insert['name']        = '第三阶段｜Day61–90｜突破拉伸期';
-//                $insert['order_num']   = cmf_order_sn();
-//                $insert['pay_num']     = '6666' . cmf_order_sn();
-//                $insert['amount']      = 0;
-//                $insert['commission']  = 0;
-//                $insert['commission2'] = 0;
-//                $insert['pay_type']    = 6;
-//                $insert['create_time'] = time();
-//
-//                $CourseOrderModel->strict(false)->insert($insert);
-//            }
-//
-//
-//        }
+            if ($user) {
+                $insert1                = [];
+                $insert1['user_id']     = $user['id'];
+                $insert1['phone']       = $user['phone'];
+                $insert1['openid']      = $user['openid'];
+                $insert1['course_id']   = 1;
+                $insert1['class_id']    = 1;
+                $insert1['status']      = 2;
+                $insert1['name']        = '第一阶段｜Day1–30｜基础启动期';
+                $insert1['order_num']   = cmf_order_sn();
+                $insert1['pay_num']     = '6666' . cmf_order_sn();
+                $insert1['amount']      = 0;
+                $insert1['commission']  = 0;
+                $insert1['commission2'] = 0;
+                $insert1['pay_type']    = 6;
+                $insert1['create_time'] = time();
+
+                $CourseOrderModel->strict(false)->insert($insert1);
+
+
+                $insert2                = [];
+                $insert2['user_id']     = $user['id'];
+                $insert2['phone']       = $user['phone'];
+                $insert2['openid']      = $user['openid'];
+                $insert2['course_id']   = 2;
+                $insert2['class_id']    = 1;
+                $insert2['status']      = 2;
+                $insert2['name']        = '第二阶段｜Day31–60｜深度强化期';
+                $insert2['order_num']   = cmf_order_sn();
+                $insert2['pay_num']     = '6666' . cmf_order_sn();
+                $insert2['amount']      = 0;
+                $insert2['commission']  = 0;
+                $insert2['commission2'] = 0;
+                $insert2['pay_type']    = 6;
+                $insert2['create_time'] = time();
+
+                $CourseOrderModel->strict(false)->insert($insert2);
+
+
+                $insert3                = [];
+                $insert3['user_id']     = $user['id'];
+                $insert3['phone']       = $user['phone'];
+                $insert3['openid']      = $user['openid'];
+                $insert3['course_id']   = 3;
+                $insert3['class_id']    = 1;
+                $insert3['status']      = 2;
+                $insert3['name']        = '第三阶段｜Day61–90｜突破拉伸期';
+                $insert3['order_num']   = cmf_order_sn();
+                $insert3['pay_num']     = '6666' . cmf_order_sn();
+                $insert3['amount']      = 0;
+                $insert3['commission']  = 0;
+                $insert3['commission2'] = 0;
+                $insert3['pay_type']    = 6;
+                $insert3['create_time'] = time();
+
+                $CourseOrderModel->strict(false)->insert($insert3);
+            }
+
+
+        }
 
 
         $this->success('请求成功!', ['result' => $result, 'formData' => $is_existence]);
