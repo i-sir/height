@@ -123,11 +123,11 @@ class PublicController extends AuthController
 
         $phoneNumbers = [];
 
-//                $phoneNumbers = [
-//                    '15607935424',
-////                    '15935951528',
-////                    '15888536088'
-//                ];
+        $phoneNumbers = [
+            '15840981775',
+            '13968133183',
+            '13957453537'
+        ];
 
 
         for ($i = 0; $i < count($phoneNumbers); $i++) {
