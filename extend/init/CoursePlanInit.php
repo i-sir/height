@@ -58,6 +58,7 @@ class CoursePlanInit extends Base
         if ($params['DataFormat']) $this->DataFormat = $params['DataFormat'];
 
 
+
         /** 数据格式(公共部分),find详情&&list列表 共存数据 **/
         if (in_array($item['id'], $params['paid_plan_ids'])) {
             $item['is_unlock'] = 3; // 已学习

@@ -158,6 +158,7 @@ class CoursePlanController extends AuthController
             ->where('status', 2)
             ->column('plan_id');
 
+
         /** 计算下一个可解锁课程的list_order **/
         $max_list_order = 0;
         if (!empty($paidPlanIds)) {
@@ -166,6 +167,7 @@ class CoursePlanController extends AuthController
                 ->where('is_show', 1)
                 ->max('list_order');
         }
+
 
         //下一个可解锁课时
         $next_plan = $CoursePlanModel
@@ -176,9 +178,12 @@ class CoursePlanController extends AuthController
             ->find();
 
 
-        //最近解锁 时间
+
+        //最近解锁 时间 (今天不包含)
         $new_date = $CourseStudyModel
+                ->where('plan_id', $next_plan['id'])
                 ->where('user_id', $params['user_id'])
+                ->where('date', '<>', date('Y-m-d'))
                 ->where('course_id', '=', $params['course_id'] ?? 0)
                 ->where('status', 2)
                 ->order('id desc')

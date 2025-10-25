@@ -201,6 +201,12 @@ class MemberController extends AuthController
         if ($member['pid'] || $params['pid'] == $this->user_id) unset($params['pid']);
 
 
+        //判断不能绑定下级
+        if ($params['pid']) {
+            $child_ids = $this->getAllChildIds($member['id']);
+            if (in_array($params['pid'], $child_ids)) unset($params['pid']);
+        }
+
         //修改密码
         if ($params['pass']) {
             if (!cmf_compare_password($params['used_pass'], $member['pass'])) $this->error('旧密码错误');
@@ -214,6 +220,8 @@ class MemberController extends AuthController
         } else {
             $this->error("保存失败!");
         }
+
+
     }
 
 
